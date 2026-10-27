@@ -1,0 +1,55 @@
+_target_: src.data.vio_datamodule.VIODataModule
+batch_size: 4
+num_workers: 0
+pin_memory: False
+train_loader:
+  _target_: src.data.components.EuRoC_dataset.EuRoC
+  _partial_: false
+  root: ${paths.data_dir}/euroc
+  sequences:
+    - MH_01_easy
+    - MH_02_easy
+    - V1_01_easy
+  sequence_length: 11
+  cam_stride: 2
+  imu_freq: 10
+  transform:
+    _target_: src.utils.custom_transform.Compose
+    _partial_: false
+    transforms:
+      - _target_: src.utils.custom_transform.ToTensor
+      - _target_: src.utils.custom_transform.Resize
+        size: [256, 512]
+val_loader:
+  _target_: src.data.components.EuRoC_dataset.EuRoC
+  _partial_: false
+  root: ${paths.data_dir}/euroc
+  sequences:
+    - V1_02_medium
+  sequence_length: 11
+  cam_stride: 2
+  imu_freq: 10
+  transform:
+    _target_: src.utils.custom_transform.Compose
+    _partial_: false
+    transforms:
+      - _target_: src.utils.custom_transform.ToTensor
+      - _target_: src.utils.custom_transform.Resize
+        size: [256, 512]
+test_loader:
+  _target_: src.data.components.EuRoC_dataset.EuRoC
+  _partial_: false
+  root: ${paths.data_dir}/euroc
+  sequences:
+    - MH_05_difficult
+    - V2_02_medium
+  sequence_length: 11
+  cam_stride: 2
+  imu_freq: 10
+  transform:
+    _target_: src.utils.custom_transform.Compose
+    _partial_: false
+    transforms:
+      - _target_: src.utils.custom_transform.ToTensor
+      - _target_: src.utils.custom_transform.Resize
+        size: [256, 512]

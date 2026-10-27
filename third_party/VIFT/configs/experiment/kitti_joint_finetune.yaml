@@ -1,0 +1,44 @@
+# @package _global_
+# Ablation: joint encoder+fusion on raw KITTI vs frozen-encoder latent VIFT recipe.
+#
+#   python src/train.py experiment=kitti_joint_finetune trainer=gpu train=true test=false
+#   python scripts/phase3/run_kitti_joint_ablation.py train --max-epochs 50
+#
+# Compare mean t_rel on seq 05/07/10 to frozen replication (2.10%) / paper (1.96%).
+
+defaults:
+  - override /data: kitti_vio_joint
+  - override /model: kitti_joint_finetune
+  - override /callbacks: kitti_joint_checkpoint
+  - override /trainer: default
+
+tags: ["kitti_joint_finetune", "ablation", "frozen_vs_joint"]
+
+seed: 42
+
+train: true
+test: false
+
+init_ckpt_weights: false
+ckpt_path: null
+
+trainer:
+  min_epochs: 1
+  max_epochs: 50
+  accelerator: gpu
+  devices: 1
+  log_every_n_steps: 10
+  num_sanity_val_steps: 0
+  gradient_clip_val: 1.0
+
+data:
+  batch_size: 4
+
+model:
+  phase2_ckpt: null
+  freeze_encoder_epochs: 5
+  fusion_lr: 0.0001
+  encoder_lr_scale: 0.1
+  gradient_clip_val: 1.0
+  scheduler:
+    T_0: 25

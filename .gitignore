@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# VIFT / data (large)
+third_party/VIFT/data/kitti_data/
+third_party/VIFT/data/kitti_latent_data/
+third_party/VIFT/data/euroc/
+third_party/VIFT/data/euroc_latent_data/
+third_party/VIFT/data/*.zip
+third_party/VIFT/data/*.zip
+third_party/VIFT/pretrained_models/*.model
+third_party/VIFT/logs/
+third_party/VIFT/outputs/
+
+# IPS project
+.env
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

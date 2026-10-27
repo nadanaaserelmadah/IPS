@@ -1,0 +1,34 @@
+# @package _global_
+# Phase 4: fine-tune on TUM-VI (optional; start from EuRoC Phase 3 ckpt).
+#
+#   python src/train.py experiment=tum_vi_joint_finetune trainer=gpu train=true test=false \
+#     "ckpt_path=/path/to/euroc_phase3/last.ckpt" init_ckpt_weights=true
+
+defaults:
+  - override /data: tum_vi_vio_kaggle
+  - override /model: tum_vi_joint_finetune
+  - override /callbacks: phase2_checkpoint
+  - override /trainer: default
+
+tags: ["tum_vi_joint_finetune", "phase4"]
+
+seed: 42
+
+train: true
+test: false
+
+trainer:
+  min_epochs: 1
+  max_epochs: 30
+  accelerator: gpu
+  devices: 1
+  log_every_n_steps: 10
+  num_sanity_val_steps: 0
+
+data:
+  batch_size: 4
+
+model:
+  freeze_encoder_epochs: 3
+  fusion_lr: 0.0001
+  encoder_lr_scale: 0.1

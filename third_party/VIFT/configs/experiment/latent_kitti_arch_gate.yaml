@@ -1,0 +1,65 @@
+# @package _global_
+# Experiment 2: vis/IMU gates + VIFT Euler head. From scratch (do not load epoch-144).
+
+defaults:
+  - override /data: latent_kitti_vio
+  - override /model: latent_vio_tf
+  - override /callbacks: default
+  - override /trainer: default
+
+tags: ["latent_kitti_vio", "arch_gate", "transformer"]
+
+seed: 42
+
+trainer:
+  min_epochs: 50
+  max_epochs: 200
+  log_every_n_steps: 1
+
+callbacks:
+  early_stopping:
+    patience: 250
+    monitor: val/loss
+    mode: min
+
+data:
+  batch_size: 128
+  train_loader:
+    root_dir: ${paths.data_dir}/kitti_latent_data/train_10
+  val_loader:
+    root_dir: ${paths.data_dir}/kitti_latent_data/val_10
+  test_loader:
+    root_dir: ${paths.data_dir}/kitti_latent_data/val_10
+
+model:
+  _target_: src.models.weighted_vio_module.WeightedVIOLitModule
+
+  optimizer:
+    lr: 0.0001
+
+  criterion:
+    _target_: src.metrics.weighted_loss.AngleWeightedPoseLoss
+    base_loss_fn:
+      _target_: torch.nn.L1Loss
+      reduction: none
+    angle_weight: 10
+
+  net:
+    _target_: src.models.components.pose_transformer.GatedPoseTransformer
+    input_dim: 768
+    embedding_dim: 768
+    num_layers: 4
+    nhead: 6
+    dim_feedforward: 128
+    dropout: 0.0
+    v_f_len: 512
+    i_f_len: 256
+    gate_hidden: 64
+
+  scheduler:
+    T_0: 25
+    T_mult: 1
+
+  tester:
+    seq_len: 11
+    use_history_in_eval: True

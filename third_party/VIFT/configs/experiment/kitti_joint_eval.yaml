@@ -1,0 +1,31 @@
+# @package _global_
+# Eval-only for KITTI joint ablation.
+
+defaults:
+  - override /data: kitti_vio_joint
+  - override /model: kitti_joint_finetune
+  - override /callbacks: default
+  - override /trainer: default
+
+tags: ["kitti_joint_eval", "ablation"]
+
+seed: 42
+
+train: false
+test: true
+
+trainer:
+  min_epochs: 1
+  max_epochs: 1
+  accelerator: gpu
+  devices: 1
+  num_sanity_val_steps: 0
+
+data:
+  batch_size: 4
+
+model:
+  freeze_encoder_epochs: 0
+  tester:
+    use_history_in_eval: true
+    eval_mode: streaming_history

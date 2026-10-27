@@ -1,0 +1,37 @@
+# @package _global_
+# PI-VIFT trained with truncated BPTT over 3 back-to-back windows (detached carry), so the
+# carried inertial state is seen in training and streaming eval modes become meaningful.
+#   python src/train.py experiment=euroc_joint_pivift_tbptt trainer=gpu train=true test=false
+# Eval as usual, plus model.tester.eval_mode=streaming_history / streaming_gb.
+
+defaults:
+  - override /data: euroc_vio_pivift_tbptt
+  - override /model: euroc_joint_pivift
+  - override /callbacks: phase2_checkpoint
+  - override /trainer: default
+
+tags: ["euroc_joint_pivift_tbptt", "pi_vift", "g1", "tbptt"]
+
+seed: 42
+
+train: true
+test: false
+
+trainer:
+  min_epochs: 1
+  max_epochs: 100
+  accelerator: gpu
+  devices: 1
+  log_every_n_steps: 10
+  num_sanity_val_steps: 0
+  gradient_clip_val: 1.0
+
+data:
+  batch_size: 4
+
+model:
+  phase2_ckpt: null
+  freeze_encoder_epochs: 100
+  fusion_lr: 0.0001
+  encoder_lr_scale: 0.1
+  gradient_clip_val: 1.0

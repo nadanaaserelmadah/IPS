@@ -1,0 +1,3 @@
+# IPS mirror — canonical copy lives in third_party/VIFT/configs/data/euroc_vio.yaml
+# Use from VIFT root:
+#   python src/train.py data=euroc_vio experiment=...

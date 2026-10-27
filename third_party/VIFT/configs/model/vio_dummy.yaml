@@ -1,0 +1,40 @@
+# Model config for smoke tests — RandomTester only (no KITTI fields).
+_target_: src.models.vio_module.VIOLitModule
+
+optimizer:
+  _target_: torch.optim.Adam
+  _partial_: true
+  lr: 0.001
+  weight_decay: 0.0
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
+  _partial_: true
+  T_0: 25
+  T_mult: 1
+
+criterion:
+  _target_: torch.nn.MSELoss
+
+net:
+  _target_: src.models.components.vio_simple_dense_net.VIOSimpleDenseNet
+  seq_len: 5
+  channels: 1
+  width: 64
+  height: 32
+  imu_freq: 5
+  lin1_size: 32
+  lin2_size: 32
+  lin3_size: 32
+  output_size: 24  # ignored by net; (seq_len-1)*6
+
+metrics_calculator:
+  _target_: src.metrics.random_metrics_calculator.RandomMetricsCalculator
+
+tester:
+  _target_: src.testers.random_tester.RandomTester
+  seq_len: 5
+  num_sequences: 2
+  sequence_lengths: [400, 300]
+
+compile: false

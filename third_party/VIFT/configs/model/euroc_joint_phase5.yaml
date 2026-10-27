@@ -1,0 +1,66 @@
+# Phase 5: joint fine-tune with multi-horizon geometric loss + SE(3) metrics.
+_target_: src.models.euroc_joint_module.EurocJointLitModule
+
+optimizer:
+  _target_: torch.optim.AdamW
+  _partial_: true
+  lr: 0.00005
+  weight_decay: 0.01
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
+  _partial_: true
+  T_0: 50
+  T_mult: 1
+
+criterion:
+  _target_: src.metrics.weighted_loss.MultiHorizonPoseLoss
+  translation_weight: 1.0
+  rotation_weight: 10.0
+  horizon_weight: 0.1
+  temporal_weight: 0.05
+  horizons: [2, 5, 10]
+  smooth_l1_beta: 0.05
+  temporal_mode: gt_delta
+
+net:
+  _target_: src.models.components.euroc_joint_net.EurocJointNet
+  img_w: 512
+  img_h: 256
+  v_f_len: 512
+  i_f_len: 256
+  imu_dropout: 0.1
+
+pretrained_encoder: ${paths.root_dir}/pretrained_models/vf_512_if_256_3e-05.model
+phase2_ckpt: null
+fusion_lr: 0.00005
+freeze_encoder_epochs: 3
+encoder_lr_scale: 0.1
+gradient_clip_val: 1.0
+
+metrics_calculator:
+  _target_: src.metrics.euroc_metrics_calculator.EuroCMetricsCalculator
+  primary_alignment: se3
+  report_all_alignments: true
+  max_step_m: 5.0
+  invalid_policy: flag
+
+tester:
+  _target_: src.testers.euroc_joint_tester.EurocJointTester
+  sequences:
+    - MH_05_difficult
+    - V2_02_medium
+  data_dir: ${paths.data_dir}/euroc
+  seq_len: 11
+  cam_stride: 2
+  imu_freq: 10
+  img_w: 512
+  img_h: 256
+  wrapper_weights_path: ""
+  device: cuda
+  v_f_len: 512
+  i_f_len: 256
+  use_history_in_eval: false
+  eval_mode: window_last
+
+compile: false

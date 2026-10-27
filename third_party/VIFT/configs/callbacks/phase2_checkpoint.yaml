@@ -1,0 +1,42 @@
+# Checkpointing for Phase 2/3/4/5 (Kaggle-friendly).
+#
+# IMPORTANT: With only save_top_k + save_last, Lightning updates last.ckpt ONLY when
+# a top-k checkpoint is written. If val/loss is not among the best 3, last.ckpt
+# (and the epoch ZIP) stay 5 epochs behind — resume then restarts at the old epoch.
+#
+# Fix: a second periodic ModelCheckpoint with monitor=null always saves every 5 epochs
+# and refreshes last.ckpt; the ZIP callback packs that fresh last.ckpt.
+
+defaults:
+  - model_summary
+  - rich_progress_bar
+  - _self_
+
+# Keep the 3 best models by validation loss (optional quality picks).
+model_checkpoint:
+  _target_: lightning.pytorch.callbacks.ModelCheckpoint
+  dirpath: ${paths.output_dir}/checkpoints
+  filename: "best_{epoch:03d}"
+  monitor: "val/loss"
+  mode: "min"
+  save_last: False
+  save_top_k: 3
+  auto_insert_metric_name: False
+  every_n_epochs: 5
+
+# Always save a periodic snapshot + refresh last.ckpt every 5 epochs.
+model_checkpoint_periodic:
+  _target_: lightning.pytorch.callbacks.ModelCheckpoint
+  dirpath: ${paths.output_dir}/checkpoints
+  filename: "epoch_{epoch:03d}"
+  monitor: null
+  save_last: True
+  save_top_k: 1
+  auto_insert_metric_name: False
+  every_n_epochs: 5
+
+checkpoint_zip:
+  _target_: src.utils.checkpoint_zip_callback.CheckpointZipCallback
+  every_n_epochs: 5
+  output_dir: ${paths.output_dir}/checkpoint_zips
+  copy_to_kaggle_working: True

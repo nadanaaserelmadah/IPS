@@ -1,0 +1,42 @@
+# @package _global_
+# Phase 2: longer EuRoC latent fusion training + ATE test.
+#
+#   python src/train.py experiment=euroc_latent_train trainer=gpu
+#
+# Prereqs: same as euroc_latent_minimal (euroc/, latents/, pretrained encoder)
+
+defaults:
+  - override /data: latent_euroc_vio
+  - override /model: latent_vio_euroc
+  - override /callbacks: phase2_checkpoint
+  - override /trainer: default
+
+tags: ["euroc_latent_train", "phase2"]
+
+seed: 42
+
+train: true
+test: false  # run test in a separate cell after training (see docs/PHASE2.md)
+
+trainer:
+  min_epochs: 10
+  max_epochs: 50
+  accelerator: gpu
+  devices: 1
+  log_every_n_steps: 10
+  num_sanity_val_steps: 0
+
+data:
+  batch_size: 32
+
+model:
+  optimizer:
+    lr: 0.0001
+  scheduler:
+    T_0: 50
+    T_mult: 1
+  tester:
+    sequences:
+      - MH_05_difficult
+      - V2_02_medium
+    use_history_in_eval: false

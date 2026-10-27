@@ -1,0 +1,16 @@
+_target_: src.data.vio_datamodule.VIODataModule
+batch_size: 4
+num_workers: 0
+pin_memory: False
+train_loader:
+  _target_: src.data.components.latent_kitti_dataset.LatentVectorDataset
+  _partial_: false
+  root_dir: ${paths.data_dir}/euroc_latent_data/train
+val_loader:
+  _target_: src.data.components.latent_kitti_dataset.LatentVectorDataset
+  _partial_: false
+  root_dir: ${paths.data_dir}/euroc_latent_data/val
+test_loader:
+  _target_: src.data.components.latent_kitti_dataset.LatentVectorDataset
+  _partial_: false
+  root_dir: ${paths.data_dir}/euroc_latent_data/val

@@ -1,0 +1,27 @@
+_target_: src.data.vio_datamodule.VIODataModule
+batch_size: 4
+num_workers: 0
+pin_memory: false
+
+# Must match configs/model/vio_dummy.yaml net (seq_len, channels, width, height, imu_freq)
+_train: &rand_loader
+  _target_: src.data.components.random_vio_dataset.RandomVIODataset
+  _partial_: false
+  seq_len: 5
+  channels: 1
+  width: 64
+  height: 32
+  imu_freq: 5
+  dataset_size: 100
+
+train_loader:
+  <<: *rand_loader
+  dataset_size: 100
+
+val_loader:
+  <<: *rand_loader
+  dataset_size: 20
+
+test_loader:
+  <<: *rand_loader
+  dataset_size: 20

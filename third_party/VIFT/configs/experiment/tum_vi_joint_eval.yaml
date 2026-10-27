@@ -1,0 +1,30 @@
+# @package _global_
+# Phase 4: zero-shot / eval on TUM-VI (EuRoC-trained checkpoint).
+#
+#   python src/train.py experiment=tum_vi_joint_eval train=false test=true \
+#     "ckpt_path=/path/to/euroc_phase3/last.ckpt" trainer=gpu
+
+defaults:
+  - override /data: tum_vi_eval
+  - override /model: tum_vi_joint_finetune
+  - override /callbacks: eval_only
+  - override /trainer: default
+
+tags: ["tum_vi_joint_eval", "phase4"]
+
+seed: 42
+
+train: false
+test: true
+
+trainer:
+  accelerator: gpu
+  devices: 1
+  num_sanity_val_steps: 0
+
+model:
+  freeze_encoder_epochs: 0
+  tester:
+    sequences:
+      - dataset-room1_512_16
+    use_history_in_eval: false

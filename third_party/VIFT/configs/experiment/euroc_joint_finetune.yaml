@@ -1,0 +1,36 @@
+# @package _global_
+# Phase 3B: joint encoder + fusion fine-tune on raw EuRoC (Kaggle 9-seq).
+#
+#   python src/train.py experiment=euroc_joint_finetune trainer=gpu train=true test=false
+#
+# Prereqs: data/euroc/, pretrained encoder; optional Phase 2 fusion ckpt
+
+defaults:
+  - override /data: euroc_vio_kaggle
+  - override /model: euroc_joint_finetune
+  - override /callbacks: phase2_checkpoint
+  - override /trainer: default
+
+tags: ["euroc_joint_finetune", "phase3"]
+
+seed: 42
+
+train: true
+test: false
+
+trainer:
+  min_epochs: 1
+  max_epochs: 30
+  accelerator: gpu
+  devices: 1
+  log_every_n_steps: 10
+  num_sanity_val_steps: 0
+
+data:
+  batch_size: 4
+
+model:
+  phase2_ckpt: null
+  freeze_encoder_epochs: 5
+  fusion_lr: 0.0001
+  encoder_lr_scale: 0.1

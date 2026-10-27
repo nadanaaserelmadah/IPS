@@ -1,0 +1,42 @@
+# @package _global_
+# PI-VIFT (= euroc_joint_pivift, the P8 baseline) + translation-direction loss: TartanVO's up-to-scale
+# term (arXiv 2011.00359 Eq. 3), weight 0.1, on per-step and composed-horizon translations that move
+# more than 1 cm. P8-D: EuRoC models fail on translation direction (31-90 deg per edge) while rotation
+# is fine; Smooth-L1 on few-cm per-frame translations barely penalises a wrong direction.
+#
+#   python src/train.py experiment=euroc_joint_pivift_dir trainer=gpu train=true test=false
+
+defaults:
+  - override /data: euroc_vio_pivift
+  - override /model: euroc_joint_pivift
+  - override /callbacks: phase2_checkpoint
+  - override /trainer: default
+
+tags: ["euroc_joint_pivift_dir", "pi_vift", "g1", "direction"]
+
+seed: 42
+
+train: true
+test: false
+
+trainer:
+  min_epochs: 1
+  max_epochs: 100
+  accelerator: gpu
+  devices: 1
+  log_every_n_steps: 10
+  num_sanity_val_steps: 0
+  gradient_clip_val: 1.0
+
+data:
+  batch_size: 4
+
+model:
+  phase2_ckpt: null
+  freeze_encoder_epochs: 100
+  fusion_lr: 0.0001
+  encoder_lr_scale: 0.1
+  gradient_clip_val: 1.0
+  criterion:
+    direction_weight: 0.1  # ~0.13 at random directions (mean |u_p - u_g| = 4/3), a few times the 40x geodesic rotation term
+    direction_min_motion: 0.01

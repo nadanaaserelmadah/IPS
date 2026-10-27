@@ -1,0 +1,37 @@
+# @package _global_
+# A1: VIFT joint recipe with canonical IMU (accel-first, camera frame via T_BS).
+# This is the corrected baseline, not a research contribution.
+# Reproduce the old mismatched loader with IPS_IMU_LEGACY=1
+#
+#   python src/train.py experiment=euroc_joint_a1 trainer=gpu train=true test=false
+
+defaults:
+  - override /data: euroc_vio_phase5
+  - override /model: euroc_joint_phase5
+  - override /callbacks: phase2_checkpoint
+  - override /trainer: default
+
+tags: ["euroc_joint_a1", "imu_canonical"]
+
+seed: 42
+
+train: true
+test: false
+
+trainer:
+  min_epochs: 1
+  max_epochs: 50
+  accelerator: gpu
+  devices: 1
+  log_every_n_steps: 10
+  num_sanity_val_steps: 0
+  gradient_clip_val: 1.0
+
+data:
+  batch_size: 4
+
+model:
+  phase2_ckpt: null
+  freeze_encoder_epochs: 5
+  fusion_lr: 0.0001
+  encoder_lr_scale: 0.1

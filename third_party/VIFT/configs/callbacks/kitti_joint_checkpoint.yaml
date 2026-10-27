@@ -1,0 +1,40 @@
+# Checkpointing for kitti_joint_finetune (Kaggle-friendly).
+#
+# - Periodic snapshot + last.ckpt every 2 epochs
+# - Best-3 by val/loss every 2 epochs (optional quality picks)
+# - ZIP of last.ckpt every 3 epochs → run dir + /kaggle/working
+#
+# Keep CheckpointZipCallback *after* model_checkpoint_periodic in this file
+# so on_train_epoch_end packs a fresh last.ckpt.
+
+defaults:
+  - model_summary
+  - rich_progress_bar
+  - _self_
+
+model_checkpoint:
+  _target_: lightning.pytorch.callbacks.ModelCheckpoint
+  dirpath: ${paths.output_dir}/checkpoints
+  filename: "best_{epoch:03d}"
+  monitor: "val/loss"
+  mode: "min"
+  save_last: False
+  save_top_k: 3
+  auto_insert_metric_name: False
+  every_n_epochs: 2
+
+model_checkpoint_periodic:
+  _target_: lightning.pytorch.callbacks.ModelCheckpoint
+  dirpath: ${paths.output_dir}/checkpoints
+  filename: "epoch_{epoch:03d}"
+  monitor: null
+  save_last: True
+  save_top_k: 1
+  auto_insert_metric_name: False
+  every_n_epochs: 2
+
+checkpoint_zip:
+  _target_: src.utils.checkpoint_zip_callback.CheckpointZipCallback
+  every_n_epochs: 3
+  output_dir: ${paths.output_dir}/checkpoint_zips
+  copy_to_kaggle_working: True

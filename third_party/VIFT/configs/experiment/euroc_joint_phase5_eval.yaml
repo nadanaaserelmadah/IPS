@@ -1,0 +1,32 @@
+# @package _global_
+# Phase 5 eval-only: EuRoC joint tester with SE(3) metrics.
+#
+#   python src/train.py experiment=euroc_joint_phase5_eval train=false test=true \
+#     "ckpt_path=/path/to.ckpt" trainer=gpu
+
+defaults:
+  - override /data: euroc_vio_phase5
+  - override /model: euroc_joint_phase5
+  - override /callbacks: phase2_checkpoint
+  - override /trainer: default
+
+tags: ["euroc_joint_phase5_eval", "phase5"]
+
+seed: 42
+train: false
+test: true
+
+trainer:
+  min_epochs: 1
+  max_epochs: 1
+  accelerator: gpu
+  devices: 1
+  num_sanity_val_steps: 0
+
+model:
+  freeze_encoder_epochs: 0
+  metrics_calculator:
+    primary_alignment: se3
+  tester:
+    use_history_in_eval: false
+    eval_mode: window_last

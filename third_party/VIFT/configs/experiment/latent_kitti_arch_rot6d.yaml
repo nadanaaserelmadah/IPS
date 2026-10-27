@@ -1,0 +1,62 @@
+# @package _global_
+# Experiment 1: VIFT fusion + Zhou 6D rotation (no RPMG, window 11).
+# Do not load the 2.10% Euler checkpoint (fc2 size mismatch).
+
+defaults:
+  - override /data: latent_kitti_vio
+  - override /model: latent_vio_tf
+  - override /callbacks: default
+  - override /trainer: default
+
+tags: ["latent_kitti_vio", "arch_rot6d", "geodesic", "transformer"]
+
+seed: 42
+
+trainer:
+  min_epochs: 50
+  max_epochs: 200
+  log_every_n_steps: 1
+
+callbacks:
+  early_stopping:
+    patience: 250
+    monitor: val/loss
+    mode: min
+
+data:
+  batch_size: 128
+  train_loader:
+    root_dir: ${paths.data_dir}/kitti_latent_data/train_10
+  val_loader:
+    root_dir: ${paths.data_dir}/kitti_latent_data/val_10
+  test_loader:
+    root_dir: ${paths.data_dir}/kitti_latent_data/val_10
+
+model:
+  _target_: src.models.weighted_vio_module.WeightedVIOLitModule
+
+  optimizer:
+    lr: 0.0001
+
+  criterion:
+    _target_: src.metrics.weighted_loss.GeodesicRot6DPoseLoss
+    translation_weight: 1.0
+    rotation_weight: 10.0
+    smooth_l1_beta: 0.05
+
+  net:
+    _target_: src.models.components.pose_transformer.PoseTransformerRot6D
+    input_dim: 768
+    embedding_dim: 768
+    num_layers: 4
+    nhead: 6
+    dim_feedforward: 128
+    dropout: 0.0
+
+  scheduler:
+    T_0: 25
+    T_mult: 1
+
+  tester:
+    seq_len: 11
+    use_history_in_eval: True

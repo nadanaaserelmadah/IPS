@@ -1,0 +1,56 @@
+# @package _global_
+# Minimal KITTI eval: short train + test on val sequences (05, 07, 10).
+# Validates metric pipeline; numbers will NOT match paper without 200-epoch train.
+#
+#   python src/train.py experiment=kitti_eval_minimal trainer=gpu
+#
+# Test-only with a checkpoint:
+#   python src/train.py experiment=kitti_eval_minimal train=false test=true ckpt_path=/path/to.ckpt
+
+defaults:
+  - override /data: latent_kitti_vio
+  - override /model: latent_vio_tf
+  - override /callbacks: default
+  - override /trainer: default
+
+tags: ["kitti_eval_minimal"]
+
+seed: 42
+
+train: true
+test: true
+
+trainer:
+  min_epochs: 1
+  max_epochs: 5
+  accelerator: gpu
+  devices: 1
+  log_every_n_steps: 5
+  num_sanity_val_steps: 0
+
+data:
+  batch_size: 32
+  train_loader:
+    root_dir: ${paths.data_dir}/kitti_latent_data/val_10
+  val_loader:
+    root_dir: ${paths.data_dir}/kitti_latent_data/val_10
+  test_loader:
+    root_dir: ${paths.data_dir}/kitti_latent_data/val_10
+
+model:
+  _target_: src.models.weighted_vio_module.WeightedVIOLitModule
+  optimizer:
+    lr: 0.0001
+  criterion:
+    _target_: src.metrics.weighted_loss.AngleWeightedPoseLoss
+    base_loss_fn:
+      _target_: torch.nn.L1Loss
+      reduction: none
+    angle_weight: 10
+  scheduler:
+    T_0: 5
+    T_mult: 1
+  tester:
+    seq_len: 11
+    use_history_in_eval: true
+    val_seqs: ["05", "07", "10"]

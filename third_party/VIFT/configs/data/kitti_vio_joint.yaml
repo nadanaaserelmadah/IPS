@@ -1,0 +1,49 @@
+# Raw KITTI images for joint encoder+fusion ablation (vs frozen latent VIFT recipe).
+# Split matches VIFT / IPS paper replication: train 00/01/02/04/06/09, test 05/07/10.
+_target_: src.data.vio_datamodule.VIODataModule
+batch_size: 4
+num_workers: 0
+pin_memory: false
+
+train_loader:
+  _target_: src.data.components.KITTI_dataset.KITTI
+  _partial_: false
+  root: ${paths.data_dir}/kitti_data
+  sequence_length: 11
+  train_seqs: ["00", "01", "02", "04", "06", "09"]
+  transform:
+    _target_: src.utils.custom_transform.Compose
+    _partial_: false
+    transforms:
+      - _target_: src.utils.custom_transform.ToTensor
+      - _target_: src.utils.custom_transform.Resize
+        size: [256, 512]
+
+val_loader:
+  _target_: src.data.components.KITTI_dataset.KITTI
+  _partial_: false
+  root: ${paths.data_dir}/kitti_data
+  sequence_length: 11
+  # Monitor on 09 (also in train) — early-stop signal only; headline is test 05/07/10.
+  train_seqs: ["09"]
+  transform:
+    _target_: src.utils.custom_transform.Compose
+    _partial_: false
+    transforms:
+      - _target_: src.utils.custom_transform.ToTensor
+      - _target_: src.utils.custom_transform.Resize
+        size: [256, 512]
+
+test_loader:
+  _target_: src.data.components.KITTI_dataset.KITTI
+  _partial_: false
+  root: ${paths.data_dir}/kitti_data
+  sequence_length: 11
+  train_seqs: ["05", "07", "10"]
+  transform:
+    _target_: src.utils.custom_transform.Compose
+    _partial_: false
+    transforms:
+      - _target_: src.utils.custom_transform.ToTensor
+      - _target_: src.utils.custom_transform.Resize
+        size: [256, 512]

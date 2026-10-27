@@ -1,0 +1,44 @@
+# @package _global_
+# Smoke test: EuRoC raw loader + small VIO head (needs euroc data under data/euroc)
+# python src/train.py experiment=euroc_vio_smoke trainer=cpu trainer.max_epochs=2
+
+defaults:
+  - override /data: euroc_vio
+  - override /model: vio
+  - override /callbacks: none
+  - override /trainer: default
+
+tags: ["euroc_vio", "smoke"]
+
+seed: 42
+
+trainer:
+  min_epochs: 1
+  max_epochs: 5
+  accelerator: cpu
+
+data:
+  batch_size: 2
+  train_loader:
+    sequences:
+      - MH_01_easy
+  val_loader:
+    sequences:
+      - MH_01_easy
+  test_loader:
+    sequences:
+      - MH_01_easy
+
+model:
+  net:
+    seq_len: 11
+    imu_freq: 10
+  metrics_calculator:
+    _target_: src.metrics.random_metrics_calculator.RandomMetricsCalculator
+  tester:
+    _target_: src.testers.random_tester.RandomTester
+    seq_len: 11
+    num_sequences: 1
+    sequence_lengths: [200]
+
+test: false

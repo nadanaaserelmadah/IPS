@@ -1,0 +1,30 @@
+# @package _global_
+# Phase 2/3C: test-only EuRoC latent fusion (no euroc_latent_data/ needed).
+#
+#   python src/train.py experiment=euroc_latent_eval train=false test=true \
+#     "ckpt_path=/path/to/phase2/last.ckpt" trainer=gpu
+
+defaults:
+  - override /data: latent_euroc_eval
+  - override /model: latent_vio_euroc
+  - override /callbacks: eval_only
+  - override /trainer: default
+
+tags: ["euroc_latent_eval", "phase3c"]
+
+seed: 42
+
+train: false
+test: true
+
+trainer:
+  accelerator: gpu
+  devices: 1
+  num_sanity_val_steps: 0
+
+model:
+  tester:
+    sequences:
+      - MH_05_difficult
+      - V2_02_medium
+    use_history_in_eval: false

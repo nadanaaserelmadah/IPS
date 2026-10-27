@@ -1,0 +1,43 @@
+# TUM-VI raw loader — partial Kaggle mirror (4 seq: room1/2, corridor1, magistrale1).
+# Train/val use only sequences present on disk; test is a placeholder during fine-tune
+# (real ATE eval via eval_all_tum_vi.py + tum_vi_joint_eval).
+_target_: src.data.vio_datamodule.VIODataModule
+batch_size: 4
+num_workers: 0
+pin_memory: False
+train_loader:
+  _target_: src.data.components.TUMVI_dataset.TUMVI
+  _partial_: false
+  root: ${paths.data_dir}/tum_vi
+  sequences:
+    - dataset-room1_512_16
+    - dataset-room2_512_16
+    - dataset-corridor1_512_16
+  sequence_length: 11
+  cam_stride: 2
+  imu_freq: 10
+  transform:
+    _target_: src.utils.custom_transform.Compose
+    _partial_: false
+    transforms:
+      - _target_: src.utils.custom_transform.ToTensor
+      - _target_: src.utils.custom_transform.Resize
+        size: [256, 512]
+val_loader:
+  _target_: src.data.components.TUMVI_dataset.TUMVI
+  _partial_: false
+  root: ${paths.data_dir}/tum_vi
+  sequences:
+    - dataset-magistrale1_512_16
+  sequence_length: 11
+  cam_stride: 2
+  imu_freq: 10
+  transform:
+    _target_: src.utils.custom_transform.Compose
+    _partial_: false
+    transforms:
+      - _target_: src.utils.custom_transform.ToTensor
+      - _target_: src.utils.custom_transform.Resize
+        size: [256, 512]
+test_loader:
+  _target_: src.data.components.empty_dataset.EvalPlaceholderDataset

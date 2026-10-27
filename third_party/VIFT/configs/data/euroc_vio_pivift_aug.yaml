@@ -1,0 +1,50 @@
+# PI-VIFT loader + train-time augmentation (E2): photometric jitter and IMU bias/noise.
+# Val/test unchanged. No horizontal flip: the IMU/vel/g mirroring is not verified for EuRoC.
+_target_: src.data.vio_datamodule.VIODataModule
+batch_size: 4
+num_workers: 0
+pin_memory: False
+train_loader:
+  _target_: src.data.components.EuRoC_dataset.EuRoC
+  _partial_: false
+  root: ${paths.data_dir}/euroc
+  sequences:
+    - MH_01_easy
+    - MH_02_easy
+    - MH_03_medium
+    - MH_04_difficult
+    - V2_01_easy
+  sequence_length: 11
+  cam_stride: 2
+  imu_freq: 10
+  include_state_gt: true
+  transform:
+    _target_: src.utils.custom_transform.Compose
+    _partial_: false
+    transforms:
+      - _target_: src.utils.custom_transform.ToTensor
+      - _target_: src.utils.custom_transform.Resize
+        size: [256, 512]
+      - _target_: src.utils.custom_transform.RandomColorAug
+        p: 0.5
+      - _target_: src.utils.custom_transform.RandomIMUBias
+        p: 0.5
+val_loader:
+  _target_: src.data.components.EuRoC_dataset.EuRoC
+  _partial_: false
+  root: ${paths.data_dir}/euroc
+  sequences:
+    - V1_03_difficult
+  sequence_length: 11
+  cam_stride: 2
+  imu_freq: 10
+  include_state_gt: true
+  transform:
+    _target_: src.utils.custom_transform.Compose
+    _partial_: false
+    transforms:
+      - _target_: src.utils.custom_transform.ToTensor
+      - _target_: src.utils.custom_transform.Resize
+        size: [256, 512]
+test_loader:
+  _target_: src.data.components.empty_dataset.EvalPlaceholderDataset

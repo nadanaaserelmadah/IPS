@@ -1,0 +1,11 @@
+# Test-only EuRoC latent eval — no cached latents required (tester reads raw euroc/).
+_target_: src.data.vio_datamodule.VIODataModule
+batch_size: 1
+num_workers: 0
+pin_memory: False
+train_loader:
+  _target_: src.data.components.empty_dataset.EvalPlaceholderDataset
+val_loader:
+  _target_: src.data.components.empty_dataset.EvalPlaceholderDataset
+test_loader:
+  _target_: src.data.components.empty_dataset.EvalPlaceholderDataset
