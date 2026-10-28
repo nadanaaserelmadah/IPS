@@ -9,7 +9,9 @@ floor on every sequence. Here the direction comes from the images instead of the
   3. with R known, each match gives one linear constraint t . ((R x_B) x x_A) = 0, so two matches
      fix the direction: 2-point RANSAC (1 px epipolar distance), SVD refit on the inliers,
      sign by cheirality (positive depths in both views);
-  4. edges with too little de-rotated parallax or too few inliers keep the network direction.
+  4. slow motion (de-rotated parallax < 2 px at 100 ms): the direction is re-measured over 200 / 300 ms
+     (A' -> B) and rotated into A with the gyro (GEO_ADAPTIVE=0 disables this);
+  5. edges with too little parallax or too few inliers keep the network direction.
 Final pose per edge: R_gyro, t = d_geo * |t_net|. Nothing is trained or fitted on test data.
 
   python scripts/euroc/geo_direction.py EUROC_ROOT OUT_DIR TS_DIR:SEQS NAME=DUMP_DIR [NAME=DUMP_DIR ...]
@@ -17,6 +19,7 @@ Final pose per edge: R_gyro, t = d_geo * |t_net|. Nothing is trained or fitted o
 TS_DIR holds <seq>_timestamps.npy / <seq>_gt_xyz.npy / <seq>_gt_poses.npy; SEQS is a comma list.
 """
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -32,6 +35,8 @@ MIN_INLIERS = 15
 MIN_INLIER_RATIO = 0.5
 RANSAC_ITERS = 300
 EPI_PX = 1.0
+ADAPTIVE = os.environ.get("GEO_ADAPTIVE", "1") == "1"
+ADAPT_PX = 2.0  # below this de-rotated parallax at 100 ms, retry over 200 / 300 ms (fixed before any run)
 
 
 def read_cam(cam_dir: Path):
@@ -92,7 +97,11 @@ def direction(xa, xb, R, f_px, rng):
         info["inliers"] = int(best_in.sum())
         return None, info
     Ni = N[best_in] / np.linalg.norm(N[best_in], axis=1, keepdims=True)
-    t = np.linalg.svd(Ni)[2][-1]
+    _, sv, Vt = np.linalg.svd(Ni, full_matrices=False)
+    t = Vt[-1]
+    # first-order angular uncertainty of the null vector: residual std / smallest tangent singular value
+    info["sigma_deg"] = float(np.degrees(sv[2] / (np.sqrt(max(len(Ni) - 2, 1)) * max(sv[1], 1e-12))))
+    info["sv"] = [float(x) for x in sv]
     inl = epi_px(t) < EPI_PX
     # cheirality: lambda_A x_A - lambda_B (R x_B) = t, both depths positive for the right sign
     votes = 0
@@ -192,6 +201,23 @@ def geo_sequence(root: Path, seq: str, t_end: np.ndarray, cache: Path):
             info = {"n": 0}
             if pa is not None:
                 d, info = direction(bearings(pa, K, dist), bearings(pb, K, dist), Rc, K[0, 0], rng)
+            if ADAPTIVE and (d is None or info.get("parallax_px", 0.0) < ADAPT_PX):
+                # slow motion: measure the direction over a longer baseline A' -> B and rotate it into A
+                for m in (2, 3):
+                    ta = int(t1) - m * EDGE_NS
+                    if ta not in idx:
+                        continue
+                    R_ab = R_bs.T @ gh.integrate(t_ns, gyro - b, ta, int(t1)) @ R_bs
+                    i2 = cv2.imread(str(files[idx[ta]]), cv2.IMREAD_GRAYSCALE)
+                    q2, qb = track(i2, ib)
+                    if q2 is None:
+                        continue
+                    d2, info2 = direction(bearings(q2, K, dist), bearings(qb, K, dist), R_ab, K[0, 0], rng)
+                    if d2 is not None and info2["parallax_px"] >= ADAPT_PX:
+                        R_aa = R_bs.T @ gh.integrate(t_ns, gyro - b, ta, t0) @ R_bs  # A' -> A
+                        d = R_aa.T @ d2
+                        info = dict(info2, baseline_ms=m * EDGE_NS // 1_000_000)
+                        break
             if stereo and t0 in idx1:
                 ir = cv2.imread(str(files1[idx1[t0]]), cv2.IMREAD_GRAYSCALE)
                 ps, X = stereo_points(ia, ir, (K, dist), (K1, dist1), T_10[:3, :3], T_10[:3, 3])
@@ -273,10 +299,18 @@ def evaluate(root, out, ts_dir, seqs, dumps):
         l_imu, gn = imu_scale.imu_lengths(root, seq, t_end, d_full)
         l_ratio = float(np.nanmedian(l_imu[moving] / ng[moving]))
         mono = gh.ate(gh.compose(list(R), d_full * np.nan_to_num(l_imu)[:, None]), gxyz)
+        # with the gravity plausibility check (|g| within 0.5 of 9.81; rejected windows keep the previous speed)
+        l_chk, _ = imu_scale.imu_lengths(root, seq, t_end, d_full, g_tol=0.5)
+        L, last_l = [], 0.0
+        for x in l_chk:
+            last_l = x if not np.isnan(x) else last_l
+            L.append(last_l)
+        mono_chk = gh.ate(gh.compose(list(R), d_full * np.array(L)[:, None]), gxyz)
         print(f"accelerometer length: median |l|/|t_gt| {l_ratio:.3f}, |g| {np.median(gn):.2f} | "
-              f"**mono-inertial network-free (R_gyro + d_geo·l_imu): SE3 {mono[0]:.2f} m**, Sim3 {mono[1]:.2f}, scale {mono[2]:.2f}")
+              f"**mono-inertial network-free (R_gyro + d_geo·l_imu): SE3 {mono[0]:.2f} m**, Sim3 {mono[1]:.2f}, scale {mono[2]:.2f}"
+              f" | with |g| check: **SE3 {mono_chk[0]:.2f} m**")
         report.append({"seq": seq, "run": "mono-inertial-geo", "floor": floor, "imu_len_ratio": l_ratio,
-                       "se3": mono[0], "sim3": mono[1], "scale": mono[2]})
+                       "se3": mono[0], "sim3": mono[1], "scale": mono[2], "se3_gcheck": mono_chk[0]})
         print("| run | net dir err | SE3 net | R_gyro + t_net | **R_gyro + d_geo·|t_net|** | R_gyro + d_geo·|t_gt| (oracle length) |")
         print("|---|---|---|---|---|---|")
         for name, dump in dumps.items():

@@ -27,6 +27,7 @@ from src.testers.sliding_window_infer import (
 )
 
 from .base_tester import BaseTester
+from src.utils.euroc_utils import load_image_rgb  # noqa: E402
 
 
 class WrapperModel(torch.nn.Module):
@@ -103,7 +104,7 @@ class EuroCLatentTester(BaseTester):
         print(f"Loaded encoder from {weights_path}")
 
     def _load_window_tensors(self, sample: dict):
-        imgs = [np.asarray(Image.open(p).convert("RGB")) for p in sample["imgs"]]
+        imgs = [load_image_rgb(p) for p in sample["imgs"]]
         imgs, imus, gts = self.transform(
             imgs, np.copy(sample["imus"]), np.copy(sample["gts"])
         )

@@ -14,6 +14,18 @@ import numpy as np
 _EPS = np.finfo(float).eps * 4.0
 
 
+def load_image_rgb(path) -> np.ndarray:
+    """(H, W, 3) uint8. 16-bit grayscale PNGs (TUM-VI ``*_512_16``) are scaled to 8 bits;
+    PIL's convert("RGB") clips them instead, which turns every TUM-VI frame white."""
+    from PIL import Image
+
+    im = Image.open(path)
+    if im.mode.startswith("I"):
+        a = (np.asarray(im).astype(np.int64) >> 8).clip(0, 255).astype(np.uint8)
+        return np.repeat(a[..., None], 3, axis=2)
+    return np.asarray(im.convert("RGB"))
+
+
 def euler_from_matrix(matrix: np.ndarray) -> np.ndarray:
     M = np.array(matrix, dtype=np.float64, copy=False)[:3, :3]
     cy = math.sqrt(M[0, 0] * M[0, 0] + M[1, 0] * M[1, 0])

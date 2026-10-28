@@ -36,6 +36,7 @@ DAY = {"00": "2011_10_03", "01": "2011_10_03", "02": "2011_10_03", "04": "2011_0
 RIDGE_BA = 1.0
 COND_MAX = 1e4
 _PRE = {}
+LAST_RMS = float("nan")
 
 
 def read_rt(path: Path):
@@ -105,10 +106,13 @@ def solve(Rk, Rk1, dirs_imu, pre, dts, p_c, base_len=None):
     A = np.vstack([A, np.hstack([np.zeros((3, 6)), RIDGE_BA * np.eye(3), np.zeros((3, n_l))])])
     x = np.linalg.lstsq(A, np.concatenate([y, np.zeros(3)]), rcond=None)[0]
     lens = x[9:] if base_len is None else x[9] * base_len
+    global LAST_RMS
+    LAST_RMS = float(np.sqrt(np.mean((A[: len(y)] @ x - y) ** 2)))  # alignment misfit (m), sensor-only quality
     return lens, cond, np.linalg.norm(x[3:6])
 
 
-def seq_lengths(npz: Path, calib: dict, p_c, dirs_cam, window, base_len=None, gap=None):
+def seq_lengths(npz: Path, calib: dict, p_c, dirs_cam, window, base_len=None, gap=None, rms_out=None, cond_out=None):
+    """rms_out / cond_out (optional ndarrays, len n): filled per edge with its window's alignment misfit / condition number."""
     z = np.load(npz)
     t_ox, ox, t_img = z["t_ox"], z["ox"], z["t_img"]
     w, a = ox[:, 17:20], ox[:, 11:14]
@@ -139,6 +143,10 @@ def seq_lengths(npz: Path, calib: dict, p_c, dirs_cam, window, base_len=None, ga
                                t1s[idx] - t0s[idx], p_c, None if base_len is None else base_len[idx])
         conds.append(cond)
         gs.append(gn)
+        if rms_out is not None:
+            rms_out[idx] = LAST_RMS
+        if cond_out is not None:
+            cond_out[idx] = cond
         if cond < COND_MAX:
             out[idx] = lens
     return out, np.array(conds), np.array(gs)

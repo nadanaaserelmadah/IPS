@@ -43,6 +43,21 @@ def test_camchain_T_BS(tmp_path: Path | None = None):
     np.testing.assert_allclose(load_T_BS(root), t_bs, atol=1e-12)
 
 
+def test_16bit_png_loader(tmp_path: Path | None = None):
+    """TUM-VI *_512_16 frames are 16-bit PNGs; convert("RGB") clipped every pixel to 255."""
+    from PIL import Image
+
+    from src.utils.euroc_utils import load_image_rgb
+
+    a16 = (np.arange(64 * 64, dtype=np.uint32).reshape(64, 64) * 16).astype(np.uint16)  # 0 .. 65520
+    path = Path(tmp_path or os.environ.get("TMPDIR", "/tmp")) / "tumvi_16bit_test.png"
+    Image.fromarray(a16).save(path)
+    out = load_image_rgb(path)
+    assert out.dtype == np.uint8 and out.shape == (64, 64, 3)
+    np.testing.assert_array_equal(out[..., 0], (a16 >> 8).astype(np.uint8))
+    assert (out == 255).mean() < 0.01
+
+
 def test_real_corridor1():
     """Optional: TUM_VI_REAL_ROOT=<dir with dataset-corridor1_512_16/{dso,mav0}> (no images needed)."""
     root = os.environ.get("TUM_VI_REAL_ROOT")
@@ -83,5 +98,6 @@ def test_real_corridor1():
 
 if __name__ == "__main__":
     test_camchain_T_BS()
+    test_16bit_png_loader()
     test_real_corridor1()
     print("ok")

@@ -11,6 +11,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 
 from src.utils.tum_vi_utils import build_sequence_samples, filter_tum_vi_sequences
+from src.utils.euroc_utils import load_image_rgb  # noqa: E402
 
 
 class TUMVI(Dataset):
@@ -62,7 +63,7 @@ class TUMVI(Dataset):
 
     def __getitem__(self, index: int):
         sample = self.samples[index]
-        imgs = [np.asarray(Image.open(img).convert("RGB")) for img in sample["imgs"]]
+        imgs = [load_image_rgb(img) for img in sample["imgs"]]
 
         if self.transform is not None:
             imgs, imus, gts = self.transform(

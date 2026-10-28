@@ -26,6 +26,7 @@ from shape_diag import rotvec  # noqa: E402
 EDGE_NS = gh.EDGE_NS
 WINDOW = 20
 RIDGE_BA = 1.0  # weight pulling b_a towards 0 (m/s^2 units; the bias is ~0.1)
+LAST_RMS = float("nan")
 
 
 def attitude(t_ns, gyro, b):
@@ -84,10 +85,15 @@ def solve_window(Rk, Rk1, d_cam, pre, dts, R_bs, p_bs):
     A = np.vstack(rows + [np.hstack([np.zeros((3, 6)), RIDGE_BA * np.eye(3), np.zeros((3, M))])])
     y = np.concatenate(rhs + [np.zeros(3)])
     x = np.linalg.lstsq(A, y, rcond=None)[0]
+    global LAST_RMS
+    LAST_RMS = float(np.sqrt(np.mean((A[: 3 * M] @ x - y[: 3 * M]) ** 2)))  # alignment misfit (m), sensor-only quality
     return x[9:], x[3:6], x[6:9]
 
 
-def imu_lengths(root: Path, seq: str, t_end: np.ndarray, d_cam: np.ndarray, window: int = WINDOW):
+def imu_lengths(root: Path, seq: str, t_end: np.ndarray, d_cam: np.ndarray, window: int = WINDOW, g_tol: float | None = None,
+                rms_out: np.ndarray | None = None):
+    """Step lengths per edge (NaN where not solved). g_tol: reject windows whose solved |g| is more than
+    g_tol m/s^2 from 9.81 (physical plausibility check; 0.5 was fixed before looking at any result)."""
     mav = root / seq / "mav0"
     imu = np.loadtxt(mav / "imu0/data.csv", delimiter=",", comments="#")
     t_ns, gyro, acc = imu[:, 0].astype(np.int64), imu[:, 1:4], imu[:, 4:7]
@@ -115,8 +121,12 @@ def imu_lengths(root: Path, seq: str, t_end: np.ndarray, d_cam: np.ndarray, wind
             pre = [preintegrate(t_ns, gyro, acc, b, t0s[i], t_end[i]) for i in idx]
             dts = (t_end[idx] - t0s[idx]) * 1e-9
             l, g, ba = solve_window(Rk, Rk1, d_cam[idx], pre, dts, R_bs, p_bs)
-            lengths[idx] = l
             gnorm.append(np.linalg.norm(g))
+            if rms_out is not None:
+                rms_out[idx] = LAST_RMS
+            if g_tol is not None and abs(gnorm[-1] - 9.81) > g_tol:
+                continue
+            lengths[idx] = l
     return lengths, np.array(gnorm)
 
 

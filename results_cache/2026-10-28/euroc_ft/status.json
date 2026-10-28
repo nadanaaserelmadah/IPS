@@ -1,0 +1,19 @@
+{
+  "experiment": "ft",
+  "overrides": [
+    "experiment=euroc_joint_pivift_aug",
+    "model.freeze_encoder_epochs=1",
+    "model.encoder_lr_scale=0.1"
+  ],
+  "train_exit_code": 0,
+  "time_stopped": false,
+  "best_ckpt": "best_009.ckpt",
+  "best_epochs": 10,
+  "bestate_ckpt": "bestate_010.ckpt",
+  "bestate_epochs": 11,
+  "last_epochs": 12,
+  "test_best_exit_code": 0,
+  "session_hours": 6.32,
+  "test_bestate_exit_code": 0,
+  "test_last_exit_code": 0
+}

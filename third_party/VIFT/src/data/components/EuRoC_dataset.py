@@ -11,6 +11,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 
 from src.utils.euroc_utils import build_sequence_samples, list_sequences
+from src.utils.euroc_utils import load_image_rgb  # noqa: E402
 
 # Mirror x in the camera frame (x right, y down, z forward). Proper vectors flip x;
 # angular velocity is a pseudovector, so gyro y/z flip; R -> M R M flips Euler y/z.
@@ -130,7 +131,7 @@ class EuRoC(Dataset):
     def _get_window(self, index: int):
         sample = self.samples[index]
         # cam0 is grayscale; VIFT Encoder stacks consecutive RGB pairs -> 6 channels
-        imgs = [np.asarray(Image.open(img).convert("RGB")) for img in sample["imgs"]]
+        imgs = [load_image_rgb(img) for img in sample["imgs"]]
 
         if self.transform is not None:
             imgs, imus, gts = self.transform(
