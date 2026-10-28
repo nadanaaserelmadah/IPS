@@ -6,6 +6,8 @@ Variants (coupling of the gated direction into the accelerometer length solve; s
   C0, C2, C4, C5a, C5b.  SIGMA_NET (C5) is the held-out-08 value, used unchanged on EuRoC.
   python scripts/gate/run_final.py VARIANT SIGMA_NET KITTI_RUNS_JSON KITTI_GEO NPZ_DIR GYRO_DIR RAW_CALIB SUMA \
       EUROC_ROOT EUROC_GEO EUROC_DUMPS RUN [RUN ...]
+TUM-VI (pre-registered third dataset; same EuRoC code path, timestamps from each run's own dump):
+  python scripts/gate/run_final.py --tumvi VARIANT SIGMA_NET TUM_ROOT TUM_GEO TUM_DUMPS RUN [RUN ...]
 """
 import json
 import sys
@@ -21,6 +23,7 @@ import gyro_hybrid as h  # noqa: E402
 import imu_scale_kitti as isk  # noqa: E402
 import observability_gate as G  # noqa: E402
 
+V4 = None  # set to {"P_CONF", "S_CONF", "M", "M_MIN", "TAU"} by --v4 TAU (gate v4, online sigma_net)
 NAMES = {"C0": "C0 (v2)", "C2": "C2 (per-window min misfit)", "C4": "C4 (no switch when stationary)",
          "C5a": "C5a (fusion, lengths from fused dir)", "C5b": "C5b (fusion, per-window min misfit)"}
 
@@ -38,6 +41,19 @@ def kitti(variant, sigma_net, runs_json, geo, npz_dir, gyro_dir, raw_calib, suma
                 gt = np.load(d / f"{s}_gt_poses.npy").astype(np.float64)
                 est = np.load(d / f"{s}_estimated_poses.npy").astype(np.float64)[: len(gt)]
                 res, _, _ = V.candidates(s, est, gt, geo / f"{s}_geo_dir.npz", npz_dir, gyro_dir, raw_calib, sigma_net)
+                if V4 is not None:  # gate v4 replaces the variant's column
+                    import gate_v4 as W
+                    n = len(gt)
+                    L_net = np.linalg.norm(est[:, 3:], axis=1)
+                    z = np.load(geo / f"{s}_geo_dir.npz")
+                    calib = json.loads((gyro_dir / f"calib_{isk.DAY[s]}.json").read_text())
+                    p_c, _ = isk.cam_in_imu(raw_calib, isk.DAY[s])
+                    gp = h.load_gap(gyro_dir, s)
+                    d4, L4, _ = W.v4(est[:, 3:] / np.maximum(L_net, 1e-9)[:, None], z["d"][:n], json.loads(str(z["info"]))[:n],
+                                     lambda dirs: V.lengths(npz_dir / f"{s}.npz", calib, p_c, dirs, gp), V4)
+                    e6 = est.copy()
+                    e6[:, 3:] = d4 * np.where(np.isnan(L4), L_net, L4)[:, None]
+                    res[NAMES[variant]] = e6
                 gR, gap = np.load(gyro_dir / f"{s}_gyro_R.npy"), h.load_gap(gyro_dir, s)
                 refs = {"OXTS": gt, "SuMa": isk.gt6_from_poses(suma / f"{s}.txt")[: len(gt)]}
                 for ref, g in refs.items():
@@ -53,20 +69,23 @@ def kitti(variant, sigma_net, runs_json, geo, npz_dir, gyro_dir, raw_calib, suma
             print(f"| {recipe} | {ref} | {f(acc[ref]['net'])} | {f(acc[ref]['gyro'])} | {f(acc[ref]['hand'])} | **{f(acc[ref]['gate'])}** |", flush=True)
 
 
-def euroc(variant, sigma_net, root, cache, dumps, runs):
+EUROC_SEQS = ("MH_05_difficult", "V2_02_medium", "V1_01_easy", "V1_02_medium")
+TUMVI_SEQS = ("dataset-room5_512_16", "dataset-room6_512_16")
+
+
+def euroc(variant, sigma_net, root, cache, dumps, runs, seqs=EUROC_SEQS, ts_run="pivift_dir_best", name="EuRoC"):
     import gyro_hybrid_euroc as gh
     import imu_scale
 
-    print(f"\n### EuRoC test, variant {variant}")
+    print(f"\n### {name} test, variant {variant}")
     print("| run | network | gyro + net t | hand-chosen (network-free) | **gate v3** | seqs |\n|---|---|---|---|---|---|")
-    seqs = ("MH_05_difficult", "V2_02_medium", "V1_01_easy", "V1_02_medium")
     for run in runs:
         rows = []
         for seq in seqs:
             dump = dumps / run
             if not (dump / f"{seq}_estimated_poses.npy").is_file():
                 continue
-            ts = dumps / "pivift_dir_best"
+            ts = dumps / (ts_run or run)
             t_end = np.load(ts / f"{seq}_timestamps.npy").astype(np.int64)
             gx = np.load(ts / f"{seq}_gt_xyz.npy").reshape(-1, 3)
             est = np.load(dump / f"{seq}_estimated_poses.npy").astype(np.float64)
@@ -84,7 +103,10 @@ def euroc(variant, sigma_net, root, cache, dumps, runs):
                 L, _ = imu_scale.imu_lengths(root, seq, t_end, dirs, g_tol=G.G_TOL, rms_out=rms)
                 return L, rms
 
-            if variant in ("C5a", "C5b"):
+            if V4 is not None:
+                import gate_v4 as W
+                d_v, L_v, _ = W.v4(d_net, d_geo, inf, lengths, V4)
+            elif variant in ("C5a", "C5b"):
                 d_v, _ = V.fuse(d_net, d_geo, sig, fl, sigma_net)
             elif variant == "C4":
                 imu = np.loadtxt(root / seq / "mav0/imu0/data.csv", delimiter=",", comments="#")
@@ -96,8 +118,9 @@ def euroc(variant, sigma_net, root, cache, dumps, runs):
                 d_v = np.where((use & ~st)[:, None], d_gate, d_net)
             else:
                 d_v = d_gate
-            L_v, r_v = lengths(d_v)
-            if variant in ("C2", "C5b"):
+            if V4 is None:
+                L_v, r_v = lengths(d_v)
+            if V4 is None and variant in ("C2", "C5b"):
                 L_n, r_n = lengths(d_net)
                 L_v = np.where(r_n < r_v, L_n, L_v)
             t_v = d_v * np.where(np.isnan(L_v), L_net, L_v)[:, None]
@@ -123,6 +146,13 @@ def euroc(variant, sigma_net, root, cache, dumps, runs):
 
 if __name__ == "__main__":
     a = sys.argv
+    if a[1] == "--v4":  # gate v4 with the chosen TAU; the remaining arguments are as without it
+        import gate_v4_select as WS
+        V4 = dict(WS.FIXED, TAU=float(a[2]))
+        a = [a[0]] + a[3:]
+    if a[1] == "--tumvi":
+        euroc(a[2], float(a[3]), Path(a[4]), Path(a[5]), Path(a[6]), a[7:], seqs=TUMVI_SEQS, ts_run=None, name="TUM-VI")
+        sys.exit()
     variant, sigma_net = a[1], float(a[2])
     kitti(variant, sigma_net, a[3], *(Path(x) for x in a[4:9]))
     euroc(variant, sigma_net, Path(a[9]), Path(a[10]), Path(a[11]), a[12:])

@@ -1,0 +1,6 @@
+
+### TUM-VI test, variant C5b
+| run | network | gyro + net t | hand-chosen (network-free) | **gate v3** | seqs |
+|---|---|---|---|---|---|
+| s123_last | 5.56 | 5.88 | 0.47 | **0.56** | 2 |
+| s123_zeroshot | 3.48 | 4.04 | 0.47 | **0.57** | 2 |

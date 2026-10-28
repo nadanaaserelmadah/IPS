@@ -12,6 +12,9 @@ floor on every sequence. Here the direction comes from the images instead of the
   4. slow motion (de-rotated parallax < 2 px at 100 ms): the direction is re-measured over 200 / 300 ms
      (A' -> B) and rotated into A with the gyro (GEO_ADAPTIVE=0 disables this);
   5. edges with too little parallax or too few inliers keep the network direction.
+TUM-VI (fisheye, no cam0/sensor.yaml): intrinsics and the equidistant model come from Kalibr's
+dso/camchain.yaml; only corners within 60 deg of the optical axis are used (FISHEYE_MAX_TAN, fixed
+before any TUM-VI run), where the normalised-plane pixel errors stay close to the image's.
 Final pose per edge: R_gyro, t = d_geo * |t_net|. Nothing is trained or fitted on test data.
 
   python scripts/euroc/geo_direction.py EUROC_ROOT OUT_DIR TS_DIR:SEQS NAME=DUMP_DIR [NAME=DUMP_DIR ...]
@@ -37,17 +40,28 @@ RANSAC_ITERS = 300
 EPI_PX = 1.0
 ADAPTIVE = os.environ.get("GEO_ADAPTIVE", "1") == "1"
 ADAPT_PX = 2.0  # below this de-rotated parallax at 100 ms, retry over 200 / 300 ms (fixed before any run)
+FISHEYE_MAX_TAN = np.tan(np.radians(60.0))
+SNAP_NS = 10_000_000  # TUM-VI frame times drift off the 50 ms grid (50.002 ms steps); EuRoC's are exact
 
 
 def read_cam(cam_dir: Path):
+    """K, distortion, timestamps, files. EuRoC: radtan array from sensor.yaml. TUM-VI: ("equidistant", k1..k4)
+    from <seq>/dso/camchain.yaml."""
     import yaml
 
-    cfg = yaml.safe_load((cam_dir / "sensor.yaml").read_text())
-    fu, fv, cu, cv = cfg["intrinsics"]
+    if (cam_dir / "sensor.yaml").is_file():
+        cfg = yaml.safe_load((cam_dir / "sensor.yaml").read_text())
+        fu, fv, cu, cv = cfg["intrinsics"]
+        dist = np.array(cfg["distortion_coefficients"], dtype=np.float64)
+    else:
+        cfg = yaml.safe_load((cam_dir.parents[1] / "dso" / "camchain.yaml").read_text())[cam_dir.name]
+        fu, fv, cu, cv = cfg["intrinsics"]
+        assert cfg["distortion_model"] == "equidistant", cfg["distortion_model"]
+        dist = ("equidistant", np.array(cfg["distortion_coeffs"], dtype=np.float64))
     K = np.array([[fu, 0, cu], [0, fv, cv], [0, 0, 1.0]])
     rows = np.loadtxt(cam_dir / "data.csv", delimiter=",", comments="#", dtype=str)
     ts = rows[:, 0].astype(np.int64)
-    return K, np.array(cfg["distortion_coefficients"], dtype=np.float64), ts, [cam_dir / "data" / f.strip() for f in rows[:, 1]]
+    return K, dist, ts, [cam_dir / "data" / f.strip() for f in rows[:, 1]]
 
 
 def track(img_a, img_b, max_corners=500):
@@ -64,14 +78,24 @@ def track(img_a, img_b, max_corners=500):
 
 
 def bearings(px, K, dist):
+    """Normalised-plane bearings (x, y, 1); fisheye corners beyond FISHEYE_MAX_TAN are NaN."""
     import cv2
 
-    n = cv2.undistortPoints(px.reshape(-1, 1, 2).astype(np.float64), K, dist).reshape(-1, 2)
+    pts = px.reshape(-1, 1, 2).astype(np.float64)
+    if len(pts) == 0:
+        return np.zeros((0, 3))
+    if isinstance(dist, tuple):
+        n = cv2.fisheye.undistortPoints(pts, K, dist[1]).reshape(-1, 2)
+        n[np.linalg.norm(n, axis=1) > FISHEYE_MAX_TAN] = np.nan
+    else:
+        n = cv2.undistortPoints(pts, K, dist).reshape(-1, 2)
     return np.hstack([n, np.ones((len(n), 1))])
 
 
 def direction(xa, xb, R, f_px, rng):
     """Unit t (A->B, X_A = R X_B + t) from normalised bearings with R known, or (None, info)."""
+    ok = np.isfinite(xa).all(1) & np.isfinite(xb).all(1)
+    xa, xb = xa[ok], xb[ok]
     rb = xb @ R.T  # R x_B, expressed in A
     par = np.linalg.norm(xa[:, :2] / xa[:, 2:] - rb[:, :2] / rb[:, 2:], axis=1) * f_px
     info = {"n": int(len(xa)), "parallax_px": float(np.median(par)) if len(par) else 0.0}
@@ -181,6 +205,11 @@ def geo_sequence(root: Path, seq: str, t_end: np.ndarray, cache: Path):
     R_bs = T_bs0[:3, :3]
     K, dist, cam_ts, files = read_cam(mav / "cam0")
     idx = {int(t): i for i, t in enumerate(cam_ts)}
+
+    def frame_at(t):  # timestamp of the cam0 frame within SNAP_NS of t, or None
+        j = int(np.clip(np.searchsorted(cam_ts, t), 1, len(cam_ts) - 1))
+        j = j - 1 if abs(cam_ts[j - 1] - t) < abs(cam_ts[j] - t) else j
+        return int(cam_ts[j]) if abs(int(cam_ts[j]) - t) < SNAP_NS else None
     stereo = (mav / "cam1" / "sensor.yaml").is_file()
     if stereo:
         K1, dist1, cam1_ts, files1 = read_cam(mav / "cam1")
@@ -189,7 +218,8 @@ def geo_sequence(root: Path, seq: str, t_end: np.ndarray, cache: Path):
     rng = np.random.default_rng(0)
     Rs, ds, ts_st, infos = [], [], [], []
     for t1 in t_end:
-        t0 = int(t1) - EDGE_NS
+        t1 = frame_at(int(t1)) or int(t1)  # the loaders parse times via float: TUM-VI's come back ~100 ns off
+        t0 = frame_at(int(t1) - EDGE_NS) or int(t1) - EDGE_NS
         Rb = gh.integrate(t_ns, gyro - b, t0, int(t1))
         Rc = R_bs.T @ Rb @ R_bs
         Rs.append(Rc)
@@ -204,8 +234,8 @@ def geo_sequence(root: Path, seq: str, t_end: np.ndarray, cache: Path):
             if ADAPTIVE and (d is None or info.get("parallax_px", 0.0) < ADAPT_PX):
                 # slow motion: measure the direction over a longer baseline A' -> B and rotate it into A
                 for m in (2, 3):
-                    ta = int(t1) - m * EDGE_NS
-                    if ta not in idx:
+                    ta = frame_at(int(t1) - m * EDGE_NS)
+                    if ta is None:
                         continue
                     R_ab = R_bs.T @ gh.integrate(t_ns, gyro - b, ta, int(t1)) @ R_bs
                     i2 = cv2.imread(str(files[idx[ta]]), cv2.IMREAD_GRAYSCALE)
@@ -362,6 +392,29 @@ def selftest():
         errs.append(np.degrees(np.arccos(np.clip(d @ (t / np.linalg.norm(t)), -1, 1))) if d is not None else 180)
     print(f"selftest: median direction error {np.median(errs):.2f} deg, max {np.max(errs):.2f} deg over 50 cases")
     assert np.median(errs) < 2.0 and np.max(errs) < 20, errs
+    # TUM-VI-like equidistant fisheye (512 px, f ~ 190 px), points all around the camera
+    Kf = np.array([[190.98, 0, 254.93], [0, 190.98, 256.90], [0, 0, 1]])
+    D = ("equidistant", np.array([0.00348, 0.00072, -0.00205, 0.00020]))
+    errs = []
+    for _ in range(50):
+        u = rng.normal(0, 1, (400, 3))
+        u[:, 2] = np.abs(u[:, 2]) + 0.2
+        X_B = u / np.linalg.norm(u, axis=1, keepdims=True) * rng.uniform(1.5, 5, (400, 1))
+        R = cv2.Rodrigues(rng.normal(0, 0.02, 3))[0]
+        t = rng.normal(0, 1, 3)
+        t *= 0.07 / np.linalg.norm(t)
+        X_A = X_B @ R.T + t
+        keep = (X_A[:, 2] > 0.2) & (X_B[:, 2] > 0.2)
+        pa = cv2.fisheye.projectPoints(X_A[keep][:, None], np.zeros(3), np.zeros(3), Kf, D[1])[0].reshape(-1, 2)
+        pb = cv2.fisheye.projectPoints(X_B[keep][:, None], np.zeros(3), np.zeros(3), Kf, D[1])[0].reshape(-1, 2)
+        pa += rng.normal(0, 0.3, pa.shape)
+        pb += rng.normal(0, 0.3, pb.shape)
+        out = rng.random(len(pa)) < 0.2
+        pb[out] += rng.uniform(-20, 20, (out.sum(), 2))
+        d, info = direction(bearings(pa, Kf, D), bearings(pb, Kf, D), R, Kf[0, 0], rng)
+        errs.append(np.degrees(np.arccos(np.clip(d @ (t / np.linalg.norm(t)), -1, 1))) if d is not None else 180)
+    print(f"selftest fisheye: median direction error {np.median(errs):.2f} deg, max {np.max(errs):.2f} deg over 50 cases")
+    assert np.median(errs) < 3.0 and np.max(errs) < 25, errs
 
 
 def main():

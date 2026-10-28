@@ -103,6 +103,9 @@ def imu_lengths(root: Path, seq: str, t_end: np.ndarray, d_cam: np.ndarray, wind
     R_bs, p_bs = T_bs[:3, :3], T_bs[:3, 3]
     Rs = attitude(t_ns, gyro, b)
     t0s = t_end - EDGE_NS
+    # TUM-VI frame times drift off the 50 ms grid: an edge starts at the previous edge's end when within 10 ms
+    near = np.abs(t0s[1:] - t_end[:-1]) < 10_000_000
+    t0s[1:][near] = t_end[:-1][near]
     # contiguous runs of edges (a dropped window breaks the chain)
     breaks = np.where(t0s[1:] != t_end[:-1])[0] + 1
     lengths = np.full(len(t_end), np.nan)

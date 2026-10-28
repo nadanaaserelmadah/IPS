@@ -1,0 +1,6 @@
+
+### TUM-VI test, variant C5b
+| run | network | gyro + net t | hand-chosen (network-free) | **gate v3** | seqs |
+|---|---|---|---|---|---|
+| s42_last | 8.81 | 8.85 | 0.47 | **0.92** | 2 |
+| s42_zeroshot | 13.39 | 16.03 | 0.47 | **0.69** | 2 |

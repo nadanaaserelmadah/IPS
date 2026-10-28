@@ -7,6 +7,9 @@ ORB-SLAM3 initialises (or inside tracking gaps > 0.2 s) are dropped; the coverag
 network-free pipeline (gyro + geometric direction x accelerometer length, |g| check) is re-scored on the
 same subset against the same body ground truth for a like-for-like row.
   python scripts/euroc/score_orbslam3.py ORB_DIR EUROC_ROOT GEO_CACHE_DIR DUMPS_DIR
+TUM-VI room5/6 (kernel mhaggag/orbslam3-tumvi; ROOT = EuRoC-layout tree with mocap0 as the GT, TS_DIR holds
+<seq>_timestamps.npy):
+  python scripts/euroc/score_orbslam3.py --tumvi ORB_DIR ROOT GEO_CACHE_DIR TS_DIR
 """
 import sys
 from pathlib import Path
@@ -18,6 +21,7 @@ import gyro_hybrid_euroc as gh  # noqa: E402
 import imu_scale  # noqa: E402
 
 SEQS = ("MH_05_difficult", "V2_02_medium", "V1_01_easy", "V1_02_medium")
+TUMVI_SEQS = ("dataset-room5_512_16", "dataset-room6_512_16")
 RUNS = ("monoi_nolc", "monoi_lc", "stereoi_nolc", "stereoi_lc")
 
 
@@ -48,15 +52,24 @@ def ours_network_free(root, seq, cache, t_end):
 
 
 def main():
-    orb, root, cache, dumps = (Path(a) for a in sys.argv[1:5])
+    tumvi = sys.argv[1] == "--tumvi"
+    args = sys.argv[2:6] if tumvi else sys.argv[1:5]
+    orb, root, cache, dumps = (Path(a) for a in args)
+    seqs, ts_dir = (TUMVI_SEQS, dumps) if tumvi else (SEQS, dumps / "pivift_dir_best")
     rows = {}
-    for seq in SEQS:
-        t_end = np.load(dumps / "pivift_dir_best" / f"{seq}_timestamps.npy").astype(np.int64)
+    for seq in seqs:
+        t_end = np.load(ts_dir / f"{seq}_timestamps.npy").astype(np.int64)
         gt = np.loadtxt(root / seq / "mav0/state_groundtruth_estimate0/data.csv", delimiter=",", comments="#")
         g_body, _ = interp(gt[:, 0].astype(np.int64), gt[:, 1:4], t_end)
         ours = ours_network_free(root, seq, cache, t_end)[1:]  # position at each t_end
         for run in RUNS:
             f = orb / f"{run}_{seq}_frames.txt"
+            if not f.is_file():  # TUM-VI kernel keeps ORB-SLAM3's own names: <run>_<seq>__f_<name>.txt
+                hits = sorted(orb.glob(f"{run}_{seq}__f_*.txt"))
+                if not hits:
+                    rows.setdefault(run, []).append((seq, 0.0, np.nan, np.nan))
+                    continue
+                f = hits[0]
             tr = np.loadtxt(f)
             t_o, p_o = tr[:, 0].astype(np.int64), tr[:, 1:4]
             order = np.argsort(t_o)
@@ -65,8 +78,8 @@ def main():
             ate_orb = gh.ate(p_q[ok], g_body[ok])[0]
             ate_ours = gh.ate(ours[ok], g_body[ok])[0]
             rows.setdefault(run, []).append((seq, cov, ate_orb, ate_ours))
-    print("| ORB-SLAM3 run | " + " | ".join(s.split("_")[0] + "_" + s.split("_")[1] for s in SEQS) + " | mean |")
-    print("|---|" + "---|" * (len(SEQS) + 1))
+    print("| ORB-SLAM3 run | " + " | ".join(s.split("_")[0] + "_" + s.split("_")[1] for s in seqs) + " | mean |")
+    print("|---|" + "---|" * (len(seqs) + 1))
     for run, v in rows.items():
         cells = [f"{a:.3f} ({c:.0%})" for _, c, a, _ in v]
         print(f"| {run} | " + " | ".join(cells) + f" | **{np.mean([a for _, _, a, _ in v]):.3f}** |")
