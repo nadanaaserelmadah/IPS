@@ -1,0 +1,35 @@
+## v3
+
+### TUM-VI test, variant C5b
+| run | network | gyro + net t | hand-chosen (network-free) | **gate v3** | seqs |
+|---|---|---|---|---|---|
+| s7_last | 5.04 | 5.13 | 0.47 | **0.59** | 2 |
+| s7_zeroshot | 6.79 | 7.37 | 0.47 | **0.75** | 2 |
+## v4
+
+### TUM-VI test, variant C5b
+| run | network | gyro + net t | hand-chosen (network-free) | **gate v3** | seqs |
+|---|---|---|---|---|---|
+| s7_last | 5.04 | 5.13 | 0.47 | **0.47** | 2 |
+| s7_zeroshot | 6.79 | 7.37 | 0.47 | **0.47** | 2 |
+## per room v3 / v4
+
+### v3 dataset-room5_512_16 test, variant C5b
+| run | network | gyro + net t | hand-chosen (network-free) | **gate v3** | seqs |
+|---|---|---|---|---|---|
+| s7_last | 3.84 | 3.82 | 0.80 | **0.97** | 1 |
+
+### v3 dataset-room6_512_16 test, variant C5b
+| run | network | gyro + net t | hand-chosen (network-free) | **gate v3** | seqs |
+|---|---|---|---|---|---|
+| s7_last | 6.24 | 6.45 | 0.13 | **0.20** | 1 |
+
+### v4 dataset-room5_512_16 test, variant C5b
+| run | network | gyro + net t | hand-chosen (network-free) | **gate v3** | seqs |
+|---|---|---|---|---|---|
+| s7_last | 3.84 | 3.82 | 0.80 | **0.80** | 1 |
+
+### v4 dataset-room6_512_16 test, variant C5b
+| run | network | gyro + net t | hand-chosen (network-free) | **gate v3** | seqs |
+|---|---|---|---|---|---|
+| s7_last | 6.24 | 6.45 | 0.13 | **0.13** | 1 |

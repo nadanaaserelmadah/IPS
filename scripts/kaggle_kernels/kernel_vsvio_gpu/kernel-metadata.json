@@ -1,0 +1,4 @@
+{"id": "amrelmadah/vsvio-kitti-infer-gpu", "title": "vsvio-kitti-infer-gpu", "code_file": "vsvio_infer.py", "language": "python", "kernel_type": "script",
+ "is_private": true, "enable_gpu": true, "enable_tpu": false, "enable_internet": true,
+ "dataset_sources": ["amrelmadah/ips-pivift-fixed", "hocop1/kitti-odometry", "amrelmadah/kitti-imus", "amrelmadah/pivift-euroc-ckpt"],
+ "kernel_sources": [], "competition_sources": [], "model_sources": [], "machine_shape": "NvidiaTeslaT4"}

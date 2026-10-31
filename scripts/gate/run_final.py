@@ -28,10 +28,14 @@ NAMES = {"C0": "C0 (v2)", "C2": "C2 (per-window min misfit)", "C4": "C4 (no swit
          "C5a": "C5a (fusion, lengths from fused dir)", "C5b": "C5b (fusion, per-window min misfit)"}
 
 
+def gate_label():
+    return f"gate v4 (TAU={V4['TAU']:g})" if V4 is not None else "gate v3"
+
+
 def kitti(variant, sigma_net, runs_json, geo, npz_dir, gyro_dir, raw_calib, suma):
     runs = json.loads(Path(runs_json).read_text())
     print(f"\n### KITTI test, variant {variant}")
-    print("| model | reference | network | gyro + net t | hand-chosen (net dir + accel len) | **gate v3** |\n|---|---|---|---|---|---|")
+    print(f"| model | reference | network | gyro + net t | hand-chosen (net dir + accel len) | **{gate_label()}** |\n|---|---|---|---|---|---|")
     for recipe, dirs in runs.items():
         acc = {ref: {k: [] for k in ("net", "gyro", "hand", "gate")} for ref in ("OXTS", "SuMa")}
         for d in dirs:
@@ -78,7 +82,7 @@ def euroc(variant, sigma_net, root, cache, dumps, runs, seqs=EUROC_SEQS, ts_run=
     import imu_scale
 
     print(f"\n### {name} test, variant {variant}")
-    print("| run | network | gyro + net t | hand-chosen (network-free) | **gate v3** | seqs |\n|---|---|---|---|---|---|")
+    print(f"| run | network | gyro + net t | hand-chosen (network-free) | **{gate_label()}** | seqs |\n|---|---|---|---|---|---|")
     for run in runs:
         rows = []
         for seq in seqs:

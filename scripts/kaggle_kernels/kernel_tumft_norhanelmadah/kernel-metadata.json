@@ -1,0 +1,15 @@
+{
+  "id": "norhanelmadah/pivift-tumvi-ft",
+  "title": "pivift-tumvi-ft",
+  "code_file": "tumvi_ft.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "dataset_sources": ["nadaelmadah/tum-vi", "norhanelmadah/ips-pivift-fixed", "norhanelmadah/pivift-euroc-ckpt"],
+  "kernel_sources": [],
+  "competition_sources": [],
+  "machine_shape": "NvidiaTeslaT4"
+}

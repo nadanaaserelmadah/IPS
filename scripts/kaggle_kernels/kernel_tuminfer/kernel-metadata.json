@@ -1,0 +1,4 @@
+{"id": "amrelmadah/pivift-tumvi-infer14", "title": "pivift-tumvi-infer14", "code_file": "tumvi_infer.py", "language": "python", "kernel_type": "script",
+ "is_private": true, "enable_gpu": true, "enable_tpu": false, "enable_internet": true,
+ "dataset_sources": ["nadaelmadah/tum-vi", "amrelmadah/ips-pivift-fixed", "amrelmadah/pivift-euroc-ckpt"],
+ "kernel_sources": [], "competition_sources": [], "machine_shape": "NvidiaTeslaT4"}

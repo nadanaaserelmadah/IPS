@@ -1,0 +1,25 @@
+{
+  "id": "hassanhaggag/vift-kitti-paper-08-mirror",
+  "id_no": 141172933,
+  "title": "vift-kitti-paper-08-mirror",
+  "code_file": "vift-kitti-paper-08-mirror.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [
+    "gpu"
+  ],
+  "dataset_sources": [
+    "hassanhaggag/ips-pivift-fixed",
+    "hocop1/kitti-odometry",
+    "hassanhaggag/kitti-imus"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-private-byod/python@sha256:9a6bcfda6d03b2cd9aa347ee8c1bae62043328ed0f4afe9bda014e4f8bbf9435",
+  "machine_shape": "NvidiaTeslaT4"
+}

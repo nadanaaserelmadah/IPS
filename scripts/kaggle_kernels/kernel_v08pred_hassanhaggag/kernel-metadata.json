@@ -1,0 +1,3 @@
+{"id": "hassanhaggag/vift-kitti-v08-pred08", "title": "vift-kitti-v08-pred08", "code_file": "v08_pred.py", "language": "python", "kernel_type": "script",
+ "is_private": true, "enable_gpu": true, "enable_tpu": false, "enable_internet": true,
+ "dataset_sources": ["hassanhaggag/ips-pivift-fixed", "hocop1/kitti-odometry", "hassanhaggag/kitti-imus"], "kernel_sources": ["hassanhaggag/vift-kitti-no08-val08-mirror", "hassanhaggag/vift-kitti-no08-val08-mirror-s2"], "competition_sources": [], "model_sources": []}

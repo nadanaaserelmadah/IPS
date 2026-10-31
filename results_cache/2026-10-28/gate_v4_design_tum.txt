@@ -1,0 +1,21 @@
+pivift_s123_last dataset-room1_512_16: sigma_hat median 61.5 deg; v3 0.88, v4 TAU=20 0.54, network-free 0.54
+pivift_s123_last dataset-room2_512_16: sigma_hat median 30.0 deg; v3 0.77, v4 TAU=20 0.42, network-free 0.34
+pivift_s123_last dataset-room3_512_16: sigma_hat median 30.4 deg; v3 5.80, v4 TAU=20 5.81, network-free 5.81
+pivift_s123_last dataset-room4_512_16: sigma_hat median 65.8 deg; v3 1.12, v4 TAU=20 0.32, network-free 0.32
+pivift_s42_last dataset-room1_512_16: sigma_hat median 63.9 deg; v3 1.82, v4 TAU=20 0.54, network-free 0.54
+pivift_s42_last dataset-room2_512_16: sigma_hat median 30.8 deg; v3 0.83, v4 TAU=20 0.36, network-free 0.34
+pivift_s42_last dataset-room3_512_16: sigma_hat median 47.8 deg; v3 6.32, v4 TAU=20 5.81, network-free 5.81
+pivift_s42_last dataset-room4_512_16: sigma_hat median 65.0 deg; v3 1.39, v4 TAU=20 0.32, network-free 0.32
+pivift_s7_best dataset-room1_512_16: sigma_hat median 67.1 deg; v3 0.97, v4 TAU=20 0.54, network-free 0.54
+pivift_s7_best dataset-room2_512_16: sigma_hat median 24.8 deg; v3 0.68, v4 TAU=20 0.35, network-free 0.34
+pivift_s7_best dataset-room3_512_16: sigma_hat median 38.7 deg; v3 5.48, v4 TAU=20 5.81, network-free 5.81
+pivift_s7_best dataset-room4_512_16: sigma_hat median 73.6 deg; v3 1.27, v4 TAU=20 0.32, network-free 0.32
+| TUM-VI room1-4 (design) | mean SE(3) ATE (m) over runs x rooms |
+|---|---|
+| v3 (C5b) | **2.279** |
+| network-free | **1.752** |
+| network | **8.196** |
+| v4 TAU=3 | **1.756** |
+| v4 TAU=5 | **1.756** |
+| v4 TAU=10 | **1.756** |
+| v4 TAU=20 | **1.762** |

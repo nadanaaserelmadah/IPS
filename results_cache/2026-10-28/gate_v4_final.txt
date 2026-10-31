@@ -1,0 +1,35 @@
+
+### KITTI test, variant C5b
+| model | reference | network | gyro + net t | hand-chosen (net dir + accel len) | **gate v3** |
+|---|---|---|---|---|---|
+| with 08: our recipe | OXTS | 2.15 ± 0.17 | 1.61 ± 0.07 | 1.27 ± 0.07 | **1.21 ± 0.06** |
+| with 08: our recipe | SuMa | 2.17 ± 0.23 | 1.68 ± 0.08 | 1.32 ± 0.08 | **1.26 ± 0.07** |
+| no 08, ckpt on 08 (clean): recipe + mirror | OXTS | 3.04 ± 0.86 | 2.10 ± 0.04 | 1.62 ± 0.03 | **1.56 ± 0.02** |
+| no 08, ckpt on 08 (clean): recipe + mirror | SuMa | 3.08 ± 0.88 | 2.20 ± 0.04 | 1.71 ± 0.03 | **1.65 ± 0.03** |
+
+### EuRoC test, variant C5b
+| run | network | gyro + net t | hand-chosen (network-free) | **gate v3** | seqs |
+|---|---|---|---|---|---|
+| vift_s42_last | 4.39 | 3.93 | 0.62 | **0.59** | 2 |
+| vift_s7_last | 3.98 | 4.06 | 0.62 | **0.57** | 2 |
+| vift_s123_last | 4.04 | 4.15 | 0.62 | **0.58** | 2 |
+| pivift_s42_best | 5.30 | 5.00 | 0.62 | **0.58** | 2 |
+| pivift_s7_best | 4.45 | 4.53 | 0.62 | **0.59** | 2 |
+| pivift_s123_last | 5.47 | 5.71 | 1.02 | **0.95** | 4 |
+| pivift_dir_best | 6.60 | 6.02 | 1.02 | **0.98** | 4 |
+
+### TUM-VI test, variant C5b
+| run | network | gyro + net t | hand-chosen (network-free) | **gate v3** | seqs |
+|---|---|---|---|---|---|
+| s123_last | 5.56 | 5.88 | 0.47 | **0.47** | 2 |
+| s42_last | 8.81 | 8.85 | 0.47 | **0.47** | 2 |
+| s123_zeroshot | 3.48 | 4.04 | 0.47 | **0.47** | 2 |
+| s42_zeroshot | 13.39 | 16.03 | 0.47 | **0.47** | 2 |
+
+### KITTI test, variant C5b
+| model | reference | network | gyro + net t | hand-chosen (net dir + accel len) | **gate v3** |
+|---|---|---|---|---|---|
+| VS-VIO policy | OXTS | 2.35 | 1.81 | 1.38 | **1.27** |
+| VS-VIO policy | SuMa | 2.35 | 1.83 | 1.41 | **1.30** |
+| VS-VIO full vision | OXTS | 3.88 | 2.12 | 1.69 | **1.59** |
+| VS-VIO full vision | SuMa | 3.88 | 2.20 | 1.77 | **1.68** |
