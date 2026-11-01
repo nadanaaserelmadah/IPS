@@ -198,9 +198,7 @@ def geo_sequence(root: Path, seq: str, t_end: np.ndarray, cache: Path):
     mav = root / seq / "mav0"
     imu = np.loadtxt(mav / "imu0/data.csv", delimiter=",", comments="#")
     t_ns, gyro, acc = imu[:, 0].astype(np.int64), imu[:, 1:4], imu[:, 4:7]
-    b, _ = gh.static_bias(t_ns, gyro, acc)
-    if b is None:
-        b = np.zeros(3)
+    b = gh.bias_for(seq, t_ns, gyro, acc)
     T_bs0 = gh.load_T_BS(root / seq)
     R_bs = T_bs0[:3, :3]
     K, dist, cam_ts, files = read_cam(mav / "cam0")
@@ -263,6 +261,58 @@ def geo_sequence(root: Path, seq: str, t_end: np.ndarray, cache: Path):
     np.savez(f, R=R, d=d, t_st=t_st, info=json.dumps(infos))
     return R, d, t_st, infos
 
+
+
+def visual_gyro_bias(root: Path, seq: str, seconds=1e9, min_inl=30):
+    """Gyro bias from the images, for sequences without a static start (no ground truth). Per 100 ms edge in the
+    first `seconds`: 5-point essential matrix (RANSAC, 1 px) on tracked undistorted corners -> recoverPose rotation;
+    bias = component-wise median of (raw gyro rotation vector - visual rotation vector, body frame) / dt. The
+    frame convention of recoverPose is picked as the one with the smaller median residual. Returns (bias, info)."""
+    import cv2
+    from scipy.spatial.transform import Rotation
+
+    mav = root / seq / "mav0"
+    imu = np.loadtxt(mav / "imu0/data.csv", delimiter=",", comments="#")
+    t_ns, gyro = imu[:, 0].astype(np.int64), imu[:, 1:4]
+    R_bs = gh.load_T_BS(root / seq)[:3, :3]
+    K, dist, cam_ts, files = read_cam(mav / "cam0")
+    res = {0: [], 1: []}
+    dts = []
+    i, t_stop = 0, cam_ts[0] + int(seconds * 1e9)
+    while i + 2 < len(cam_ts) and cam_ts[i + 2] < t_stop:
+        t0, t1 = int(cam_ts[i]), int(cam_ts[i + 2])
+        i += 2
+        if not (t_ns[0] < t0 and t1 < t_ns[-1]):
+            continue
+        ia = cv2.imread(str(files[i - 2]), cv2.IMREAD_GRAYSCALE)
+        ib = cv2.imread(str(files[i]), cv2.IMREAD_GRAYSCALE)
+        pa, pb = track(ia, ib)
+        if pa is None:
+            continue
+        xa, xb = bearings(pa, K, dist), bearings(pb, K, dist)
+        ok = np.isfinite(xa).all(1) & np.isfinite(xb).all(1)
+        xa, xb = xa[ok, :2], xb[ok, :2]
+        if len(xa) < min_inl:
+            continue
+        E, mask = cv2.findEssentialMat(xa, xb, focal=1.0, pp=(0.0, 0.0), method=cv2.RANSAC, prob=0.999,
+                                       threshold=1.0 / K[0, 0])
+        if E is None or E.shape != (3, 3):
+            continue
+        n_in, Rr, _, _ = cv2.recoverPose(E, xa, xb, focal=1.0, pp=(0.0, 0.0), mask=mask)
+        if n_in < min_inl or n_in < 0.5 * len(xa):
+            continue
+        th_gyro = Rotation.from_matrix(gh.integrate(t_ns, gyro, t0, t1)).as_rotvec()
+        for c, Rc in ((0, Rr), (1, Rr.T)):
+            th_vis = Rotation.from_matrix(R_bs @ Rc @ R_bs.T).as_rotvec()
+            res[c].append(th_gyro - th_vis)
+        dts.append((t1 - t0) * 1e-9)
+    if len(dts) < 20:
+        return None, {"edges": len(dts)}
+    dts = np.array(dts)[:, None]
+    c = min(res, key=lambda k: np.median(np.linalg.norm(np.array(res[k]), axis=1)))
+    r = np.array(res[c]) / dts
+    return np.median(r, axis=0), {"edges": len(dts), "convention": c,
+                                  "residual_deg_per_edge": float(np.degrees(np.median(np.linalg.norm(np.array(res[c]), axis=1))))}
 
 def track_points(img_a, img_b, pa):
     """LK-track given points A -> B with a forward-backward check; failed points are NaN."""

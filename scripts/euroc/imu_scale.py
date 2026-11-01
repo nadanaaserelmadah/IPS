@@ -97,8 +97,7 @@ def imu_lengths(root: Path, seq: str, t_end: np.ndarray, d_cam: np.ndarray, wind
     mav = root / seq / "mav0"
     imu = np.loadtxt(mav / "imu0/data.csv", delimiter=",", comments="#")
     t_ns, gyro, acc = imu[:, 0].astype(np.int64), imu[:, 1:4], imu[:, 4:7]
-    b, _ = gh.static_bias(t_ns, gyro, acc)
-    b = np.zeros(3) if b is None else b
+    b = gh.bias_for(seq, t_ns, gyro, acc)
     T_bs = gh.load_T_BS(root / seq)
     R_bs, p_bs = T_bs[:3, :3], T_bs[:3, 3]
     Rs = attitude(t_ns, gyro, b)

@@ -1,0 +1,3 @@
+{"id": "moha70/euroc-v101-bias", "title": "euroc-v101-bias", "code_file": "v101_bias.py", "language": "python", "kernel_type": "script",
+ "is_private": true, "enable_gpu": false, "enable_tpu": false, "enable_internet": true,
+ "dataset_sources": ["moha70/ips-pivift-fixed", "nadaelmadah/eurocmav", "moha70/euroc-v101-bias-inputs"], "kernel_sources": [], "competition_sources": [], "model_sources": []}

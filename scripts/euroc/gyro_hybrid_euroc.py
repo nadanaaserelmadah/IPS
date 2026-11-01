@@ -60,6 +60,22 @@ def static_bias(t_ns, gyro, acc, block_s=0.25, min_s=0.5):
     return gyro[:end].mean(0), (t_ns[end - 1] - t_ns[0]) * 1e-9
 
 
+
+def bias_for(seq, t_ns, gyro, acc):
+    """Gyro bias for a sequence: the static-prefix mean, else (opt-in diagnostic) a bias from the JSON file named
+    by env IPS_GYRO_BIAS_JSON ({seq: [bx, by, bz]}, e.g. the visual estimate of geo_direction.visual_gyro_bias),
+    else zero. Without the env variable this is exactly the original static-prefix-or-zero rule."""
+    import json
+    import os
+
+    b, _ = static_bias(t_ns, gyro, acc)
+    if b is not None:
+        return b
+    f = os.environ.get("IPS_GYRO_BIAS_JSON")
+    if f and seq in json.loads(Path(f).read_text()):
+        return np.asarray(json.loads(Path(f).read_text())[seq], dtype=np.float64)
+    return np.zeros(3)
+
 def run(root: Path, dump: Path, ts_dir: Path, seq: str):
     mav = root / seq / "mav0"
     imu = np.loadtxt(mav / "imu0/data.csv", delimiter=",", comments="#")
