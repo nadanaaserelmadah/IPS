@@ -1,0 +1,92 @@
+# Audit E5, one-GPU control (2026-11-14): VS-VIO seed 0, --gpu_ids 0 (authors' default), clean protocol, sessions nadaelmadah c1-c2, nadanasserelmadah c3-c4, sallyhaggag c5 (kernel sallyhaggag/vsvio-e5-1gpu-s0-c5). scripts/audit/e5_run.sh; scoring inputs rebuilt by build_score_inputs.sh and checked (released VS-VIO policy 2.35 / 1.81 / 1.38 / 1.27).
+
+## Epoch selection
+| run | rule | epoch | 08 | 05 | 07 | 10 | mean 05/07/10 |
+|---|---|---|---|---|---|---|---|
+| s0 | best08 | 83 | 3.99 | 4.36 | 4.41 | 4.83 | 4.53 |
+| s0 | besttest | 88 | 4.64 | 3.63 | 3.35 | 4.43 | 3.80 |
+| s0 | last | 99 | 4.22 | 4.00 | 3.81 | 3.70 | 3.84 |
+
+| rule | mean 05/07/10 per seed | mean ± SD |
+|---|---|---|
+| best08 | 4.53 | 4.53 ± 0.00 |
+| besttest | 3.80 | 3.80 ± 0.00 |
+| last | 3.84 | 3.84 ± 0.00 |
+
+## E5: VS-VIO retrained under the clean protocol (train 00 01 02 04 06 09, 08 held out), 1 seeds
+
+### E5.1 Epoch picked by each rule, scored like the released models (t_rel %, mean of 05/07/10, OXTS)
+
+| seed | rule | epoch | 08 (held out), network | network | gyro rot + net t | + accel length | gate v3 |
+|---|---|---|---|---|---|---|---|
+| s0 | best08 | 83 | 3.99 | 4.53 | 3.78 | 2.66 | **2.61** |
+| s0 | besttest | 88 | 4.64 | 3.80 | 3.65 | 2.60 | **2.54** |
+| s0 | last | 99 | 4.22 | 3.84 | 3.71 | 2.74 | **2.67** |
+
+### E5.2 Mean ± SD over seeds
+
+| rule | network | gyro rot + net t | + accel length | gate v3 |
+|---|---|---|---|---|
+| best08 | 4.53 ± 0.00 | 3.78 ± 0.00 | 2.66 ± 0.00 | 2.61 ± 0.00 |
+| besttest | 3.80 ± 0.00 | 3.65 ± 0.00 | 2.60 ± 0.00 | 2.54 ± 0.00 |
+| last | 3.84 ± 0.00 | 3.71 ± 0.00 | 2.74 ± 0.00 | 2.67 ± 0.00 |
+| released checkpoint (trained on 08, test-selected) | 2.35 | 1.81 | 1.38 | 1.27 |
+
+### E5.3 What choosing the epoch on the test drives does
+
+VS-VIO's own t_rel (its `kitti_eval`), all 19 evaluated epochs per seed. 'Optimism' = median epoch minus the picked epoch, on the test drives: how much lower the reported number is than a typical epoch.
+
+| seed | test t_rel over epochs 81–99: min–max (median) | best-on-08 epoch: test | best-on-test epoch: test | optimism of best-on-test | optimism of best-on-08 | Spearman(08, test) over epochs |
+|---|---|---|---|---|---|---|
+| s0 | 3.80–6.35 (4.29) | 4.53 (ep 83) | 3.80 (ep 88) | 0.48 | -0.25 | +0.58 |
+| mean | | | | 0.48 | -0.25 | |
+
+Same contrast after scoring (best-on-test minus best-on-08; negative = the test-selected epoch looks better):
+
+| seed | network | gyro rot + net t | + accel length | gate v3 |
+|---|---|---|---|---|
+| s0 | -0.73 | -0.13 | -0.06 | -0.07 |
+| mean | -0.73 | -0.13 | -0.06 | -0.07 |
+
+### E5.4 E6 again, with VS-VIO seeds (clean, best on 08)
+
+| stage | 5 released checkpoints: min–max (range) | VIFT, 6 seeds: min–max (range), SD | VS-VIO, 1 seeds: min–max (range), SD |
+|---|---|---|---|
+| network | 2.35–3.88 (1.53) | 2.38–4.04 (1.66), 0.62 | 4.53–4.53 (0.00), 0.00 |
+| gyro rot + net t | 1.71–2.17 (0.46) | 2.06–2.18 (0.12), 0.04 | 3.78–3.78 (0.00), 0.00 |
+| + accel length | 1.38–1.82 (0.44) | 1.61–1.69 (0.08), 0.03 | 2.66–2.66 (0.00), 0.00 |
+| gate v3 | 1.27–1.74 (0.47) | 1.55–1.62 (0.07), 0.03 | 2.61–2.61 (0.00), 0.00 |
+
+Released VS-VIO checkpoint: network 2.35, gate v3 1.27. Clean seeds (best on 08) with a worse network: 1 of 1; any rule: 3 of 3. Worse after gate v3: 1 of 1.
+
+figure: /Users/finetch/Library/Caches/ips_e5_chain/e5_1gpu/audit_e5.png
+
+# Full scoring output
+## Oracle swap and sensor rows (t_rel % / r_rel deg/100 m, mean of 05 / 07 / 10)
+
+| model | reference | network | oracle: GT rot + net t | oracle: net rot + GT t | gyro rot + net t | + accel length |
+|---|---|---|---|---|---|---|
+| best08/poses | OXTS | 4.53 / 1.92 | 3.71 / 0.00 | 3.73 / 1.92 | 3.78 / 0.17 | 2.66 / 0.17 |
+| best08/poses | SuMa | 4.51 / 1.92 | 3.79 / 0.25 | 3.70 / 1.92 | 3.84 / 0.31 | 2.72 / 0.31 |
+| besttest/poses | OXTS | 3.80 / 1.72 | 3.58 / 0.00 | 3.16 / 1.72 | 3.65 / 0.17 | 2.60 / 0.17 |
+| besttest/poses | SuMa | 3.84 / 1.73 | 3.66 / 0.25 | 3.17 / 1.73 | 3.71 / 0.30 | 2.68 / 0.30 |
+| last/poses | OXTS | 3.84 / 1.90 | 3.63 / 0.00 | 3.28 / 1.90 | 3.71 / 0.17 | 2.74 / 0.17 |
+| last/poses | SuMa | 3.90 / 1.97 | 3.69 / 0.25 | 3.36 / 1.97 | 3.75 / 0.31 | 2.79 / 0.31 |
+
+### KITTI test, variant C5b
+| model | reference | network | gyro + net t | hand-chosen (net dir + accel len) | **gate v3** |
+|---|---|---|---|---|---|
+| s0/best08/poses | OXTS | 4.53 | 3.78 | 2.66 | **2.61** |
+| s0/best08/poses | SuMa | 4.51 | 3.84 | 2.72 | **2.67** |
+| s0/besttest/poses | OXTS | 3.80 | 3.65 | 2.60 | **2.54** |
+| s0/besttest/poses | SuMa | 3.84 | 3.71 | 2.68 | **2.62** |
+| s0/last/poses | OXTS | 3.84 | 3.71 | 2.74 | **2.67** |
+| s0/last/poses | SuMa | 3.90 | 3.75 | 2.79 | **2.73** |
+
+## 08 (in every released model's training split), network only, OXTS
+
+| model | t_rel % | r_rel |
+|---|---|---|
+| s0/best08/poses | 3.99 | 1.04 |
+| s0/besttest/poses | 4.64 | 1.24 |
+| s0/last/poses | 4.22 | 1.23 |

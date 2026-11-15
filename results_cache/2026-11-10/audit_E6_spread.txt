@@ -1,0 +1,33 @@
+# Audit E6 (2026-11-10): python scripts/audit/e6_spread.py results_cache/2026-11-09/audit_E1_E3_released_models.txt results_cache/2026-11-10/audit_E4_lagfix_6seeds.txt docs/figures/audit_e6_spread.png
+
+## E6: spread across released methods vs across seeds of one method (t_rel %, 05/07/10, OXTS)
+
+| stage | 5 released checkpoints: min–max (range) | VIFT, 6 seeds, released IMU: min–max (range), SD | VIFT, 12 runs (both IMU sets): min–max (range), SD |
+|---|---|---|---|
+| network | 2.35–3.88 (1.53) | 2.38–4.04 (1.66), 0.62 | 2.00–4.04 (2.04), 0.52 |
+| gyro rot + net t | 1.71–2.17 (0.46) | 2.06–2.18 (0.12), 0.04 | 1.94–2.18 (0.24), 0.08 |
+| + accel length | 1.38–1.82 (0.44) | 1.61–1.69 (0.08), 0.03 | 1.52–1.69 (0.17), 0.05 |
+| gate v3 | 1.27–1.74 (0.47) | 1.55–1.62 (0.07), 0.03 | 1.45–1.62 (0.17), 0.05 |
+
+## Where each released checkpoint falls among the 12 VIFT runs (share of VIFT runs that are worse)
+
+| released | network | VIFT runs worse | gate v3 | VIFT runs worse |
+|---|---|---|---|---|
+| VS-VIO policy | 2.35 | 83% | 1.27 | 100% |
+| VS-VIO full vision | 3.88 | 8% | 1.59 | 17% |
+| UL-VIO | 3.52 | 8% | 1.74 | 0% |
+| NASVIO flops | 2.58 | 42% | 1.42 | 100% |
+| NASVIO latency | 2.50 | 67% | 1.38 | 100% |
+
+## Keeping the best of k seeds by test score (VIFT, 6 seeds, released IMU): expected reported number
+
+| k | network | gate v3 |
+|---|---|---|
+| 1 | 2.79 | 1.58 |
+| 2 | 2.50 | 1.56 |
+| 3 | 2.46 | 1.55 |
+| 4 | 2.43 | 1.55 |
+| 5 | 2.40 | 1.55 |
+| 6 | 2.38 | 1.55 |
+
+figure: docs/figures/audit_e6_spread.png

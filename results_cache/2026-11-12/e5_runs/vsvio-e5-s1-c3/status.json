@@ -1,0 +1,31 @@
+{
+  "seed": 1,
+  "smoke": false,
+  "commit": "27b06b38dcf07a015fba22038050113462387e7d",
+  "budget_h": 11.0,
+  "sessions": [
+    {
+      "n": 1,
+      "resume_from": null,
+      "start": 1794333794.4899197,
+      "stopped_before_epoch": 38,
+      "end": 1794372800.3354793,
+      "rc": 0
+    },
+    {
+      "n": 2,
+      "resume_from": "/kaggle/input/notebooks/elsamadony/vsvio-e5-s1/e5/resume.pth",
+      "start": 1794384190.2834778,
+      "rc": -9,
+      "end": 1794422696.6880403
+    },
+    {
+      "n": 3,
+      "resume_from": "/kaggle/input/datasets/moha70/vsvio-e5-s1-resume/resume.pth",
+      "start": 1794424833.3649962,
+      "rc": 0,
+      "end": 1794448409.0935187
+    }
+  ],
+  "done": true
+}

@@ -1,0 +1,36 @@
+## Oracle swap and sensor rows (t_rel % / r_rel deg/100 m, mean of 05 / 07 / 10)
+
+| model | reference | network | oracle: GT rot + net t | oracle: net rot + GT t | gyro rot + net t | + accel length |
+|---|---|---|---|---|---|---|
+| vsvio/policy | OXTS | 2.35 / 0.88 | 1.68 / 0.00 | 1.55 / 0.88 | 1.81 / 0.17 | 1.38 / 0.17 |
+| vsvio/policy | SuMa | 2.35 / 0.95 | 1.73 / 0.25 | 1.56 / 0.95 | 1.83 / 0.32 | 1.41 / 0.32 |
+| vsvio/fullvision | OXTS | 3.88 / 1.57 | 2.01 / 0.00 | 3.22 / 1.57 | 2.12 / 0.17 | 1.69 / 0.17 |
+| vsvio/fullvision | SuMa | 3.88 / 1.60 | 2.13 / 0.25 | 3.17 / 1.60 | 2.20 / 0.32 | 1.77 / 0.32 |
+| ulvio/ulvio_out | OXTS | 3.52 / 1.73 | 2.03 / 0.00 | 3.12 / 1.73 | 2.17 / 0.18 | 1.82 / 0.18 |
+| ulvio/ulvio_out | SuMa | 3.62 / 1.79 | 2.22 / 0.25 | 3.19 / 1.79 | 2.33 / 0.32 | 1.91 / 0.32 |
+| nasvio_out/flops | OXTS | 2.58 / 0.70 | 1.64 / 0.00 | 1.71 / 0.70 | 1.79 / 0.18 | 1.47 / 0.18 |
+| nasvio_out/flops | SuMa | 2.58 / 0.72 | 1.80 / 0.25 | 1.66 / 0.72 | 1.91 / 0.32 | 1.58 / 0.32 |
+| nasvio_out/latency | OXTS | 2.50 / 0.69 | 1.56 / 0.00 | 1.72 / 0.69 | 1.71 / 0.18 | 1.43 / 0.18 |
+| nasvio_out/latency | SuMa | 2.50 / 0.72 | 1.72 / 0.25 | 1.68 / 0.72 | 1.82 / 0.32 | 1.54 / 0.32 |
+
+### KITTI test, variant C5b
+| model | reference | network | gyro + net t | hand-chosen (net dir + accel len) | **gate v3** |
+|---|---|---|---|---|---|
+| vsvio/policy | OXTS | 2.35 | 1.81 | 1.38 | **1.27** |
+| vsvio/policy | SuMa | 2.35 | 1.83 | 1.41 | **1.30** |
+| vsvio/fullvision | OXTS | 3.88 | 2.12 | 1.69 | **1.59** |
+| vsvio/fullvision | SuMa | 3.88 | 2.20 | 1.77 | **1.68** |
+| ulvio/ulvio_out | OXTS | 3.52 | 2.17 | 1.82 | **1.74** |
+| ulvio/ulvio_out | SuMa | 3.62 | 2.33 | 1.91 | **1.84** |
+| nasvio_out/flops | OXTS | 2.58 | 1.79 | 1.47 | **1.42** |
+| nasvio_out/flops | SuMa | 2.58 | 1.91 | 1.58 | **1.54** |
+| nasvio_out/latency | OXTS | 2.50 | 1.71 | 1.43 | **1.38** |
+| nasvio_out/latency | SuMa | 2.50 | 1.82 | 1.54 | **1.50** |
+
+## 08 (in every released model's training split), network only, OXTS
+
+| model | t_rel % | r_rel |
+|---|---|---|
+| ulvio/ulvio_out | 3.36 | 1.40 |
+| nasvio_out/flops | 1.37 | 0.52 |
+| nasvio_out/latency | 1.53 | 0.57 |

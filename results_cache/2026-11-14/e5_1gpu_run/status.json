@@ -1,0 +1,49 @@
+{
+  "seed": 0,
+  "smoke": false,
+  "gpu_ids": "0",
+  "commit": "27b06b38dcf07a015fba22038050113462387e7d",
+  "budget_h": 11.0,
+  "sessions": [
+    {
+      "n": 1,
+      "resume_from": null,
+      "start": 1794470609.970989,
+      "stopped_before_epoch": 17,
+      "end": 1794507818.2985828,
+      "rc": 0
+    },
+    {
+      "n": 2,
+      "resume_from": "/kaggle/input/notebooks/nadaelmadah/vsvio-e5-1gpu-s0-c1/e5/resume.pth",
+      "start": 1794508346.0868185,
+      "stopped_before_epoch": 38,
+      "end": 1794546059.2704952,
+      "rc": 0
+    },
+    {
+      "n": 3,
+      "resume_from": "/kaggle/input/datasets/nadanasserelmadah/vsvio-e5-1gpu-s0-resume/resume.pth",
+      "start": 1794562837.0021198,
+      "stopped_before_epoch": 57,
+      "end": 1794601039.5771348,
+      "rc": 0
+    },
+    {
+      "n": 4,
+      "resume_from": "/kaggle/input/notebooks/nadanasserelmadah/vsvio-e5-1gpu-s0-c3/e5/resume.pth",
+      "start": 1794603856.3713398,
+      "stopped_before_epoch": 81,
+      "end": 1794642318.3200104,
+      "rc": 0
+    },
+    {
+      "n": 5,
+      "resume_from": "/kaggle/input/datasets/sallyhaggag/vsvio-e5-1gpu-s0-resume/resume.pth",
+      "start": 1794648441.987994,
+      "rc": 0,
+      "end": 1794683632.8007674
+    }
+  ],
+  "done": true
+}

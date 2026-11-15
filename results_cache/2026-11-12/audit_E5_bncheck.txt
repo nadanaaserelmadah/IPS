@@ -1,0 +1,71 @@
+# Audit E5 BatchNorm check (2026-11-12): kernel hagagovic/vsvio-e5-bn-recal (scripts/kaggle_kernels/e5_bncheck), report scripts/audit/e5_bncheck_report.py
+
+## BatchNorm check: statistics re-estimated on the clean training split, batch 16, one GPU (3 gumbel seeds)
+
+### VS-VIO's own metric (t_rel %, mean of 05/07/10; mean ± SD over gumbel seeds) and forward scale
+
+| model | variant | 05/07/10 | 08 | forward scale 05/07/10 (est / GT) | visual usage % |
+|---|---|---|---|---|---|
+| s0_best08 | asis | 3.51 ± 0.08 | 4.10 | 1.058 | 27 |
+| s0_best08 | recal | 3.80 ± 0.04 | 4.72 | 1.068 | 27 |
+| s1_best08 | asis | 6.98 ± 0.22 | 5.38 | 1.062 | 24 |
+| s1_best08 | recal | 6.46 ± 0.14 | 6.91 | 1.070 | 25 |
+| s2_best08 | asis | 4.84 ± 0.11 | 4.79 | 1.067 | 29 |
+| s2_best08 | recal | 5.34 ± 0.12 | 5.35 | 1.076 | 26 |
+| released | asis | 2.39 ± 0.03 | 2.15 | 1.019 | 21 |
+| released | recal | 2.84 ± 0.04 | 1.82 | 1.024 | 18 |
+
+### Scored like every audit model (OXTS, mean over gumbel seeds)
+
+| model | variant | network | gyro rot + net t | + accel length | gate v3 |
+|---|---|---|---|---|---|
+| s0_best08 | asis | 3.51 | 3.47 | 2.67 | 2.57 |
+| s0_best08 | recal | 3.81 | 3.82 | 2.86 | 2.75 |
+| s1_best08 | asis | 6.98 | 3.92 | 2.99 | 2.91 |
+| s1_best08 | recal | 6.46 | 4.23 | 3.17 | 3.09 |
+| s2_best08 | asis | 4.84 | 3.92 | 2.91 | 2.84 |
+| s2_best08 | recal | 5.34 | 4.34 | 3.14 | 3.08 |
+| released | asis | 2.39 | 1.86 | 1.42 | 1.32 |
+| released | recal | 2.84 | 2.12 | 1.63 | 1.55 |
+
+### How far the saved statistics were from the re-estimated ones (mean over layers)
+
+| model | image + policy BN: mean shift in SD | IMU encoder BN (BatchNorm1d 64/128/256): mean shift in SD |
+|---|---|---|
+| s0_best08 | 0.02 | 0.01 |
+| s1_best08 | 0.02 | 0.01 |
+| s2_best08 | 0.01 | 0.01 |
+| released | 0.03 | 0.01 |
+
+(The kernel's per-layer variance ratio is not shown: channels with zero variance after ReLU dominate it.)
+
+# Kernel log
+[   0.4 min] torch 2.11.0+cu130, gpus 2, using cuda:0 only; N_BATCHES 150, K 3
+[   0.6 min] loaded s0_best08 (best08_s0.pth), 14 BatchNorm layers
+[   0.7 min] loaded s1_best08 (best08_s1.pth), 14 BatchNorm layers
+[   0.9 min] loaded s2_best08 (best08_s2.pth), 14 BatchNorm layers
+[   1.8 min] loaded released (vf_512_if_256_3e-05.model), 14 BatchNorm layers
+[   2.4 min] BN pass: batch 0/150
+[   4.1 min] BN pass: batch 25/150
+[   5.7 min] BN pass: batch 50/150
+[   7.2 min] BN pass: batch 75/150
+[   8.6 min] BN pass: batch 100/150
+[  10.0 min] BN pass: batch 125/150
+[  11.4 min] BN re-estimation: 150 batches of 16 in 9.5 min
+[  11.4 min] s0_best08: BN shift (saved vs re-estimated), mean |dmean|/sd per layer: 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.01 0.00 0.00 0.18 0.06
+[  11.4 min] s1_best08: BN shift (saved vs re-estimated), mean |dmean|/sd per layer: 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.01 0.01 0.01 0.16 0.08
+[  11.4 min] s2_best08: BN shift (saved vs re-estimated), mean |dmean|/sd per layer: 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.02 0.01 0.01 0.07 0.04
+[  11.4 min] released: BN shift (saved vs re-estimated), mean |dmean|/sd per layer: 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.03 0.00 0.00 0.22 0.11
+[  15.7 min] k 0 seq 08 (4.3 min): s0_best08/asis 4.15 (x1.037) | s0_best08/recal 4.70 (x1.043) | s1_best08/asis 5.53 (x1.042) | s1_best08/recal 6.81 (x1.048) | s2_best08/asis 4.66 (x1.044) | s2_best08/recal 5.30 (x1.051) | released/asis 2.13 (x1.002) | released/recal 1.84 (x1.006)
+[  18.6 min] k 0 seq 05 (2.9 min): s0_best08/asis 3.04 (x1.035) | s0_best08/recal 3.74 (x1.044) | s1_best08/asis 7.60 (x1.049) | s1_best08/recal 8.31 (x1.055) | s2_best08/asis 5.70 (x1.052) | s2_best08/recal 5.30 (x1.060) | released/asis 1.99 (x1.017) | released/recal 3.06 (x1.021)
+[  19.8 min] k 0 seq 07 (1.2 min): s0_best08/asis 3.79 (x1.072) | s0_best08/recal 3.98 (x1.089) | s1_best08/asis 5.80 (x1.074) | s1_best08/recal 5.50 (x1.084) | s2_best08/asis 4.23 (x1.083) | s2_best08/recal 5.65 (x1.091) | released/asis 1.80 (x1.016) | released/recal 2.74 (x1.021)
+[  21.1 min] k 0 seq 10 (1.3 min): s0_best08/asis 3.44 (x1.060) | s0_best08/recal 3.56 (x1.071) | s1_best08/asis 8.29 (x1.061) | s1_best08/recal 5.78 (x1.070) | s2_best08/asis 4.90 (x1.067) | s2_best08/recal 5.37 (x1.077) | released/asis 3.48 (x1.023) | released/recal 2.59 (x1.027)
+[  25.3 min] k 1 seq 08 (4.3 min): s0_best08/asis 4.05 (x1.037) | s0_best08/recal 4.67 (x1.042) | s1_best08/asis 5.24 (x1.043) | s1_best08/recal 7.26 (x1.046) | s2_best08/asis 4.76 (x1.043) | s2_best08/recal 5.40 (x1.050) | released/asis 2.19 (x1.002) | released/recal 1.82 (x1.007)
+[  28.2 min] k 1 seq 05 (2.9 min): s0_best08/asis 3.34 (x1.037) | s0_best08/recal 3.77 (x1.044) | s1_best08/asis 6.98 (x1.049) | s1_best08/recal 8.15 (x1.055) | s2_best08/asis 5.11 (x1.052) | s2_best08/recal 5.14 (x1.060) | released/asis 2.02 (x1.017) | released/recal 3.26 (x1.024)
+[  29.4 min] k 1 seq 07 (1.2 min): s0_best08/asis 3.75 (x1.077) | s0_best08/recal 4.14 (x1.088) | s1_best08/asis 5.37 (x1.074) | s1_best08/recal 5.52 (x1.085) | s2_best08/asis 4.14 (x1.079) | s2_best08/recal 5.71 (x1.094) | released/asis 1.67 (x1.013) | released/recal 2.74 (x1.020)
+[  30.7 min] k 1 seq 10 (1.3 min): s0_best08/asis 3.49 (x1.064) | s0_best08/recal 3.54 (x1.070) | s1_best08/asis 8.36 (x1.062) | s1_best08/recal 5.95 (x1.070) | s2_best08/asis 4.96 (x1.066) | s2_best08/recal 5.26 (x1.076) | released/asis 3.42 (x1.025) | released/recal 2.55 (x1.029)
+[  34.9 min] k 2 seq 08 (4.3 min): s0_best08/asis 4.10 (x1.037) | s0_best08/recal 4.78 (x1.044) | s1_best08/asis 5.36 (x1.043) | s1_best08/recal 6.66 (x1.046) | s2_best08/asis 4.95 (x1.043) | s2_best08/recal 5.36 (x1.049) | released/asis 2.13 (x1.002) | released/recal 1.81 (x1.006)
+[  37.8 min] k 2 seq 05 (2.9 min): s0_best08/asis 3.30 (x1.036) | s0_best08/recal 3.69 (x1.042) | s1_best08/asis 6.97 (x1.048) | s1_best08/recal 7.98 (x1.056) | s2_best08/asis 5.21 (x1.053) | s2_best08/recal 4.90 (x1.059) | released/asis 1.78 (x1.016) | released/recal 3.12 (x1.023)
+[  39.0 min] k 2 seq 07 (1.2 min): s0_best08/asis 3.88 (x1.080) | s0_best08/recal 3.83 (x1.087) | s1_best08/asis 5.57 (x1.077) | s1_best08/recal 5.21 (x1.084) | s2_best08/asis 4.19 (x1.079) | s2_best08/recal 5.59 (x1.093) | released/asis 1.96 (x1.015) | released/recal 2.77 (x1.020)
+[  40.3 min] k 2 seq 10 (1.3 min): s0_best08/asis 3.55 (x1.063) | s0_best08/recal 4.00 (x1.075) | s1_best08/asis 7.89 (x1.062) | s1_best08/recal 5.70 (x1.068) | s2_best08/asis 5.17 (x1.068) | s2_best08/recal 5.12 (x1.077) | released/asis 3.42 (x1.025) | released/recal 2.75 (x1.032)
+[  40.3 min] done

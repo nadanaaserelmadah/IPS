@@ -1,0 +1,4 @@
+{"id": "amrelmadah/ulvio-kitti-infer", "title": "ulvio-kitti-infer", "code_file": "ulvio_infer.py", "language": "python", "kernel_type": "script",
+ "is_private": true, "enable_gpu": true, "enable_tpu": false, "enable_internet": true,
+ "dataset_sources": ["hocop1/kitti-odometry"],
+ "kernel_sources": [], "competition_sources": [], "model_sources": [], "machine_shape": "NvidiaTeslaT4"}

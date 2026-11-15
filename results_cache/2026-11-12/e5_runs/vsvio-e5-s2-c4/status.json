@@ -1,0 +1,39 @@
+{
+  "seed": 2,
+  "smoke": false,
+  "commit": "27b06b38dcf07a015fba22038050113462387e7d",
+  "budget_h": 11.0,
+  "sessions": [
+    {
+      "n": 1,
+      "resume_from": null,
+      "start": 1794333794.7046843,
+      "stopped_before_epoch": 37,
+      "end": 1794372713.5969043,
+      "rc": 0
+    },
+    {
+      "n": 2,
+      "resume_from": "/kaggle/input/notebooks/abeerelsamadony/vsvio-e5-s2/e5/resume.pth",
+      "start": 1794384399.4928532,
+      "stopped_before_epoch": 76,
+      "end": 1794423210.428622,
+      "rc": 0
+    },
+    {
+      "n": 3,
+      "resume_from": "/kaggle/input/datasets/norhanelmadah/vsvio-e5-s2-resume/resume.pth",
+      "start": 1794424849.3854852,
+      "rc": -9,
+      "end": 1794450631.1323214
+    },
+    {
+      "n": 4,
+      "resume_from": "/kaggle/input/datasets/hagagovic/vsvio-e5-s2-resume/resume.pth",
+      "start": 1794460945.055766,
+      "rc": 0,
+      "end": 1794462473.444517
+    }
+  ],
+  "done": true
+}
