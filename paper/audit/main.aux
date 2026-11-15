@@ -1,0 +1,84 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{Clark2017,Han2019,Yang2022,Kurt2024}
+\citation{Yang2022}
+\citation{Geiger2012,Geiger2013}
+\citation{Kurt2024}
+\citation{Ma2026,Wan2026}
+\citation{Geiger2012}
+\citation{Geiger2013}
+\citation{Behley2018}
+\@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{1}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {II}Benchmark and Evaluation}{1}{section.2}\protected@file@percent }
+\newlabel{sec:bench}{{II}{1}{Benchmark and Evaluation}{section.2}{}}
+\citation{Cimarelli2022}
+\citation{ElMadah2026gate}
+\citation{Yang2022}
+\citation{Chen2023NASVIO}
+\citation{Park2024ULVIO}
+\citation{Kurt2024}
+\citation{DAPPose}
+\citation{TORVIO2026}
+\citation{Gu2026}
+\citation{ElMadah2026gate}
+\citation{RWKVVIO2025}
+\citation{Han2019}
+\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Released learned-VIO code on KITTI. ``Same .mat'': \texttt  {imus/05.mat} byte-identical (MD5) to VS-VIO's. Training sets and validation sets as in the released training scripts.}}{2}{table.1}\protected@file@percent }
+\newlabel{tab:repos}{{I}{2}{Released learned-VIO code on KITTI. ``Same .mat'': \texttt {imus/05.mat} byte-identical (MD5) to VS-VIO's. Training sets and validation sets as in the released training scripts}{table.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {III}The Inertial Data}{2}{section.3}\protected@file@percent }
+\newlabel{sec:data}{{III}{2}{The Inertial Data}{section.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces One KITTI frame pair to scale. The inertial files imply $10\times 10$\,ms; the images are $\approx $104\,ms apart, and the inertial samples lag them by $\approx $60\,ms. (b)~Rotation over the true interval and lag, as used for gyroscope substitution.}}{2}{figure.1}\protected@file@percent }
+\newlabel{fig:timing}{{1}{2}{One KITTI frame pair to scale. The inertial files imply $10\times 10$\,ms; the images are $\approx $104\,ms apart, and the inertial samples lag them by $\approx $60\,ms. (b)~Rotation over the true interval and lag, as used for gyroscope substitution}{figure.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces Lag-corrected inertial files, VIFT retrained under the clean protocol, six paired seeds. $t_{\mathrm  {rel}}$ (\%), 05/07/10, OXTS.}}{2}{table.2}\protected@file@percent }
+\newlabel{tab:e4}{{II}{2}{Lag-corrected inertial files, VIFT retrained under the clean protocol, six paired seeds. $\trel $ (\%), 05/07/10, OXTS}{table.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {IV}The Protocol}{2}{section.4}\protected@file@percent }
+\newlabel{sec:protocol}{{IV}{2}{The Protocol}{section.4}{}}
+\citation{Henderson2018,Bouthillier2021,Musgrave2020}
+\citation{ElMadah2026gate}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Five released configurations of three methods against six seeds of one method (VIFT, released and lag-corrected inertial files). Left: network output. Right: after gyroscope rotation, accelerometer step length and the frozen gate.}}{3}{figure.2}\protected@file@percent }
+\newlabel{fig:spread}{{2}{3}{Five released configurations of three methods against six seeds of one method (VIFT, released and lag-corrected inertial files). Left: network output. Right: after gyroscope rotation, accelerometer step length and the frozen gate}{figure.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {III}{\ignorespaces Spread between methods and between seeds, $t_{\mathrm  {rel}}$ (\%), 05/07/10, OXTS: min--max (range).}}{3}{table.3}\protected@file@percent }
+\newlabel{tab:spread}{{III}{3}{Spread between methods and between seeds, $\trel $ (\%), 05/07/10, OXTS: min--max (range)}{table.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {V}How Large Are the Differences?}{3}{section.5}\protected@file@percent }
+\newlabel{sec:variance}{{V}{3}{How Large Are the Differences?}{section.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {IV}{\ignorespaces VS-VIO retrained from its released code, 08 held out. $t_{\mathrm  {rel}}$ (\%), 05/07/10, OXTS; mean$\pm $SD over seeds 0/1/2 (two GPUs); one-GPU control: seed 0 at the authors' default.}}{3}{table.4}\protected@file@percent }
+\newlabel{tab:e5}{{IV}{3}{VS-VIO retrained from its released code, 08 held out. $\trel $ (\%), 05/07/10, OXTS; mean$\pm $SD over seeds 0/1/2 (two GPUs); one-GPU control: seed 0 at the authors' default}{table.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {VI}Retraining VS-VIO Under a Clean Protocol}{3}{section.6}\protected@file@percent }
+\newlabel{sec:e5}{{VI}{3}{Retraining VS-VIO Under a Clean Protocol}{section.6}{}}
+\citation{Park2024ULVIO,Chen2023NASVIO}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces VS-VIO retrained under the clean protocol, seeds 0--2. Left: test error of every evaluated epoch (VS-VIO's own metric), with the epoch picked on 08 (circle) and on the test sequences (diamond). Middle and right: the three epoch rules for the network and after sensor substitution; dashed line: released checkpoint.}}{4}{figure.3}\protected@file@percent }
+\newlabel{fig:e5}{{3}{4}{VS-VIO retrained under the clean protocol, seeds 0--2. Left: test error of every evaluated epoch (VS-VIO's own metric), with the epoch picked on 08 (circle) and on the test sequences (diamond). Middle and right: the three epoch rules for the network and after sensor substitution; dashed line: released checkpoint}{figure.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {V}{\ignorespaces Released checkpoints of three methods (all trained with 08); VS-VIO is one checkpoint run with its learned visual selection and with vision always on. $t_{\mathrm  {rel}}$ (\%), 05/07/10, OXTS ($r_{\mathrm  {rel}}$ in parentheses); last column against SuMa.}}{4}{table.5}\protected@file@percent }
+\newlabel{tab:diag}{{V}{4}{Released checkpoints of three methods (all trained with 08); VS-VIO is one checkpoint run with its learned visual selection and with vision always on. $\trel $ (\%), 05/07/10, OXTS ($\rrel $ in parentheses); last column against SuMa}{table.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {VII}What Each Model Gets Wrong}{4}{section.7}\protected@file@percent }
+\newlabel{sec:diag}{{VII}{4}{What Each Model Gets Wrong}{section.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {VIII}Recommendations}{4}{section.8}\protected@file@percent }
+\newlabel{sec:recs}{{VIII}{4}{Recommendations}{section.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {IX}Limitations}{4}{section.9}\protected@file@percent }
+\bibstyle{IEEEtran}
+\bibdata{refs}
+\bibcite{Clark2017}{1}
+\bibcite{Han2019}{2}
+\bibcite{Yang2022}{3}
+\bibcite{Kurt2024}{4}
+\bibcite{Geiger2012}{5}
+\bibcite{Geiger2013}{6}
+\bibcite{Ma2026}{7}
+\bibcite{Wan2026}{8}
+\bibcite{Behley2018}{9}
+\bibcite{Cimarelli2022}{10}
+\bibcite{ElMadah2026gate}{11}
+\bibcite{Chen2023NASVIO}{12}
+\bibcite{Park2024ULVIO}{13}
+\bibcite{DAPPose}{14}
+\bibcite{TORVIO2026}{15}
+\bibcite{Gu2026}{16}
+\bibcite{RWKVVIO2025}{17}
+\bibcite{Henderson2018}{18}
+\bibcite{Bouthillier2021}{19}
+\bibcite{Musgrave2020}{20}
+\@writefile{toc}{\contentsline {section}{\numberline {X}Conclusion}{5}{section.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{References}{5}{section*.1}\protected@file@percent }
+\gdef \@abspage@last{5}

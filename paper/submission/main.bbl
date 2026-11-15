@@ -174,6 +174,16 @@ J.~Behley and C.~Stachniss, ``Efficient surfel-based {SLAM} using {3D} laser
   range data in urban environments,'' in \emph{Proc. Robot.: Sci. Syst. (RSS)},
   2018.
 
+\bibitem{Park2024ULVIO}
+J.~Park, S.~Y. Chun, and M.~Seok, ``{UL-VIO}: Ultra-lightweight visual-inertial
+  odometry with noise robust test-time adaptation,'' in \emph{Proc. Eur. Conf.
+  Comput. Vis. (ECCV)}, 2024.
+
+\bibitem{Chen2023NASVIO}
+Y.~Chen, M.~Yang, and H.-S. Kim, ``Search for efficient deep visual-inertial
+  odometry through neural architecture search,'' in \emph{Proc. IEEE Int. Conf.
+  Acoust., Speech Signal Process. (ICASSP)}, 2023.
+
 \bibitem{Delmerico2018}
 J.~Delmerico and D.~Scaramuzza, ``A benchmark comparison of monocular
   visual-inertial odometry algorithms for flying robots,'' in \emph{Proc. IEEE

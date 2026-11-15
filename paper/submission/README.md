@@ -1,6 +1,6 @@
 # Short paper (draft; venue not decided)
 
-`main.tex` is the short IEEE two-column version (currently 6 pages including references). It does not name a venue; that is decided after talking with the supervisors. `refs.bib` holds the bibliography and `figures/` the figures. `IEEEtran.cls` and `IEEEtran.bst` are local copies from CTAN, because the system TeX (BasicTeX) does not include them.
+`main.tex` is the short IEEE two-column version (currently 8 pages including references: the 6-page short version plus the PI-VIFT description and figure, the accelerometer-alignment equations, the design history of the gate with a sensitivity table, two more limitations, and the cross-model results on the released UL-VIO and NASVIO weights; the numbers come from `results_cache/2026-11-09/audit_E1_E3_released_models.txt`, the same models are the subject of the separate audit paper in `paper/audit/`). It does not name a venue; that is decided after talking with the supervisors. `refs.bib` holds the bibliography and `figures/` the figures. `IEEEtran.cls` and `IEEEtran.bst` are local copies from CTAN, because the system TeX (BasicTeX) does not include them.
 
 Build:
 
