@@ -1,0 +1,48 @@
+# Why 08 matters (2026-11-18). scripts/audit/seq08_stats.py on KITTI odometry poses (data_odometry_poses.zip) and the released imus/*.mat
+
+## Per sequence (KITTI odometry ground truth; inertial statistics from imus/*.mat)
+
+| seq | role | day | frames | km | speed m/s: mean (p90) | stopped % | |yaw rate| deg/s: mean (p90) | turning % (>5 deg/s) | vertical m/s mean | accel-norm SD | gyro-norm mean deg/s |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 00 | train | 2011_10_03 | 4541 | 3.72 | 7.9 (11.3) | 0.4 | 6.24 (24.4) | 27.7 | 0.23 | 0.49 | 7.21 |
+| 01 | train | 2011_10_03 | 1101 | 2.45 | 21.5 (25.9) | 0.0 | 3.84 (15.7) | 20.4 | 0.65 | 0.46 | 4.24 |
+| 02 | train | 2011_10_03 | 4661 | 5.07 | 10.5 (12.9) | 0.0 | 5.41 (17.0) | 30.2 | 0.45 | 0.46 | 6.22 |
+| 04 | train | 2011_09_30 | 271 | 0.39 | 14.1 (15.5) | 0.0 | 0.29 (0.6) | 0.0 | 0.28 | 0.22 | 1.10 |
+| 06 | train | 2011_09_30 | 1101 | 1.23 | 10.8 (13.8) | 0.0 | 3.88 (14.1) | 12.1 | 0.22 | 0.31 | 4.35 |
+| 09 | train | 2011_09_30 | 1591 | 1.71 | 10.3 (14.0) | 0.0 | 6.15 (14.8) | 43.5 | 0.46 | 0.36 | 6.63 |
+| 08 | train (08) | 2011_09_30 | 4071 | 3.22 | 7.6 (11.0) | 0.6 | 5.26 (19.5) | 26.6 | 0.35 | 0.39 | 6.00 |
+| 05 | test | 2011_09_30 | 2761 | 2.21 | 7.7 (10.8) | 2.7 | 4.32 (15.7) | 22.4 | 0.21 | 0.34 | 4.96 |
+| 07 | test | 2011_09_30 | 1101 | 0.69 | 6.1 (9.9) | 7.1 | 5.97 (22.6) | 29.5 | 0.11 | 0.32 | 6.50 |
+| 10 | test | 2011_09_30 | 1201 | 0.92 | 7.4 (10.5) | 1.9 | 4.59 (12.1) | 26.6 | 0.39 | 0.47 | 5.42 |
+
+## Share of the training frames by recording day
+
+| training set | frames | from 2011_09_30 (the test day) | share | of which 08 |
+|---|---|---|---|---|
+| without 08 | 13266 | 2963 | 22 % | – |
+| with 08 (authors') | 17337 | 7034 | 41 % | 58 % |
+
+## Coverage of the test frames' (speed, yaw rate) distribution
+
+| training set | Jensen-Shannon divergence to test | test frames in bins with no training frame |
+|---|---|---|
+| without 08 | 0.192 | 2.57 % |
+| with 08 | 0.149 | 0.63 % |
+| 08 alone | 0.095 | 3.30 % |
+| 2011_09_30 training drives without 08 (04, 06, 09) | 0.316 | 24.72 % |
+| test 05 alone: without 08 / with 08 | 0.231 / 0.185 | |
+| test 07 alone: without 08 / with 08 | 0.293 / 0.255 | |
+| test 10 alone: without 08 / with 08 | 0.272 / 0.248 | |
+
+## Forward-scale error by true speed (scripts/audit/scale_by_speed.py), VS-VIO seed 0, one GPU, KITTI 05/07/10
+
+| model | 0-3 m/s | 3-6 m/s | 6-9 m/s | 9-12 m/s | 12-30 m/s | all |
+|---|---|---|---|---|---|---|
+| clean, best on 08 (ep 83) | 2.145 | 1.114 | 1.038 | 1.019 | 0.960 | 1.059 |
+| clean, best on test (ep 88) | 2.145 | 1.108 | 1.036 | 1.017 | 0.963 | 1.057 |
+| with 08, best on test (ep 85) | 1.281 | 1.037 | 1.014 | 1.004 | 0.991 | 1.017 |
+| with 08, last (ep 99) | 1.290 | 1.049 | 1.016 | 1.003 | 0.985 | 1.019 |
+| released checkpoint | 1.335 | 1.027 | 1.014 | 1.005 | 1.008 | 1.018 |
+| frames | 558 | 962 | 1809 | 1647 | 84 | 5060 |
+
+Cells: summed estimated step length / summed true step length (1.000 = correct scale).

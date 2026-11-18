@@ -60,56 +60,76 @@ L.~Ma, L.~Zhang, C.~Huang, T.~Zhang, and X.~Chu, ``{MixVIO}: Selective
 Z.~Wan and L.~Zhao, ``{DB-VIO}: Dual-branch visual inertial odometry with
   enhanced visual-inertial representation,'' arXiv:2607.22123, 2026.
 
-\bibitem{Behley2018}
-J.~Behley and C.~Stachniss, ``Efficient surfel-based {SLAM} using {3D} laser
-  range data in urban environments,'' in \emph{Proc. Robot.: Sci. Syst. (RSS)},
-  2018.
-
-\bibitem{Cimarelli2022}
-C.~Cimarelli, H.~Bavle, J.~L. Sanchez-Lopez, and H.~Voos, ``{RAUM-VO}:
-  Rotational adjusted unsupervised monocular visual odometry,'' \emph{Sensors},
-  vol.~22, no.~7, p. 2651, 2022.
-
-\bibitem{ElMadah2026gate}
-N.~{El Madah}, ``Measure what is observable, learn the rest:
-  Observability-gated fusion for learned visual--inertial odometry,'' 2026,
-  companion paper, in preparation.
+\bibitem{Almalioglu2022}
+Y.~Almalioglu, M.~Turan, M.~R.~U. Saputra, P.~P.~B. de~Gusm\~ao, A.~Markham,
+  and N.~Trigoni, ``{SelfVIO}: Self-supervised deep monocular visual-inertial
+  odometry and depth estimation,'' \emph{Neural Netw.}, vol. 150, pp. 119--136,
+  2022.
 
 \bibitem{Chen2023NASVIO}
 Y.~Chen, M.~Yang, and H.-S. Kim, ``Search for efficient deep visual-inertial
   odometry through neural architecture search,'' in \emph{Proc. IEEE Int. Conf.
-  Acoustics, Speech and Signal Processing (ICASSP)}, 2023, code:
-  github.com/unchenyu/NASVIO. TODO verify author list and pages.
+  Acoustics, Speech and Signal Processing (ICASSP)}, 2023, pp. 1--5.
 
 \bibitem{Park2024ULVIO}
 J.~Park, S.~Y. Chun, and M.~Seok, ``{UL-VIO}: Ultra-lightweight visual-inertial
   odometry with noise robust test-time adaptation,'' in \emph{Proc. European
-  Conf. Computer Vision (ECCV)}, 2024, arXiv:2409.13106; code:
-  github.com/jp4327/ulvio. TODO verify author list.
+  Conf. Computer Vision (ECCV)}, ser. LNCS, 2024, pp. 415--432.
+
+\bibitem{RWKVVIO2025}
+J.~Yang, X.~Xu, Z.~Xu, Z.~Wu, and W.~Chu, ``{RWKV-VIO}: An efficient and
+  low-drift visual--inertial odometry using an end-to-end deep network,''
+  \emph{Sensors}, vol.~25, no.~18, p. 5737, 2025.
+
+\bibitem{Qin2026}
+W.~Qin, X.~Kong, S.~Zhang, H.~Xu, and X.~Dong, ``{Diff-VIO}: A diffusion
+  model-based pose optimizer for visual inertial odometry,'' in \emph{Proc.
+  IEEE Int. Conf. Robot. Autom. (ICRA)}, 2026, pp. 5430--5437.
 
 \bibitem{DAPPose}
 J.~Lin, Y.~Qin, J.~Yuan, W.~Zhang, and S.~Gao, ``{DAP-Pose}: Deep temporal
   alignment and physics-aware cross-modal sensor fusion for robust pose
   estimation,'' arXiv:2607.23755, 2026.
 
+\bibitem{Delmerico2018}
+J.~Delmerico and D.~Scaramuzza, ``A benchmark comparison of monocular
+  visual-inertial odometry algorithms for flying robots,'' in \emph{Proc. IEEE
+  Int. Conf. Robot. Autom. (ICRA)}, 2018.
+
+\bibitem{Zhang2018traj}
+Z.~Zhang and D.~Scaramuzza, ``A tutorial on quantitative trajectory evaluation
+  for visual(-inertial) odometry,'' in \emph{Proc. IEEE/RSJ Int. Conf.
+  Intelligent Robots and Systems (IROS)}, 2018.
+
+\bibitem{Furgale2013}
+P.~Furgale, J.~Rehder, and R.~Siegwart, ``Unified temporal and spatial
+  calibration for multi-sensor systems,'' in \emph{Proc. IEEE/RSJ Int. Conf.
+  Intell. Robots Syst. (IROS)}, 2013.
+
+\bibitem{Qin2018b}
+T.~Qin and S.~Shen, ``Online temporal calibration for monocular visual-inertial
+  systems,'' in \emph{Proc. IEEE/RSJ Int. Conf. Intell. Robots Syst. (IROS)},
+  2018.
+
 \bibitem{TORVIO2026}
-{TODO authors}, ``{TOR-VIO}: Time-offset-robust visual-inertial odometry (todo
-  exact title),'' in \emph{Proc. Int. Joint Conf. Neural Networks (IJCNN)},
-  2026, not read yet (paywalled).
+G.~Luo, D.~Zhu, L.~Wang, Y.~Liu, and J.~Li, ``{TOR-VIO}: Time-offset-robust
+  self-supervised visual--inertial odometry,'' in \emph{Proc. Int. Joint Conf.
+  Neural Networks (IJCNN)}, 2026, pp. 1--8.
 
 \bibitem{Gu2026}
-{TODO: Gu et al., full author list}, ``Todo: unified benchmark of learned
-  visual-inertial odometry,'' \emph{IEEE Sensors Journal}, 2026, not read yet
-  (paywalled).
-
-\bibitem{RWKVVIO2025}
-{TODO authors}, ``{RWKV-VIO} (todo full title),'' \emph{Sensors}, 2025, code:
-  github.com/kamuyix/RWKV-VIO.
+F.~Gu, K.~Ji, J.~Dou, H.~Zhao, Y.~Li, and X.~Long, ``Unifying geometric- and
+  learning-based visual--inertial odometry: A comprehensive evaluation and
+  comparative study,'' \emph{IEEE Sensors Journal}, vol.~26, no.~7, pp.
+  11\,399--11\,412, 2026.
 
 \bibitem{Henderson2018}
 P.~Henderson, R.~Islam, P.~Bachman, J.~Pineau, D.~Precup, and D.~Meger, ``Deep
   reinforcement learning that matters,'' in \emph{Proc. AAAI Conf. Artificial
   Intelligence}, 2018.
+
+\bibitem{Musgrave2020}
+K.~Musgrave, S.~Belongie, and S.-N. Lim, ``A metric learning reality check,''
+  in \emph{Proc. European Conf. Computer Vision (ECCV)}, 2020.
 
 \bibitem{Bouthillier2021}
 X.~Bouthillier, P.~Delaunay, M.~Bronzi, A.~Trofimov, B.~Nichyporuk, J.~Szeto,
@@ -118,8 +138,19 @@ X.~Bouthillier, P.~Delaunay, M.~Bronzi, A.~Trofimov, B.~Nichyporuk, J.~Szeto,
   machine learning benchmarks,'' in \emph{Proc. Machine Learning and Systems
   (MLSys)}, 2021.
 
-\bibitem{Musgrave2020}
-K.~Musgrave, S.~Belongie, and S.-N. Lim, ``A metric learning reality check,''
-  in \emph{Proc. European Conf. Computer Vision (ECCV)}, 2020.
+\bibitem{Cimarelli2022}
+C.~Cimarelli, H.~Bavle, J.~L. Sanchez-Lopez, and H.~Voos, ``{RAUM-VO}:
+  Rotational adjusted unsupervised monocular visual odometry,'' \emph{Sensors},
+  vol.~22, no.~7, p. 2651, 2022.
+
+\bibitem{Behley2018}
+J.~Behley and C.~Stachniss, ``Efficient surfel-based {SLAM} using {3D} laser
+  range data in urban environments,'' in \emph{Proc. Robot.: Sci. Syst. (RSS)},
+  2018.
+
+\bibitem{ElMadah2026gate}
+N.~{El Madah}, ``Measure what is observable, learn the rest:
+  Observability-gated fusion for learned visual--inertial odometry,'' 2026,
+  companion paper, in preparation.
 
 \end{thebibliography}

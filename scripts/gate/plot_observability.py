@@ -113,7 +113,7 @@ def main():
     kd, kg, npz, gyro, raw, ed, eg, out = (Path(a) for a in sys.argv[1:9])
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(11, 4.0), facecolor=SURFACE)
     edges = np.geomspace(0.5, 60, 16)
-    for (x, y), col, mk, lab in ((kitti_direction(kd, kg), BLUE, "o", "KITTI (VIFT)"),
+    for (x, y), col, mk, lab in ((kitti_direction(kd, kg), BLUE, "o", "KITTI (base)"),
                                  (euroc_direction(ed, eg), ORANGE, "s", "EuRoC (PI-VIFT)")):
         c, m, q1, q3 = binned(x, y, edges)
         a1.fill_between(c, q1, q3, color=col, alpha=0.18, lw=0)
@@ -132,7 +132,7 @@ def main():
     x, y = kitti_length(kd, npz, gyro, raw)
     c, m, q1, q3 = binned(x, y, np.geomspace(max(x.min(), 1.0), x.max() * 1.01, 12))
     a2.fill_between(c, q1, q3, color=BLUE, alpha=0.18, lw=0)
-    a2.plot(c, m, color=BLUE, lw=2, marker="o", ms=5, label="KITTI (VIFT)")
+    a2.plot(c, m, color=BLUE, lw=2, marker="o", ms=5, label="KITTI (base)")
     a2.axvline(isk.COND_MAX, color=MUTED, lw=0.9, ls=(0, (4, 3)))
     a2.set_xscale("log")
     a2.text(isk.COND_MAX, a2.get_ylim()[1], "gate threshold ", fontsize=8, color=MUTED, va="top", ha="right")

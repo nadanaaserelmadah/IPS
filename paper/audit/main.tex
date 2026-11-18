@@ -44,7 +44,7 @@ Visual--inertial SLAM, deep learning methods, performance evaluation and benchma
 
 \IEEEPARstart{L}{earned} VIO regresses the relative pose between two camera frames from images and inertial measurements with a neural network \cite{Clark2017,Han2019,Yang2022,Kurt2024}. Since VS-VIO \cite{Yang2022}, most methods are compared on the KITTI odometry benchmark \cite{Geiger2012,Geiger2013} with the same data pipeline: training on sequences 00--09 except 03, 05 and 07, testing on 05, 07 and 10, and reporting the mean relative translation error $\trel$ and rotation error $\rrel$ of the test sequences. Reported numbers have fallen from 2.35\% for the released VS-VIO checkpoint to 1.96\% for VIFT \cite{Kurt2024} and 1.69--1.77\% for later work \cite{Ma2026,Wan2026}, so successive improvements are a few tenths of a percent.
 
-Whether such differences reflect better models depends on three things that published tables do not show: whether the inputs are what the methods assume, whether the test sequences influence training, and how much a single method varies with its random seed. We audit all three on four methods whose code is public and on retrained models, and add a component-wise diagnosis that says which part of the pose each model gets wrong.
+Whether such differences reflect better models depends on three things that published tables do not show: whether the inputs are what the methods assume, whether the test sequences influence training, and how much a single method varies with its random seed. We audit all three on five methods whose code is public and on retrained models, and add a component-wise diagnosis that says which part of the pose each model gets wrong.
 
 \textbf{Contributions.}
 \begin{enumerate}
@@ -55,6 +55,15 @@ Whether such differences reflect better models depends on three things that publ
 \item Corrected inertial files, a clean protocol and re-scoring scripts (Sec.~\ref{sec:recs}).
 \end{enumerate}
 Every number in this paper comes from public code and data and from Kaggle kernels that we release; none of the audited models was trained by us unless we say so.
+
+\section{Related Work}
+\label{sec:related}
+
+\textbf{Learned VIO on KITTI.} End-to-end models regress the relative pose from images and inertial windows: VINet \cite{Clark2017}, DeepVIO \cite{Han2019}, SelfVIO \cite{Almalioglu2022} and VS-VIO \cite{Yang2022}, which adds a learned policy that switches the visual encoder off. NASVIO \cite{Chen2023NASVIO} searches VS-VIO-style architectures under compute budgets, UL-VIO \cite{Park2024ULVIO} compresses them and adds test-time adaptation, and VIFT \cite{Kurt2024} trains a causal transformer on the frozen latents of VS-VIO's encoders. Recent work changes the fusion or the output stage: RWKV-VIO \cite{RWKVVIO2025}, DB-VIO with a gyroscope attitude prior \cite{Wan2026}, MixVIO \cite{Ma2026}, Diff-VIO \cite{Qin2026} and DAP-Pose \cite{DAPPose}. Since VS-VIO most of these inherit its data pipeline and evaluation (Table~\ref{tab:repos}), so they share whatever that pipeline contains. They are compared by a single $\trel$ per method; VS-VIO is the only paper we found that reports a spread (2.40$\pm$0.064\% over ten seeds, without saying whether the seeds are training or test-time seeds).
+
+\textbf{Evaluation of odometry.} Classical VIO has benchmark comparisons that run every method under one protocol \cite{Delmerico2018} and standard practice for trajectory metrics \cite{Zhang2018traj}. Camera--IMU time offsets are estimated offline \cite{Furgale2013} or online \cite{Qin2018b} in classical systems, and TOR-VIO makes self-supervised learned VIO robust to time offsets \cite{TORVIO2026}; a comparative study evaluates geometric and learned VIO under one framework \cite{Gu2026}. \todo{position against \cite{TORVIO2026,Gu2026} once read.} We know of no audit of the shared KITTI data and of the training protocols behind published learned-VIO numbers.
+
+\textbf{Benchmark audits in machine learning.} Re-running published methods under one protocol has repeatedly shrunk reported gains: in deep reinforcement learning, seeds and implementation details change rankings \cite{Henderson2018}; in metric learning, a decade of improvements largely vanished under a fair protocol with held-out validation \cite{Musgrave2020}; and variance from seeds and data sampling is often larger than the differences reported between methods \cite{Bouthillier2021}. We apply this practice to learned VIO, where an additional resource exists: the sensors measure part of the pose. Replacing predicted components by ground truth has been used to diagnose an unsupervised visual-odometry network \cite{Cimarelli2022}; we extend it to learned VIO, to sensor measurements in place of ground truth, and to several released models.
 
 \section{Benchmark and Evaluation}
 \label{sec:bench}
@@ -83,8 +92,9 @@ VS-VIO \cite{Yang2022} & reference & yes & 05/07/10 & yes \\
 NASVIO \cite{Chen2023NASVIO} & yes & yes & 05/07/10 & yes \\
 UL-VIO \cite{Park2024ULVIO} & yes & ---$^a$ & ---$^a$ & yes \\
 VIFT \cite{Kurt2024} & yes & yes & 05/07/10$^b$ & no \\
+RWKV-VIO \cite{RWKVVIO2025} & loader$^c$ & yes & 05/07/10 & no \\
 \bottomrule
-\multicolumn{5}{@{}p{0.95\columnwidth}@{}}{\footnotesize $^a$evaluation code only. $^b$the same split serves as validation and test; checkpointing and early stopping monitor its loss.}
+\multicolumn{5}{@{}p{0.95\columnwidth}@{}}{\footnotesize $^a$evaluation code only. $^b$the same split serves as validation and test; checkpointing and early stopping monitor its loss. $^c$VS-VIO's loader and file format (\texttt{imus/<seq>.mat}, key \texttt{imu\_data\_interp}); the files are not shipped, so they could not be compared byte by byte.}
 \end{tabular}
 \end{table}
 
@@ -203,6 +213,26 @@ Because the gap is large, we ruled out our own setup with two controls. Our runs
 
 \emph{(c)~Authors' protocol.} Finally, we trained seed 0 once more on one GPU with the authors' own training set, 08 included (17\,260 training windows instead of 13\,200), and everything else unchanged. Choosing the epoch on the test sequences, as VS-VIO's \texttt{train.py} does, gives 2.21\% (2.24/1.75/2.65 on 05/07/10), against 2.35\% (2.04/1.64/3.38) for the released checkpoint, and 1.33\% against 1.27\% after sensor substitution (Table~\ref{tab:e5}). The released code therefore reproduces the released checkpoint, and the gap to the clean protocol comes from the protocol. With the same code, seed and hardware, training on 08 lowers the median test error over epochs 81--99 from 4.29\% to 2.85\% and the number after sensor substitution from 2.61\% to 1.31--1.33\%, so 08 improves the learned translation itself, not only its scale. Choosing the epoch on the test sequences lowers the network number by a further 0.64 (2.85\% to 2.21\%) and leaves the substituted number unchanged ($+0.02$). Within this run the test error still spans 2.21--4.26\% across epochs, so part of the 2.21\% is the luck of the epoch that test-set selection picks.
 
+\textbf{Why 08 matters.} Sequence 08 adds 31\% of the training frames, but its weight goes beyond size (Table~\ref{tab:why08}). All three test sequences were recorded on one day (2011\_09\_30); without 08 only 22\% of the training frames come from that day, and 08 makes up 58\% of the test-day frames once it is included. It is also the training drive whose motion is closest to the test drives: slow residential driving with stops (mean speed 7.6\,m/s; test 6.1--7.7\,m/s), whereas the rest of the training set averages 10.6\,m/s, raised by the highway sequence 01 (21.5\,m/s). The Jensen--Shannon divergence between the (speed, yaw rate) distribution of the test frames and that of the training frames falls from 0.192 to 0.149 when 08 is added (08 alone: 0.095). The scale error follows: binned by true speed, the clean model doubles the step length below 3\,m/s and underestimates it above 12\,m/s, the signature of a regression towards the training speed, while the model trained with 08 and the released checkpoint stay close to 1 except at the slowest frames. Training on 08 thus supplies the slow, test-day driving that the clean training set lacks; with only one held-out sequence of this kind, a clean protocol trades it for an unbiased choice of checkpoint, and reporting both numbers is the honest option.
+
+\begin{table}[t]
+\centering
+\caption{Forward-scale error (estimated / true step length) of VS-VIO on 05/07/10, binned by true speed; seed 0, one GPU.}
+\label{tab:why08}
+\setlength{\tabcolsep}{2.2pt}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+Speed (m/s) & 0--3 & 3--6 & 6--9 & 9--12 & $>$12 & All \\
+\midrule
+Without 08 (clean) & 2.15 & 1.11 & 1.04 & 1.02 & 0.96 & 1.06 \\
+With 08 & 1.28 & 1.04 & 1.01 & 1.00 & 0.99 & 1.02 \\
+Released checkpoint & 1.34 & 1.03 & 1.01 & 1.01 & 1.01 & 1.02 \\
+\midrule
+Test frames & 558 & 962 & 1809 & 1647 & 84 & 5060 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \section{What Each Model Gets Wrong}
 \label{sec:diag}
 
@@ -226,7 +256,7 @@ NASVIO latency & 2.50 (0.69) & 1.56 & 1.71 (0.18) & 1.43 & \textbf{1.38} & 1.50 
 
 Table~\ref{tab:diag} applies the oracle swap and the sensor substitution to the four released checkpoints (five configurations). The pattern is the same for all three methods. Rotation is the largest error source: ground-truth rotation with the network's own translation lowers $\trel$ by 28--48\%. Gyroscope rotation over the true interval comes close to this oracle ($\rrel$ 0.17--0.18 for every model against 0.69--1.73 for the networks), accelerometer step length lowers the error further, and the frozen gate lowers it by 45--59\% in total, on models we did not train and without changing a parameter. The ranking NASVIO latency $<$ NASVIO flops $<$ UL-VIO survives, but the gap shrinks from 1.0 to 0.4: a large part of the published difference lies in rotation, which a gyroscope measures, rather than in what the networks learned.
 
-Two checks on the released checkpoints. On 08, which every released model was trained on, NASVIO gives 1.37--1.53\%, clearly below its test error as expected for training data, whereas UL-VIO gives 3.36\%, close to its test error of 3.52\%. \todo{compare with the numbers printed in the UL-VIO and NASVIO papers \cite{Park2024ULVIO,Chen2023NASVIO}; the released UL-VIO weights may differ from the paper's model or omit its test-time adaptation, which we did not run.}
+Checks against what the authors printed. Our score of the released VS-VIO checkpoint (2.35\%; 2.04/1.64/3.38) lies within the spread its paper reports for the corresponding visual-usage penalty (2.40$\pm$0.064\%; 2.01/1.79/3.41) \cite{Yang2022}. The UL-VIO paper reports $\trel$ only as a scatter against model size and tabulates RMSE instead \cite{Park2024ULVIO}; the example output in its repository (4.22/3.26/3.07\% on 05/07/10) has the same mean as our score of the released weights, 3.52\%. On 08, which every released model was trained on, NASVIO gives 1.37--1.53\%, clearly below its test error as expected for training data, whereas UL-VIO gives 3.36\%, close to its test error. \todo{the NASVIO paper \cite{Chen2023NASVIO} was not accessible to us; compare its printed numbers before submission.}
 
 \section{Recommendations}
 \label{sec:recs}
@@ -242,7 +272,7 @@ Two checks on the released checkpoints. On 08, which every released model was tr
 
 \section{Limitations}
 
-Seed variance is measured on two methods (six VIFT seeds, three plus one VS-VIO seeds); other architectures may vary more or less. The lag-corrected retraining keeps VIFT's frozen encoder, which was trained on the lagged files. The split of VS-VIO's gap between training on 08 and selecting on the test sequences rests on one seed per protocol. The sensor substitution relies on OXTS inertial data, which also produce the ground truth; SuMa results agree throughout, but SuMa has its own drift. Finally, we audited four methods with public code; methods without code could not be checked.
+Seed variance is measured on two methods (six VIFT seeds, three plus one VS-VIO seeds); other architectures may vary more or less. The lag-corrected retraining keeps VIFT's frozen encoder, which was trained on the lagged files. The split of VS-VIO's gap between training on 08 and selecting on the test sequences rests on one seed per protocol. The sensor substitution relies on OXTS inertial data, which also produce the ground truth; SuMa results agree throughout, but SuMa has its own drift. Finally, we audited five methods with public code (byte-level file comparison for four of them); methods without code could not be checked.
 
 \section{Conclusion}
 

@@ -20,9 +20,15 @@ Figures are copied from `docs/figures`:
 These are also marked in red with `\todo{}` in the PDF, or as `TODO` in `refs.bib`.
 
 1. **TOR-VIO and Gu et al. 2026** (paywalled) must be read before claiming that the timing error was not reported before (Sec. III).
-2. **The UL-VIO and NASVIO papers' own numbers** still need comparing with their released checkpoints (Sec. VII). UL-VIO's released weights give 3.36 on its training sequence 08, close to its 3.52 on the test sequences.
-3. **Shared data in other methods:** we have not confirmed that RWKV-VIO, DB-VIO and DAP-Pose use the same `imus/*.mat`. DB-VIO's paper (read 2026-11-15) says it interpolates the 100 Hz stream to image timestamps with 11 samples per image pair and integrates the gyroscope explicitly (its attitude-guided encoding) with a time step it does not state; whether it uses the same files or the nominal 10 ms step needs its code. Table I lists only the repositories that were checked by MD5.
-4. **Bibliography:** RWKV-VIO, TOR-VIO and Gu 2026 have placeholder authors and titles. The NASVIO and UL-VIO author lists need checking.
+2. **Paper numbers** (checked 2026-11-18):
+   - VS-VIO: the paper's 2.40±0.064 (λ=3e-5, 10 seeds) matches our 2.35 for the released weights.
+   - UL-VIO: the paper has no t_rel table, only RMSE and an unlabelled figure. Its README example output has a mean of 3.52, identical to ours.
+   - **NASVIO:** the paper is not openly accessible. Compare its printed numbers before submission.
+3. **Shared data in other methods:**
+   - RWKV-VIO (checked 2026-11-18): its code uses VS-VIO's loader and `imus/<seq>.mat` format, trains on 08, and keeps `best_<t_rel>.pth` on 05/07/10. Now in Table I. The `.mat` files are not in the repo, so there is no MD5 check.
+   - DB-VIO's paper interpolates the 100 Hz stream to image timestamps with 11 samples per pair and integrates the gyroscope with an unstated step. Its code is needed.
+   - DAP-Pose: unchecked, no code.
+4. **Bibliography:** filled from Crossref on 2026-11-18 (NASVIO, UL-VIO, RWKV-VIO, TOR-VIO, Gu 2026). Nothing left marked TODO in `refs.bib`.
 5. **Authors:** contact the authors of VS-VIO, NASVIO, UL-VIO and VIFT before posting. The paper criticises their protocol, so the tone stays factual.
 6. **Overlap with the first paper:** the timing finding and the VIFT protocol audit also appear in `paper/submission/main.tex`. Decide which paper keeps the full account. The plan proposes this one, with a line and a citation in the first.
 7. **Author line:** it is copied from the first paper. Set it as intended.
