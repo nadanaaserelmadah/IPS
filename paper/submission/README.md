@@ -10,3 +10,5 @@ pdflatex main && bibtex main && pdflatex main && pdflatex main
 ```
 
 Every number is checked against `docs/RESULTS.md`; the last check was 2026-11-01, by an independent pass over 88 claims, with all fixes applied. The plan and the list of material moved to the supplementary are in `docs/SUBMISSION_PLAN.md`.
+
+`versions/` keeps earlier copies of `main.tex` (and the PDF built from each): `main_v1_old_intro.*` is the version before the introduction was rewritten (2026-11-15), with the original opening paragraph that starts from the learned-VIO literature.

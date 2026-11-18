@@ -55,6 +55,16 @@ J.~Chen, Y.~Yin, T.~Birdal, B.~Chen, L.~J. Guibas, and H.~Wang, ``Projective
   manifold gradient layer for deep rotation regression,'' in \emph{Proc.
   IEEE/CVF Conf. Comput. Vis. Pattern Recognit. (CVPR)}, 2022.
 
+\bibitem{Chen2023NASVIO}
+Y.~Chen, M.~Yang, and H.-S. Kim, ``Search for efficient deep visual-inertial
+  odometry through neural architecture search,'' in \emph{Proc. IEEE Int. Conf.
+  Acoust., Speech Signal Process. (ICASSP)}, 2023.
+
+\bibitem{Park2024ULVIO}
+J.~Park, S.~Y. Chun, and M.~Seok, ``{UL-VIO}: Ultra-lightweight visual-inertial
+  odometry with noise robust test-time adaptation,'' in \emph{Proc. Eur. Conf.
+  Comput. Vis. (ECCV)}, 2024.
+
 \bibitem{Mourikis2007}
 A.~I. Mourikis and S.~I. Roumeliotis, ``A multi-state constraint {Kalman}
   filter for vision-aided inertial navigation,'' in \emph{Proc. IEEE Int. Conf.
@@ -173,16 +183,6 @@ D.~Schubert, T.~Goll, N.~Demmel, V.~Usenko, J.~St\"uckler, and D.~Cremers,
 J.~Behley and C.~Stachniss, ``Efficient surfel-based {SLAM} using {3D} laser
   range data in urban environments,'' in \emph{Proc. Robot.: Sci. Syst. (RSS)},
   2018.
-
-\bibitem{Park2024ULVIO}
-J.~Park, S.~Y. Chun, and M.~Seok, ``{UL-VIO}: Ultra-lightweight visual-inertial
-  odometry with noise robust test-time adaptation,'' in \emph{Proc. Eur. Conf.
-  Comput. Vis. (ECCV)}, 2024.
-
-\bibitem{Chen2023NASVIO}
-Y.~Chen, M.~Yang, and H.-S. Kim, ``Search for efficient deep visual-inertial
-  odometry through neural architecture search,'' in \emph{Proc. IEEE Int. Conf.
-  Acoust., Speech Signal Process. (ICASSP)}, 2023.
 
 \bibitem{Delmerico2018}
 J.~Delmerico and D.~Scaramuzza, ``A benchmark comparison of monocular

@@ -23,17 +23,17 @@
 
 \begin{document}
 
-\title{What the KITTI Benchmark Measures in Learned\\Visual--Inertial Odometry: A Timing Error,\\Test-Set Selection, and Seed Variance}
+\title{Benchmarking Learned Visual--Inertial\\Odometry on KITTI: An Audit of Data,\\Protocol, and Evaluation}
 
 \author{Nada El Madah%
 \thanks{Draft, 2026-11-14. Code, Kaggle kernels, corrected inertial files and every score in this paper: to be released.}}
 
-\markboth{Preprint, 2026}{What the KITTI Benchmark Measures in Learned VIO}
+\markboth{Preprint, 2026}{Benchmarking Learned VIO on KITTI}
 
 \maketitle
 
 \begin{abstract}
-Learned visual--inertial odometry (VIO) methods are ranked by their translation error $\trel$ on KITTI sequences 05, 07 and 10, and published gaps between methods are often a few tenths of a percent. We audit what this number measures. (i)~\emph{Data.} The inertial files used by VS-VIO, NASVIO, UL-VIO and VIFT are byte-identical; they store 11 samples per image pair, which suggests 10\,ms steps, but the samples span the true image interval of $\approx$104\,ms and lag the images by $\approx$60\,ms. Integrating them with the nominal step under-rotates every frame by 4\% (gyroscope-only rotation: 4.62\% $\trel$ instead of 1.70\%). Correcting the lag before training does not change the network measurably (six paired seeds, $p=0.57$). (ii)~\emph{Protocol.} In every released training script we checked, sequence 08 is in the training set and the checkpoint is chosen on 05/07/10, the test sequences. (iii)~\emph{Variance.} Retraining VIFT with six seeds under one protocol spans 2.38--4.04\%, wider than the 2.35--3.88\% spread of five released configurations of three methods; retraining VS-VIO end to end spans 3.55--6.83\%, and choosing its epoch on the test sequences lowers the reported number by 0.89 on average. Under a clean protocol (08 held out, no test-set selection), VS-VIO's own code gives 3.55--6.83\% against 2.35\% for its released checkpoint, with a one-GPU control at the authors' default setting confirming the gap. (iv)~\emph{Diagnosis.} Replacing pose components with ground truth or with sensor measurements shows that rotation is the largest error source of every released model; once rotation comes from the gyroscope and step length from the accelerometer, seed spread falls to 0.07 while the spread between methods stays at 0.47, so only then does a ranking carry information. We release corrected inertial files, a clean protocol and scripts that re-score any model under it.
+Learned visual--inertial odometry (VIO) methods are ranked by their translation error $\trel$ on KITTI sequences 05, 07 and 10, and published gaps between methods are often a few tenths of a percent. We audit what this number measures. (i)~\emph{Data.} The inertial files used by VS-VIO, NASVIO, UL-VIO and VIFT are byte-identical; they store 11 samples per image pair, which suggests 10\,ms steps, but the samples span the true image interval of $\approx$104\,ms and lag the images by $\approx$60\,ms. Integrating them with the nominal step under-rotates every frame by 4\% (gyroscope-only rotation: 4.62\% $\trel$ instead of 1.70\%). Correcting the lag before training does not change the network measurably (six paired seeds, $p=0.57$). (ii)~\emph{Protocol.} In every released training script we checked, sequence 08 is in the training set and the checkpoint is chosen on 05/07/10, the test sequences. (iii)~\emph{Variance.} Retraining VIFT with six seeds under one protocol spans 2.38--4.04\%, wider than the 2.35--3.88\% spread of five released configurations of three methods; retraining VS-VIO end to end spans 3.55--6.83\%, and choosing its epoch on the test sequences lowers the reported number by 0.89 on average. VS-VIO's released code reproduces its released checkpoint only under its own protocol: with 08 in training and the epoch chosen on the test sequences it gives 2.21\% (released: 2.35\%), whereas holding out 08 and selecting on 08 the same code and seed give 4.53\%, and 2.61\% against 1.33\% after sensor substitution. (iv)~\emph{Diagnosis.} Replacing pose components with ground truth or with sensor measurements shows that rotation is the largest error source of every released model; once rotation comes from the gyroscope and step length from the accelerometer, seed spread falls to 0.07 while the spread between methods stays at 0.47, so only then does a ranking carry information. We release corrected inertial files, a clean protocol and scripts that re-score any model under it.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -50,7 +50,7 @@ Whether such differences reflect better models depends on three things that publ
 \begin{enumerate}
 \item \emph{A timing error in shared inertial data} (Sec.~\ref{sec:data}). The KITTI inertial files used across learned-VIO repositories assume 10\,ms steps that are in fact $\approx$10.4\,ms, and lag the images by $\approx$60\,ms. We measure the effect on gyroscope integration and on a network retrained with corrected files.
 \item \emph{A protocol audit} (Sec.~\ref{sec:protocol}) of the released training code: sequence 08 is trained on and checkpoints are selected on the test sequences.
-\item \emph{A variance study} (Sec.~\ref{sec:variance}): seed spread of two methods retrained from their own code, the effect of best-of-$k$ seed selection and of test-set epoch selection, and a clean-protocol retraining of VS-VIO with two controls.
+\item \emph{A variance study} (Sec.~\ref{sec:variance}): seed spread of two methods retrained from their own code, the effect of best-of-$k$ seed selection and of test-set epoch selection, and a retraining of VS-VIO under the clean and under its authors' protocol that reproduces its released checkpoint and attributes the gap between the two.
 \item \emph{A component-wise diagnosis} (Sec.~\ref{sec:diag}) of the released models of three methods by oracle swap and sensor substitution, showing what remains different between methods once measurable components are measured.
 \item Corrected inertial files, a clean protocol and re-scoring scripts (Sec.~\ref{sec:recs}).
 \end{enumerate}
@@ -163,12 +163,12 @@ Gate \cite{ElMadah2026gate} & 1.27--1.74 (0.47) & 1.55--1.62 (0.07) & 2.56--2.98
 
 \textbf{After sensor substitution.} With gyroscope rotation, accelerometer length and the gate, the picture changes (Table~\ref{tab:spread}). VIFT's seed spread falls from 1.66 to 0.07 (SD 0.03), while the spread between the released methods stays at 0.47, seven times larger; VS-VIO policy and both NASVIO checkpoints are better than all twelve VIFT runs, and UL-VIO is worse. Best-of-$k$ selection now changes almost nothing (1.58 to 1.55 for $k=6$), and neither does test-set epoch selection for VS-VIO ($-0.01$ on average). Most of the variance of the network number lies in components that the sensors measure.
 
-\section{Retraining VS-VIO Under a Clean Protocol}
+\section{Retraining VS-VIO: Clean Protocol and Authors' Protocol}
 \label{sec:e5}
 
 \begin{table}[t]
 \centering
-\caption{VS-VIO retrained from its released code, 08 held out. $\trel$ (\%), 05/07/10, OXTS; mean$\pm$SD over seeds 0/1/2 (two GPUs); one-GPU control: seed 0 at the authors' default.}
+\caption{VS-VIO retrained from its released code. $\trel$ (\%), 05/07/10, OXTS. Clean protocol (08 held out): mean$\pm$SD over seeds 0/1/2 on two GPUs, and seed 0 on one GPU, the authors' default. Authors' protocol (08 in training): seed 0, one GPU.}
 \label{tab:e5}
 \setlength{\tabcolsep}{2.5pt}
 \begin{tabular}{@{}lcccc@{}}
@@ -182,6 +182,9 @@ Last epoch & 6.48$\pm$1.46 & 3.79$\pm$0.14 & 2.92$\pm$0.05 & 2.83$\pm$0.07 \\
 One GPU, best on 08 & 4.53 & 3.78 & 2.66 & 2.61 \\
 One GPU, best on test & 3.80 & 3.65 & 2.60 & 2.54 \\
 \midrule
+With 08, best on test & \textbf{2.21} & 1.75 & 1.41 & \textbf{1.33} \\
+With 08, last epoch & 3.69 & 1.78 & 1.39 & 1.31 \\
+\midrule
 Released checkpoint & 2.35 & 1.81 & 1.38 & 1.27 \\
 \bottomrule
 \end{tabular}
@@ -194,11 +197,11 @@ Released checkpoint & 2.35 & 1.81 & 1.38 & 1.27 \\
 \label{fig:e5}
 \end{figure*}
 
-Table~\ref{tab:e5} lists the retrained VS-VIO under three epoch rules. All runs are far worse than the released checkpoint: the network gives 3.5--6.8\% against 2.35\%, and after sensor substitution 2.5--3.0\% against 1.27\%. On the same frames, rotation is as accurate as the released model (per-axis correlation with ground truth 0.99 in both), but the retrained models overestimate forward motion by 4--8\% where the released one does so by 1.5--2.5\%. The gap persists after accelerometer step length (2.66--3.05\% against 1.38\%), so it is not only a matter of scale.
+Table~\ref{tab:e5} lists the retrained VS-VIO under three epoch rules. All clean-protocol runs are far worse than the released checkpoint: the network gives 3.5--6.8\% against 2.35\%, and after sensor substitution 2.5--3.0\% against 1.27\%. On the same frames, rotation is as accurate as the released model (per-axis correlation with ground truth 0.99 in both), but the retrained models overestimate forward motion by 4--8\% where the released one does so by 1.5--2.5\%. The gap persists after accelerometer step length (2.66--3.05\% against 1.38\%), so it is not only a matter of scale.
 
 Because the gap is large, we ruled out our own setup with two controls. Our runs split each batch of 16 across two GPUs, while the authors' default is one GPU, so batch-normalisation statistics were estimated from 8 samples. \emph{(a)~Statistics.} Re-estimating every batch-normalisation statistic on the clean training split with batches of 16, without changing a weight, moves the saved statistics by at most 0.02 standard deviations in the image and inertial encoders, makes all four models worse (the released one as well, 1.32 to 1.55 after the gate) and leaves the scale overestimate in place (1.06--1.08 against 1.02). \emph{(b)~Training.} Retraining seed 0 on one GPU, the authors' default and otherwise identical (same initialisation and batch order), gives a median test error over epochs 81--99 of 4.29\% against 4.36\% on two GPUs, 2.61\% against 2.56\% after the gate, the same scale overestimate, and mean training losses within 3\% in each of the three training stages.
 
-With VS-VIO's released code at its default setting, holding out 08 and not selecting on the test sequences therefore gives a network $\trel$ of 3.5--6.8\%, not 2.35\%. We cannot attribute the whole gap to removing 08: the released checkpoint may also come from a training run that differs from the released code (library versions, or selection among several runs on the test score), which we cannot reproduce. We report the number as what the released code produces under a clean protocol.
+\emph{(c)~Authors' protocol.} Finally, we trained seed 0 once more on one GPU with the authors' own training set, 08 included (17\,260 training windows instead of 13\,200), and everything else unchanged. Choosing the epoch on the test sequences, as VS-VIO's \texttt{train.py} does, gives 2.21\% (2.24/1.75/2.65 on 05/07/10), against 2.35\% (2.04/1.64/3.38) for the released checkpoint, and 1.33\% against 1.27\% after sensor substitution (Table~\ref{tab:e5}). The released code therefore reproduces the released checkpoint, and the gap to the clean protocol comes from the protocol. With the same code, seed and hardware, training on 08 lowers the median test error over epochs 81--99 from 4.29\% to 2.85\% and the number after sensor substitution from 2.61\% to 1.31--1.33\%, so 08 improves the learned translation itself, not only its scale. Choosing the epoch on the test sequences lowers the network number by a further 0.64 (2.85\% to 2.21\%) and leaves the substituted number unchanged ($+0.02$). Within this run the test error still spans 2.21--4.26\% across epochs, so part of the 2.21\% is the luck of the epoch that test-set selection picks.
 
 \section{What Each Model Gets Wrong}
 \label{sec:diag}
@@ -239,7 +242,7 @@ Two checks on the released checkpoints. On 08, which every released model was tr
 
 \section{Limitations}
 
-Seed variance is measured on two methods (six VIFT seeds, three plus one VS-VIO seeds); other architectures may vary more or less. The lag-corrected retraining keeps VIFT's frozen encoder, which was trained on the lagged files. The clean-protocol gap of VS-VIO cannot be split between removing 08 and differences between the released code and the authors' training run. The sensor substitution relies on OXTS inertial data, which also produce the ground truth; SuMa results agree throughout, but SuMa has its own drift. Finally, we audited four methods with public code; methods without code could not be checked.
+Seed variance is measured on two methods (six VIFT seeds, three plus one VS-VIO seeds); other architectures may vary more or less. The lag-corrected retraining keeps VIFT's frozen encoder, which was trained on the lagged files. The split of VS-VIO's gap between training on 08 and selecting on the test sequences rests on one seed per protocol. The sensor substitution relies on OXTS inertial data, which also produce the ground truth; SuMa results agree throughout, but SuMa has its own drift. Finally, we audited four methods with public code; methods without code could not be checked.
 
 \section{Conclusion}
 

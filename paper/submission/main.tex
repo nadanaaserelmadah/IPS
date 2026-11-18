@@ -17,7 +17,8 @@
 
 \title{Measure What Is Observable, Learn the Rest:\\Observability-Gated Fusion for Learned Visual--Inertial Odometry}
 
-\author{Nada El Madah%
+\author{Nada El Madah, Magdy Zakaria, Samir Elmougy, Shahenda Sarhan, Mohamed Handosa, and Rasha Elsayed Sakr\\
+\textit{Computer Science, Mansoura University, Egypt}%
 \thanks{Manuscript in preparation. Code and Kaggle kernels: to be released.}}
 
 \markboth{Preprint, 2026}{Measure What Is Observable, Learn the Rest}
@@ -25,7 +26,7 @@
 \maketitle
 
 \begin{abstract}
-Visual--inertial odometry (VIO), estimating motion from a camera and an inertial measurement unit (IMU), is how robots, drones and AR headsets localize without satellite positioning, using sensors found in every phone. Learned VIO regresses the full relative pose with a neural network, even though the gyroscope measures rotation, the accelerometer can measure step length, and two-view geometry can measure the direction of travel. This is where such networks fail. Swapping one pose component at a time with ground truth shows that VIFT's error comes from rotation and step length on KITTI and from the translation direction on EuRoC, and exposes a 4\% timing error in widely used KITTI inertial data that made the gyroscope look worse than the network. We propose an \emph{observability gate} that, for every frame pair and pose component, uses the sensor measurement where the sensors observe that component and the frozen network elsewhere, deciding from sensor signals alone (parallax, solver uncertainty, conditioning, gravity consistency). With one configuration, fixed on held-out data and pre-registered, the gate reduces KITTI translation error from VIFT's published 1.96\% to 1.56\% without test-set model selection (1.65\% against IMU-independent lidar poses), lowers EuRoC error from 5.5--6.6\,m to below 1\,m, and improves a model we did not train, VS-VIO, from 2.35\% to 1.27\%. On TUM-VI it fails by over-trusting the network; a post-hoc revision that estimates this trust online removes the failure. The rule: measure what is observable, learn the rest, and measure how far to trust what you learn.
+Satellite positioning stops at the door. Inside a warehouse, a hospital or a mine, an indoor positioning system (IPS) must tell a robot, drone or headset where it is, and a natural way is to track its motion with only a camera and an inertial sensor (IMU), the pair found in every phone: visual--inertial odometry (VIO). A gyroscope measures rotation. An accelerometer can measure step length. Two views of a scene give the direction of travel. Yet learned VIO asks one neural network to predict all of it, and this is where it fails. Swapping one pose component at a time for ground truth shows where: for a recent transformer VIO model, rotation and step length on KITTI and translation direction on EuRoC. The swap also exposes a 4\% timing error in the KITTI inertial files distributed with several released models (their 100\,Hz samples span a $\approx$104\,ms image interval, not 100\,ms) that had made the gyroscope look worse than the network. We propose an \emph{observability gate} that, for every frame pair and pose component, uses the sensor measurement where the sensors observe that component and the frozen network elsewhere, deciding from sensor signals alone (parallax, solver uncertainty, conditioning, gravity consistency). With one configuration, fixed on held-out data and pre-registered, the gate reduces KITTI translation error from the 1.96\% published for that model to 1.56\% without test-set model selection (1.65\% against IMU-independent lidar poses), lowers EuRoC error from 5.5--6.6\,m to below 1\,m, and cuts the error of three released models we did not train by 45--59\%. It is not flawless: on TUM-VI it over-trusts the network, and a post-hoc revision that estimates this trust online removes the failure. The rule: measure what is observable, learn the rest, and measure how far to trust what you learn.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -34,17 +35,23 @@ Visual--inertial SLAM, deep learning methods, sensor fusion, localization.
 
 \section{Introduction}
 
-\IEEEPARstart{L}{earned} VIO has moved from end-to-end recurrent models \cite{Clark2017,Han2019} to visual modality selection \cite{Yang2022} and transformer fusion of frozen visual and inertial latents: VIFT \cite{Kurt2024} reports 1.96\% $t_\mathrm{rel}$ on KITTI, and later work reports 1.69--1.77\% \cite{Ma2026,Wan2026}. These models regress rotation and translation jointly, and improvements are sought inside the network: rotation losses \cite{Chen2022}, longer context, new fusion modules.
+\IEEEPARstart{T}{o} move through the world without satellite positioning, a robot, drone or headset must track its own motion. Visual--inertial odometry (VIO) does this with a camera and an inertial sensor (IMU): for each pair of consecutive frames it estimates how the camera rotated, and in which direction and how far it moved.
 
-We first ask \emph{which part of the pose is wrong}. An oracle swap answers this without retraining: replace one predicted component by ground truth and re-score. On KITTI (VIFT's released-code split), ground-truth rotation with the network's own translation already scores 1.55\%, better than VIFT's 1.96\%. A gyroscope measures rotation directly, yet integrating the gyroscope windows that VIFT receives gives 4.62\%, far worse than the network. The reason is a timing detail: the inertial windows used by VS-VIO and VIFT hold 11 samples per image pair, which suggests 10\,ms steps, but they are the raw 100\,Hz readings interpolated over the \emph{actual} image interval, which is $\approx$104\,ms on KITTI. Integrating with the nominal step under-rotates every frame by 4\% and makes an accurate gyroscope look biased; over the true interval it gives 1.70\% with $r_\mathrm{rel}$ 0.18. On EuRoC the same swap points at a different component, the translation direction, which the camera measures geometrically once rotation is known; on TUM-VI the network direction is 40--87$^\circ$ off.
+Learned VIO trains one neural network to predict all of this at once, from recurrent models \cite{Clark2017,Han2019} to visual modality selection \cite{Yang2022} and transformers over frozen visual and inertial latents \cite{Kurt2024}. Published models report a relative translation error $t_\mathrm{rel}$ of 1.69--1.96\% on KITTI \cite{Kurt2024,Ma2026,Wan2026}; these gains come from inside the network: rotation losses \cite{Chen2022}, longer context, new fusion modules.
+
+The sensors, however, already measure much of the pose: a gyroscope measures rotation, an accelerometer can measure the step length, and two-view geometry measures the direction of travel once rotation is known. So we ask \emph{which part of the pose is wrong}, rather than how to improve the whole network. An oracle swap answers this without retraining: replace one predicted component by ground truth and re-score. On KITTI, for the transformer model VIFT \cite{Kurt2024} (released-code split), ground-truth rotation with the network's own translation already scores 1.55\%, better than the 1.96\% VIFT reports: rotation is the main problem.
+
+Yet integrating the gyroscope windows that the network receives gives 4.62\%, far worse than the network. The reason is a timing detail: the inertial windows distributed with several released models \cite{Yang2022,Kurt2024,Chen2023NASVIO,Park2024ULVIO} hold 11 samples per image pair, which suggests 10\,ms steps, but they are the raw 100\,Hz readings interpolated over the \emph{actual} image interval, which is $\approx$104\,ms on KITTI. Integrating with the nominal step under-rotates every frame by 4\% and makes an accurate gyroscope look biased; over the true interval it gives 1.70\% with $r_\mathrm{rel}$ 0.18. The networks themselves never see the step, so only methods that integrate these files inherit the error. For drive 05 the file is byte-identical (MD5) across these four. Newer models that integrate the gyroscope explicitly, such as DB-VIO \cite{Wan2026}, also use 11 interpolated samples per pair but do not state their time step; we have not checked whether they are affected.
+
+On EuRoC the same swap points at a different component, the translation direction, which the camera measures geometrically once rotation is known; on TUM-VI the network direction is 40--87$^\circ$ off.
 
 This suggests a design rule: measure each component where the sensors observe it, and learn only the rest. Observability varies along a trajectory (the step length is unobservable at a stop or at constant velocity, the direction at tiny parallax), so the choice must be made per edge.
 
 \textbf{Contributions.}
 \begin{enumerate}
 \item A component-wise oracle-swap diagnosis of learned VIO, including the KITTI $\approx$104\,ms / +60\,ms timing finding, showing that the failing component is dataset-dependent.
-\item An observability gate that chooses between sensor measurements and a frozen network per edge and per component from sensor-computable signals only, pre-registered on KITTI, EuRoC and TUM-VI and run frozen on a model we did not train, with every failure reported; and a post-hoc online estimate of the network's trustworthiness that removes the TUM-VI failure.
-\item Measurement components validated against references independent of the IMU (lidar SLAM, motion capture), a protocol audit of VIFT, and an analysis of what remains.
+\item An observability gate that chooses between sensor measurements and a frozen network per edge and per component from sensor-computable signals only, pre-registered on KITTI, EuRoC and TUM-VI and run frozen on three released models we did not train, with every failure reported; and a post-hoc online estimate of the network's trustworthiness that removes the TUM-VI failure.
+\item Measurement components validated against references independent of the IMU (lidar SLAM, motion capture), a protocol audit of a released learned-VIO model (training split and checkpoint selection), and an analysis of what remains.
 \end{enumerate}
 
 \section{Related Work}
@@ -368,16 +375,38 @@ Network & 3.04$\pm$0.86 / 1.04 & 3.08 & 2.15$\pm$0.17 / 0.83 \\
 + gyro rotation & 2.10$\pm$0.04 / 0.18 & 2.20 & 1.61$\pm$0.07 / 0.18 \\
 + accel.\ length & 1.62$\pm$0.03 / 0.18 & 1.71 & 1.27$\pm$0.07 / 0.18 \\
 \textbf{Gate (v3 = v4)} & \textbf{1.56$\pm$0.02} / 0.18 & \textbf{1.65} & \textbf{1.21$\pm$0.06} / 0.18 \\
-\midrule
-VIFT + RPMG \cite{Kurt2024} & \multicolumn{3}{l}{1.96 / 0.46 (no 08, selected on test)} \\
-DB-VIO \cite{Wan2026} & \multicolumn{3}{l}{1.77 / 0.69 (split not confirmed)} \\
-MixVIO \cite{Ma2026} & \multicolumn{3}{l}{1.69 (abstract)} \\
-DAP-Pose, cam+IMU / +GNSS \cite{DAPPose} & \multicolumn{3}{l}{1.90 / 0.54; 1.31 / 0.46 (with 08)} \\
 \bottomrule
 \end{tabular}}
 \end{table}
 
 Table~\ref{tab:kitti} gives the main result. The gyroscope removes most of the error (3.04$\to$2.10\% clean, $r_\mathrm{rel}$ 1.04$\to$0.18; Fig.~\ref{fig:heading}), the accelerometer length most of the rest (1.62\%), and the gate, which measures the length and fuses the direction, reaches 1.56\% without test-set selection, against VIFT's 1.96\%. $r_\mathrm{rel}$ 0.18 is measured against OXTS, which shares the unit with the gyroscope; against SuMa it is 0.32, close to the 0.25 disagreement between the two references. Against SuMa the numbers rise by about 0.1 point (1.65\%), and a calibration that never touches OXTS ground truth (factory extrinsic, lag fitted against SuMa) gives 1.69\% for the hand-designed pipeline, so the gain is not an artifact of the IMU and the ground truth sharing a unit. On the released-code split the gate reaches 1.21\%. A network-free variant (gyro, fixed forward direction, accelerometer length, median length where unobservable) scores only 10.9\%: on a car the length is unobservable at stops and at constant speed, and there the network is needed. A caveat: on held-out 08 itself, gyro with network translation (0.86\%) beats both the accelerometer length (1.22\%) and the gate (1.20\%), most likely because the checkpoints were selected on 08.
+
+\begin{table}[t]
+\caption{Comparison with prior work and the gain (reduction) in error. KITTI 05/07/10: $t_\mathrm{rel}$\,\% / $r_\mathrm{rel}$; ours is the gate on the clean split (1.56 / 0.18), or on the released-code split (1.21 / 0.18) where the prior result uses 08. EuRoC, TUM-VI: ATE (m), ours is the gate (0.94 and 0.99 on EuRoC, 0.47 on TUM-VI). Reported numbers are copied from the cited papers and not rerun; ``our runs'' are our reproductions. Negative change: ours is lower.}
+\label{tab:prior}
+\centering\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\resizebox{\columnwidth}{!}{\begin{tabular}{@{}llccc@{}}
+\toprule
+Prior work & Protocol & Reported & Ours & Change (abs.\ (\%)) \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{KITTI: $t_\mathrm{rel}$ / $r_\mathrm{rel}$}} \\
+VIFT + RPMG \cite{Kurt2024} & no 08, test-selected & 1.96 / 0.46 & \textbf{1.56 / 0.18} & $-0.40$ ($-20$) / $-0.28$ ($-61$) \\
+DB-VIO \cite{Wan2026} & not confirmed & 1.77 / 0.69 & \textbf{1.56 / 0.18} & $-0.21$ ($-12$) / $-0.51$ ($-74$) \\
+MixVIO \cite{Ma2026} & abstract only & 1.69 / --- & \textbf{1.56 / 0.18} & $-0.13$ ($-8$) / --- \\
+DAP-Pose, cam+IMU \cite{DAPPose} & with 08 & 1.90 / 0.54 & \textbf{1.21 / 0.18} & $-0.69$ ($-36$) / $-0.36$ ($-67$) \\
+DAP-Pose, +GNSS \cite{DAPPose} & with 08 & 1.31 / 0.46 & \textbf{1.21 / 0.18} & $-0.10$ ($-8$) / $-0.28$ ($-61$) \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{EuRoC and TUM-VI: ATE (m)}} \\
+Learned VIFT-style, EuRoC & our runs & 4.02--4.98 & \textbf{0.94--0.99} & $-3.0$ to $-4.0$ ($-75$ to $-81$) \\
+Learned networks, TUM-VI & our runs & 5.0--8.8 & \textbf{0.47} & $-4.5$ to $-8.3$ ($-90$ to $-95$) \\
+VINS-Mono \cite{Delmerico2018}, EuRoC & literature & 0.15 & \textbf{0.94} & $+0.79$ ($6.3\times$ higher) \\
+ORB-SLAM3, EuRoC & our runs & 0.042 & \textbf{0.94} & $+0.90$ ($22\times$ higher) \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+Table~\ref{tab:prior} lists the gains against prior work. On KITTI the gate lowers $t_\mathrm{rel}$ by 0.13--0.40 points against learned VIO on a comparable or stricter protocol, and $r_\mathrm{rel}$ by 61--74\%; against the GNSS-aided DAP-Pose the gain is 0.10 points, without GNSS. The prior numbers come from different protocols and were not rerun, so the comparison is indicative. On EuRoC and TUM-VI the gain over learned networks is large, but classical VIO remains 6--22 times more accurate on EuRoC.
 
 \begin{figure}[t]
 \centering
@@ -497,7 +526,7 @@ Fig.~\ref{fig:observ} summarizes the rule: the useful split between measured and
 
 \section{Conclusion}
 
-Learned VIO fails in identifiable, dataset-dependent places, and an oracle swap finds them. Measuring what the sensors observe, keeping the learned network only for the rest, and measuring how far to trust it yields a single configuration that improves VIFT to 1.56\% on KITTI without test-set selection, brings EuRoC from 5.5--6.6\,m to below 1\,m, improves a model we did not train, and, once its trust is estimated online (post-hoc), stops doing harm on a third dataset. Natural next steps are networks that predict only the unobservable components together with their uncertainty, and windowed optimization over the gated estimates.
+Learned VIO fails in identifiable, dataset-dependent places, and an oracle swap finds them. Measuring what the sensors observe, keeping the learned network only for the rest, and measuring how far to trust it yields a single configuration that improves VIFT to 1.56\% on KITTI without test-set selection, brings EuRoC from 5.5--6.6\,m to below 1\,m, improves three released models we did not train, and, once its trust is estimated online (post-hoc), stops doing harm on a third dataset. Natural next steps are networks that predict only the unobservable components together with their uncertainty, and windowed optimization over the gated estimates.
 
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
