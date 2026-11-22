@@ -35,6 +35,7 @@ DAY = {"00": "2011_10_03", "01": "2011_10_03", "02": "2011_10_03", "04": "2011_0
        "06": "2011_09_30", "07": "2011_09_30", "08": "2011_09_30", "09": "2011_09_30", "10": "2011_09_30"}
 RIDGE_BA = 1.0
 COND_MAX = 1e4
+G_TOL = None  # unified-rule option: also require | |g| - 9.81 | <= G_TOL for a window to be used. None = condition number only (as in every reported result)
 _PRE = {}
 LAST_RMS = float("nan")
 
@@ -147,7 +148,7 @@ def seq_lengths(npz: Path, calib: dict, p_c, dirs_cam, window, base_len=None, ga
             rms_out[idx] = LAST_RMS
         if cond_out is not None:
             cond_out[idx] = cond
-        if cond < COND_MAX:
+        if cond < COND_MAX and (G_TOL is None or abs(gn - 9.81) <= G_TOL):
             out[idx] = lens
     return out, np.array(conds), np.array(gs)
 

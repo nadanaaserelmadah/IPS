@@ -35,3 +35,12 @@ for step in "$@"; do
   sleep 300
 done
 st=$(wait_kernel "$CUR"); log "$CUR finished: $st (last planned session)"
+# the last planned session may be the one that completes the run: record it, or chain_supervisor.sh keeps
+# restarting this script every 30 min (it stops only on "run done after")
+d=$WORK/chain_probe_$(basename "$CUR"); mkdir -p "$d"
+KAGGLE_CONFIG_DIR=~/.kaggle-accounts/${CUR%%/*} kaggle kernels output "$CUR" -p "$d" --file-pattern '^e5/(status\.json|driver_log\.txt)$' >/dev/null 2>&1
+if python3 -c "import json,sys; sys.exit(0 if json.load(open('$d/e5/status.json')).get('done') else 1)" 2>/dev/null; then
+  log "run done after $CUR"
+else
+  log "last planned session ended but the run is not done: plan another session"
+fi

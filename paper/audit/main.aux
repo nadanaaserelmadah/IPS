@@ -28,7 +28,8 @@
 \citation{Qin2018b}
 \citation{TORVIO2026}
 \citation{Gu2026}
-\citation{TORVIO2026,Gu2026}
+\citation{TORVIO2026}
+\citation{Gu2026}
 \citation{Henderson2018}
 \citation{Musgrave2020}
 \citation{Bouthillier2021}
@@ -63,30 +64,25 @@
 \newlabel{tab:e4}{{II}{3}{Lag-corrected inertial files, VIFT retrained under the clean protocol, six paired seeds. $\trel $ (\%), 05/07/10, OXTS}{table.2}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {V}The Protocol}{3}{section.5}\protected@file@percent }
 \newlabel{sec:protocol}{{V}{3}{The Protocol}{section.5}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Five released configurations of three methods against six seeds of one method (VIFT, released and lag-corrected inertial files). Left: network output. Right: after gyroscope rotation, accelerometer step length and the frozen gate.}}{3}{figure.2}\protected@file@percent }
-\newlabel{fig:spread}{{2}{3}{Five released configurations of three methods against six seeds of one method (VIFT, released and lag-corrected inertial files). Left: network output. Right: after gyroscope rotation, accelerometer step length and the frozen gate}{figure.2}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {III}{\ignorespaces Spread between methods and between seeds, $t_{\mathrm  {rel}}$ (\%), 05/07/10, OXTS: min--max (range).}}{3}{table.3}\protected@file@percent }
 \newlabel{tab:spread}{{III}{3}{Spread between methods and between seeds, $\trel $ (\%), 05/07/10, OXTS: min--max (range)}{table.3}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {VI}How Large Are the Differences?}{3}{section.6}\protected@file@percent }
 \newlabel{sec:variance}{{VI}{3}{How Large Are the Differences?}{section.6}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {IV}{\ignorespaces VS-VIO retrained from its released code. $t_{\mathrm  {rel}}$ (\%), 05/07/10, OXTS. Clean protocol (08 held out): mean$\pm $SD over seeds 0/1/2 on two GPUs, and seed 0 on one GPU, the authors' default. Authors' protocol (08 in training): seed 0, one GPU.}}{4}{table.4}\protected@file@percent }
-\newlabel{tab:e5}{{IV}{4}{VS-VIO retrained from its released code. $\trel $ (\%), 05/07/10, OXTS. Clean protocol (08 held out): mean$\pm $SD over seeds 0/1/2 on two GPUs, and seed 0 on one GPU, the authors' default. Authors' protocol (08 in training): seed 0, one GPU}{table.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Five released configurations of three methods against six seeds of one method (VIFT, released and lag-corrected inertial files). Left: network output. Right: after gyroscope rotation, accelerometer step length and the frozen gate.}}{4}{figure.2}\protected@file@percent }
+\newlabel{fig:spread}{{2}{4}{Five released configurations of three methods against six seeds of one method (VIFT, released and lag-corrected inertial files). Left: network output. Right: after gyroscope rotation, accelerometer step length and the frozen gate}{figure.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {IV}{\ignorespaces VS-VIO retrained from its released code. $t_{\mathrm  {rel}}$ (\%), 05/07/10, OXTS. Clean protocol (08 held out): mean$\pm $SD over seeds 0/1/2 on two GPUs, and seed 0 on one GPU, the authors' default. Authors' protocol (08 in training): mean$\pm $SD over seeds 0/1/2, one GPU.}}{4}{table.4}\protected@file@percent }
+\newlabel{tab:e5}{{IV}{4}{VS-VIO retrained from its released code. $\trel $ (\%), 05/07/10, OXTS. Clean protocol (08 held out): mean$\pm $SD over seeds 0/1/2 on two GPUs, and seed 0 on one GPU, the authors' default. Authors' protocol (08 in training): mean$\pm $SD over seeds 0/1/2, one GPU}{table.4}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {VII}Retraining VS-VIO: Clean Protocol and Authors' Protocol}{4}{section.7}\protected@file@percent }
 \newlabel{sec:e5}{{VII}{4}{Retraining VS-VIO: Clean Protocol and Authors' Protocol}{section.7}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {V}{\ignorespaces Forward-scale error (estimated / true step length) of VS-VIO on 05/07/10, binned by true speed; seed 0, one GPU.}}{4}{table.5}\protected@file@percent }
-\newlabel{tab:why08}{{V}{4}{Forward-scale error (estimated / true step length) of VS-VIO on 05/07/10, binned by true speed; seed 0, one GPU}{table.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces VS-VIO retrained under the clean protocol, seeds 0--2. Left: test error of every evaluated epoch (VS-VIO's own metric), with the epoch picked on 08 (circle) and on the test sequences (diamond). Middle and right: the three epoch rules for the network and after sensor substitution; dashed line: released checkpoint.}}{5}{figure.3}\protected@file@percent }
+\newlabel{fig:e5}{{3}{5}{VS-VIO retrained under the clean protocol, seeds 0--2. Left: test error of every evaluated epoch (VS-VIO's own metric), with the epoch picked on 08 (circle) and on the test sequences (diamond). Middle and right: the three epoch rules for the network and after sensor substitution; dashed line: released checkpoint}{figure.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {V}{\ignorespaces Forward-scale error (estimated / true step length) of VS-VIO on 05/07/10, binned by true speed; seed 0, one GPU.}}{5}{table.5}\protected@file@percent }
+\newlabel{tab:why08}{{V}{5}{Forward-scale error (estimated / true step length) of VS-VIO on 05/07/10, binned by true speed; seed 0, one GPU}{table.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {VIII}What Each Model Gets Wrong}{5}{section.8}\protected@file@percent }
+\newlabel{sec:diag}{{VIII}{5}{What Each Model Gets Wrong}{section.8}{}}
 \citation{Yang2022}
 \citation{Park2024ULVIO}
 \citation{Chen2023NASVIO}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces VS-VIO retrained under the clean protocol, seeds 0--2. Left: test error of every evaluated epoch (VS-VIO's own metric), with the epoch picked on 08 (circle) and on the test sequences (diamond). Middle and right: the three epoch rules for the network and after sensor substitution; dashed line: released checkpoint.}}{5}{figure.3}\protected@file@percent }
-\newlabel{fig:e5}{{3}{5}{VS-VIO retrained under the clean protocol, seeds 0--2. Left: test error of every evaluated epoch (VS-VIO's own metric), with the epoch picked on 08 (circle) and on the test sequences (diamond). Middle and right: the three epoch rules for the network and after sensor substitution; dashed line: released checkpoint}{figure.3}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {VI}{\ignorespaces Released checkpoints of three methods (all trained with 08); VS-VIO is one checkpoint run with its learned visual selection and with vision always on. $t_{\mathrm  {rel}}$ (\%), 05/07/10, OXTS ($r_{\mathrm  {rel}}$ in parentheses); last column against SuMa.}}{5}{table.6}\protected@file@percent }
-\newlabel{tab:diag}{{VI}{5}{Released checkpoints of three methods (all trained with 08); VS-VIO is one checkpoint run with its learned visual selection and with vision always on. $\trel $ (\%), 05/07/10, OXTS ($\rrel $ in parentheses); last column against SuMa}{table.6}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {VIII}What Each Model Gets Wrong}{5}{section.8}\protected@file@percent }
-\newlabel{sec:diag}{{VIII}{5}{What Each Model Gets Wrong}{section.8}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {IX}Recommendations}{5}{section.9}\protected@file@percent }
-\newlabel{sec:recs}{{IX}{5}{Recommendations}{section.9}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {X}Limitations}{5}{section.10}\protected@file@percent }
 \bibstyle{IEEEtran}
 \bibdata{refs}
 \bibcite{Clark2017}{1}
@@ -102,6 +98,13 @@
 \bibcite{Park2024ULVIO}{11}
 \bibcite{RWKVVIO2025}{12}
 \bibcite{Qin2026}{13}
+\@writefile{lot}{\contentsline {table}{\numberline {VI}{\ignorespaces Released checkpoints of three methods (all trained with 08); VS-VIO is one checkpoint run with its learned visual selection and with vision always on. $t_{\mathrm  {rel}}$ (\%), 05/07/10, OXTS ($r_{\mathrm  {rel}}$ in parentheses); last column against SuMa.}}{6}{table.6}\protected@file@percent }
+\newlabel{tab:diag}{{VI}{6}{Released checkpoints of three methods (all trained with 08); VS-VIO is one checkpoint run with its learned visual selection and with vision always on. $\trel $ (\%), 05/07/10, OXTS ($\rrel $ in parentheses); last column against SuMa}{table.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {IX}Recommendations}{6}{section.9}\protected@file@percent }
+\newlabel{sec:recs}{{IX}{6}{Recommendations}{section.9}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {X}Limitations}{6}{section.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {XI}Conclusion}{6}{section.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{References}{6}{section*.1}\protected@file@percent }
 \bibcite{DAPPose}{14}
 \bibcite{Delmerico2018}{15}
 \bibcite{Zhang2018traj}{16}
@@ -115,6 +118,4 @@
 \bibcite{Cimarelli2022}{24}
 \bibcite{Behley2018}{25}
 \bibcite{ElMadah2026gate}{26}
-\@writefile{toc}{\contentsline {section}{\numberline {XI}Conclusion}{6}{section.11}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{References}{6}{section*.1}\protected@file@percent }
-\gdef \@abspage@last{6}
+\gdef \@abspage@last{7}

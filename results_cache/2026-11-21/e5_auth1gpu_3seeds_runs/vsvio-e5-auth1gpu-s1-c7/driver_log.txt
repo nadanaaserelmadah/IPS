@@ -1,0 +1,200 @@
+[    0.1 min] kitti /kaggle/input/datasets/hocop1/kitti-odometry
+imus /kaggle/input/datasets/elsamadony/vsvio-e5-inputs/imus
+flownet /kaggle/input/datasets/elsamadony/vsvio-e5-inputs/flownets_bn_EPE2.459.pth.tar
+previous session []
+[    0.1 min] $ nvidia-smi --query-gpu=name,memory.total --format=csv
+[    0.1 min] $ bash -c nproc; free -g | head -2; df -h /tmp /kaggle/working | cat
+[    0.1 min] frame cache in /tmp/e5cache (1038 GB free)
+[    0.1 min] $ git clone -q https://github.com/mingyuyng/Visual-Selective-VIO.git /kaggle/working/vsvio
+[    0.2 min] $ git -C /kaggle/working/vsvio checkout -q 27b06b38dcf07a015fba22038050113462387e7d
+[    0.2 min] $ /usr/bin/python3 -m pip install -q path
+[    0.3 min] $ git -C /kaggle/working/vsvio diff --no-index --stat /kaggle/working/vsvio/train.py /kaggle/working/vsvio/train_e5.py
+[    0.4 min] gpu_ids 0
+[    0.4 min] $ /usr/bin/python3 train_e5.py --data_dir /kaggle/working/kitti --seed 1 --gpu_ids 0 --workers 4 --experiment_name e5_s1 --pretrain_flownet /kaggle/input/datasets/elsamadony/vsvio-e5-inputs/flownets_bn_EPE2.459.pth.tar
+[    0.7 min] train windows: 17260
+[   11.3 min] frame cache: 17330 frames, 13.6 GB in 10.6 min, max |cached - original| on 4 windows 1.22e-04
+[   51.6 min] epoch 0: 40.2 min (train 40.1, iters 1079); mem: available 23.6 GB, rss 6.6 GB, cgroup 27.9 GB
+[   91.8 min] epoch 1: 40.2 min (train 40.2, iters 1079); mem: available 23.5 GB, rss 6.6 GB, cgroup 27.4 GB
+[  132.0 min] epoch 2: 40.2 min (train 40.2, iters 1079); mem: available 23.5 GB, rss 6.6 GB, cgroup 27.0 GB
+[  172.1 min] epoch 3: 40.2 min (train 40.1, iters 1079); mem: available 23.2 GB, rss 6.6 GB, cgroup 27.1 GB
+[  212.3 min] epoch 4: 40.2 min (train 40.1, iters 1079); mem: available 23.3 GB, rss 6.6 GB, cgroup 26.8 GB
+[  252.4 min] epoch 5: 40.1 min (train 40.1, iters 1079); mem: available 23.0 GB, rss 6.5 GB, cgroup 26.7 GB
+[  292.5 min] epoch 6: 40.1 min (train 40.1, iters 1079); mem: available 23.3 GB, rss 6.5 GB, cgroup 27.1 GB
+[  332.6 min] epoch 7: 40.0 min (train 40.0, iters 1079); mem: available 23.4 GB, rss 6.5 GB, cgroup 27.3 GB
+[  372.4 min] epoch 8: 39.8 min (train 39.8, iters 1079); mem: available 23.2 GB, rss 6.5 GB, cgroup 26.8 GB
+[  412.0 min] epoch 9: 39.6 min (train 39.6, iters 1079); mem: available 23.0 GB, rss 6.6 GB, cgroup 26.9 GB
+[  451.4 min] epoch 10: 39.5 min (train 39.4, iters 1079); mem: available 22.7 GB, rss 6.5 GB, cgroup 26.5 GB
+[  491.0 min] epoch 11: 39.5 min (train 39.5, iters 1079); mem: available 22.9 GB, rss 6.6 GB, cgroup 26.8 GB
+[  530.6 min] epoch 12: 39.6 min (train 39.6, iters 1079); mem: available 23.2 GB, rss 6.6 GB, cgroup 27.1 GB
+[  570.0 min] epoch 13: 39.4 min (train 39.4, iters 1079); mem: available 23.1 GB, rss 6.6 GB, cgroup 27.0 GB
+[  609.4 min] epoch 14: 39.4 min (train 39.4, iters 1079); mem: available 23.5 GB, rss 6.6 GB, cgroup 27.0 GB
+[  648.9 min] epoch 15: 39.5 min (train 39.5, iters 1079); mem: available 23.3 GB, rss 6.6 GB, cgroup 26.5 GB
+[  648.9 min] time budget: stopping before epoch 16; resume.pth holds epoch 15
+[  649.1 min] rc 0, done False, epochs evaluated: 0
+[    0.2 min] $ git clone -q https://github.com/mingyuyng/Visual-Selective-VIO.git /kaggle/working/vsvio
+[    0.2 min] $ git -C /kaggle/working/vsvio checkout -q 27b06b38dcf07a015fba22038050113462387e7d
+[    0.2 min] $ /usr/bin/python3 -m pip install -q path
+[    0.3 min] $ git -C /kaggle/working/vsvio diff --no-index --stat /kaggle/working/vsvio/train.py /kaggle/working/vsvio/train_e5.py
+[    0.4 min] gpu_ids 0
+[    0.4 min] $ /usr/bin/python3 train_e5.py --data_dir /kaggle/working/kitti --seed 1 --gpu_ids 0 --workers 4 --experiment_name e5_s1 --pretrain_flownet /kaggle/input/datasets/elsamadony/vsvio-e5-inputs/flownets_bn_EPE2.459.pth.tar
+[    0.7 min] train windows: 17260
+[    7.7 min] frame cache: 17330 frames, 13.6 GB in 7.0 min, max |cached - original| on 4 windows 1.22e-04
+[    7.8 min] resumed from /kaggle/input/notebooks/elsamadony/vsvio-e5-auth1gpu-s1-c1/e5/resume.pth: epoch 15 done, continuing at 16
+[   49.4 min] epoch 16: 41.5 min (train 41.5, iters 1079); mem: available 23.3 GB, rss 6.6 GB, cgroup 27.7 GB
+[   90.9 min] epoch 17: 41.5 min (train 41.5, iters 1079); mem: available 23.5 GB, rss 6.6 GB, cgroup 27.5 GB
+[  132.5 min] epoch 18: 41.6 min (train 41.6, iters 1079); mem: available 23.5 GB, rss 6.6 GB, cgroup 26.7 GB
+[  174.0 min] epoch 19: 41.6 min (train 41.6, iters 1079); mem: available 23.4 GB, rss 6.6 GB, cgroup 27.0 GB
+[  215.7 min] epoch 20: 41.7 min (train 41.7, iters 1079); mem: available 23.3 GB, rss 6.6 GB, cgroup 27.0 GB
+[  257.5 min] epoch 21: 41.7 min (train 41.7, iters 1079); mem: available 23.6 GB, rss 6.6 GB, cgroup 27.1 GB
+[  299.1 min] epoch 22: 41.6 min (train 41.6, iters 1079); mem: available 23.5 GB, rss 6.6 GB, cgroup 27.5 GB
+[  340.7 min] epoch 23: 41.6 min (train 41.6, iters 1079); mem: available 23.7 GB, rss 6.6 GB, cgroup 27.5 GB
+[  382.4 min] epoch 24: 41.6 min (train 41.6, iters 1079); mem: available 23.7 GB, rss 6.6 GB, cgroup 27.4 GB
+[  424.0 min] epoch 25: 41.6 min (train 41.6, iters 1079); mem: available 23.3 GB, rss 6.6 GB, cgroup 27.3 GB
+[  465.5 min] epoch 26: 41.5 min (train 41.5, iters 1079); mem: available 23.6 GB, rss 6.7 GB, cgroup 27.5 GB
+[  507.2 min] epoch 27: 41.7 min (train 41.7, iters 1079); mem: available 23.5 GB, rss 6.7 GB, cgroup 27.3 GB
+[  548.9 min] epoch 28: 41.8 min (train 41.7, iters 1079); mem: available 23.3 GB, rss 6.7 GB, cgroup 27.1 GB
+[  590.6 min] epoch 29: 41.7 min (train 41.7, iters 1079); mem: available 23.2 GB, rss 6.7 GB, cgroup 27.2 GB
+[  632.4 min] epoch 30: 41.8 min (train 41.7, iters 1079); mem: available 23.2 GB, rss 6.7 GB, cgroup 27.3 GB
+[  632.4 min] time budget: stopping before epoch 31; resume.pth holds epoch 30
+[  632.5 min] rc 0, done False, epochs evaluated: 0
+[    0.1 min] $ git clone -q https://github.com/mingyuyng/Visual-Selective-VIO.git /kaggle/working/vsvio
+[    0.2 min] $ git -C /kaggle/working/vsvio checkout -q 27b06b38dcf07a015fba22038050113462387e7d
+[    0.2 min] $ /usr/bin/python3 -m pip install -q path
+[    0.2 min] $ git -C /kaggle/working/vsvio diff --no-index --stat /kaggle/working/vsvio/train.py /kaggle/working/vsvio/train_e5.py
+[    0.3 min] gpu_ids 0
+[    0.3 min] $ /usr/bin/python3 train_e5.py --data_dir /kaggle/working/kitti --seed 1 --gpu_ids 0 --workers 4 --experiment_name e5_s1 --pretrain_flownet /kaggle/input/datasets/amrelmadah/vsvio-e5-inputs/flownets_bn_EPE2.459.pth.tar
+[    0.6 min] train windows: 17260
+[   10.8 min] frame cache: 17330 frames, 13.6 GB in 10.2 min, max |cached - original| on 4 windows 1.22e-04
+[   10.9 min] resumed from /kaggle/input/datasets/amrelmadah/vsvio-e5-auth1gpu-s1-resume/resume.pth: epoch 30 done, continuing at 31
+[   55.8 min] epoch 31: 44.9 min (train 44.9, iters 1079); mem: available 23.8 GB, rss 6.6 GB, cgroup 27.7 GB
+[  100.8 min] epoch 32: 44.9 min (train 44.9, iters 1079); mem: available 23.8 GB, rss 6.6 GB, cgroup 27.3 GB
+[  145.8 min] epoch 33: 45.0 min (train 45.0, iters 1079); mem: available 23.5 GB, rss 6.6 GB, cgroup 26.6 GB
+[  190.7 min] epoch 34: 45.0 min (train 45.0, iters 1079); mem: available 23.4 GB, rss 6.6 GB, cgroup 26.7 GB
+[  235.7 min] epoch 35: 44.9 min (train 44.9, iters 1079); mem: available 23.2 GB, rss 6.5 GB, cgroup 26.6 GB
+[  280.6 min] epoch 36: 45.0 min (train 45.0, iters 1079); mem: available 23.4 GB, rss 6.5 GB, cgroup 26.5 GB
+[  325.6 min] epoch 37: 45.0 min (train 45.0, iters 1079); mem: available 23.1 GB, rss 6.5 GB, cgroup 26.7 GB
+[  370.6 min] epoch 38: 45.0 min (train 44.9, iters 1079); mem: available 23.2 GB, rss 6.5 GB, cgroup 26.5 GB
+[  415.5 min] epoch 39: 44.9 min (train 44.9, iters 1079); mem: available 23.6 GB, rss 6.5 GB, cgroup 27.0 GB
+[  460.5 min] epoch 40: 45.0 min (train 45.0, iters 1079); mem: available 23.2 GB, rss 6.6 GB, cgroup 27.1 GB
+[  505.4 min] epoch 41: 45.0 min (train 44.9, iters 1079); mem: available 23.6 GB, rss 6.6 GB, cgroup 26.7 GB
+[  550.4 min] epoch 42: 44.9 min (train 44.9, iters 1079); mem: available 23.5 GB, rss 6.6 GB, cgroup 26.8 GB
+[  595.3 min] epoch 43: 44.9 min (train 44.9, iters 1079); mem: available 23.3 GB, rss 6.6 GB, cgroup 26.8 GB
+[  640.2 min] epoch 44: 44.9 min (train 44.9, iters 1079); mem: available 23.1 GB, rss 6.6 GB, cgroup 26.9 GB
+[  640.2 min] time budget: stopping before epoch 45; resume.pth holds epoch 44
+[  640.3 min] rc 0, done False, epochs evaluated: 0
+[    0.2 min] $ git clone -q https://github.com/mingyuyng/Visual-Selective-VIO.git /kaggle/working/vsvio
+[    0.2 min] $ git -C /kaggle/working/vsvio checkout -q 27b06b38dcf07a015fba22038050113462387e7d
+[    0.2 min] $ /usr/bin/python3 -m pip install -q path
+[    0.3 min] $ git -C /kaggle/working/vsvio diff --no-index --stat /kaggle/working/vsvio/train.py /kaggle/working/vsvio/train_e5.py
+[    0.5 min] gpu_ids 0
+[    0.5 min] $ /usr/bin/python3 train_e5.py --data_dir /kaggle/working/kitti --seed 1 --gpu_ids 0 --workers 4 --experiment_name e5_s1 --pretrain_flownet /kaggle/input/datasets/amrelmadah/vsvio-e5-inputs/flownets_bn_EPE2.459.pth.tar
+[    0.9 min] train windows: 17260
+[    8.5 min] frame cache: 17330 frames, 13.6 GB in 7.6 min, max |cached - original| on 4 windows 1.22e-04
+[    8.7 min] resumed from /kaggle/input/notebooks/amrelmadah/vsvio-e5-auth1gpu-s1-c3/e5/resume.pth: epoch 44 done, continuing at 45
+[   45.5 min] epoch 45: 36.8 min (train 36.8, iters 1079); mem: available 23.7 GB, rss 6.7 GB, cgroup 27.8 GB
+[   82.1 min] epoch 46: 36.6 min (train 36.6, iters 1079); mem: available 23.5 GB, rss 6.7 GB, cgroup 27.2 GB
+[  118.7 min] epoch 47: 36.6 min (train 36.6, iters 1079); mem: available 23.2 GB, rss 6.7 GB, cgroup 26.9 GB
+[  155.3 min] epoch 48: 36.6 min (train 36.5, iters 1079); mem: available 23.3 GB, rss 6.7 GB, cgroup 26.9 GB
+[  191.8 min] epoch 49: 36.5 min (train 36.5, iters 1079); mem: available 23.7 GB, rss 6.6 GB, cgroup 26.9 GB
+[  228.1 min] epoch 50: 36.3 min (train 36.3, iters 1079); mem: available 23.2 GB, rss 6.6 GB, cgroup 26.8 GB
+[  264.2 min] epoch 51: 36.1 min (train 36.1, iters 1079); mem: available 23.2 GB, rss 6.6 GB, cgroup 26.8 GB
+[  300.1 min] epoch 52: 35.9 min (train 35.9, iters 1079); mem: available 23.1 GB, rss 6.6 GB, cgroup 26.9 GB
+[  335.7 min] epoch 53: 35.6 min (train 35.6, iters 1079); mem: available 23.3 GB, rss 6.6 GB, cgroup 27.1 GB
+[  371.1 min] epoch 54: 35.4 min (train 35.4, iters 1079); mem: available 23.0 GB, rss 6.6 GB, cgroup 26.9 GB
+[  406.3 min] epoch 55: 35.3 min (train 35.3, iters 1079); mem: available 23.2 GB, rss 6.6 GB, cgroup 27.0 GB
+[  441.5 min] epoch 56: 35.2 min (train 35.2, iters 1079); mem: available 22.9 GB, rss 6.6 GB, cgroup 26.9 GB
+[  476.6 min] epoch 57: 35.1 min (train 35.0, iters 1079); mem: available 22.8 GB, rss 6.6 GB, cgroup 26.6 GB
+[  511.6 min] epoch 58: 35.0 min (train 35.0, iters 1079); mem: available 23.0 GB, rss 6.6 GB, cgroup 26.7 GB
+[  546.4 min] epoch 59: 34.8 min (train 34.8, iters 1079); mem: available 23.5 GB, rss 6.6 GB, cgroup 26.7 GB
+[  581.2 min] epoch 60: 34.8 min (train 34.8, iters 1079); mem: available 23.0 GB, rss 6.7 GB, cgroup 26.8 GB
+[  616.0 min] epoch 61: 34.8 min (train 34.8, iters 1079); mem: available 23.1 GB, rss 6.7 GB, cgroup 26.8 GB
+[  650.8 min] epoch 62: 34.8 min (train 34.8, iters 1079); mem: available 22.8 GB, rss 6.7 GB, cgroup 26.7 GB
+[  650.8 min] time budget: stopping before epoch 63; resume.pth holds epoch 62
+[  651.1 min] rc 0, done False, epochs evaluated: 0
+[    0.2 min] $ git clone -q https://github.com/mingyuyng/Visual-Selective-VIO.git /kaggle/working/vsvio
+[    0.2 min] $ git -C /kaggle/working/vsvio checkout -q 27b06b38dcf07a015fba22038050113462387e7d
+[    0.2 min] $ /usr/bin/python3 -m pip install -q path
+[    0.3 min] $ git -C /kaggle/working/vsvio diff --no-index --stat /kaggle/working/vsvio/train.py /kaggle/working/vsvio/train_e5.py
+[    0.5 min] gpu_ids 0
+[    0.5 min] $ /usr/bin/python3 train_e5.py --data_dir /kaggle/working/kitti --seed 1 --gpu_ids 0 --workers 4 --experiment_name e5_s1 --pretrain_flownet /kaggle/input/datasets/norhanelmadah/vsvio-e5-inputs/flownets_bn_EPE2.459.pth.tar
+[    0.8 min] train windows: 17260
+[   11.2 min] frame cache: 17330 frames, 13.6 GB in 10.4 min, max |cached - original| on 4 windows 1.22e-04
+[   11.3 min] resumed from /kaggle/input/datasets/norhanelmadah/vsvio-e5-auth1gpu-s1-resume/resume.pth: epoch 62 done, continuing at 63
+[   46.6 min] epoch 63: 35.3 min (train 35.2, iters 1079); mem: available 23.5 GB, rss 6.7 GB, cgroup 27.4 GB
+[   81.7 min] epoch 64: 35.2 min (train 35.1, iters 1079); mem: available 23.7 GB, rss 6.7 GB, cgroup 27.1 GB
+[  116.8 min] epoch 65: 35.1 min (train 35.1, iters 1079); mem: available 23.4 GB, rss 6.7 GB, cgroup 26.6 GB
+[  152.0 min] epoch 66: 35.1 min (train 35.1, iters 1079); mem: available 23.1 GB, rss 6.7 GB, cgroup 26.7 GB
+[  187.2 min] epoch 67: 35.2 min (train 35.2, iters 1079); mem: available 23.0 GB, rss 6.7 GB, cgroup 26.9 GB
+[  222.3 min] epoch 68: 35.2 min (train 35.2, iters 1079); mem: available 23.3 GB, rss 6.7 GB, cgroup 26.9 GB
+[  257.4 min] epoch 69: 35.1 min (train 35.1, iters 1079); mem: available 23.4 GB, rss 6.7 GB, cgroup 27.0 GB
+[  292.6 min] epoch 70: 35.1 min (train 35.1, iters 1079); mem: available 23.6 GB, rss 6.7 GB, cgroup 26.7 GB
+[  327.7 min] epoch 71: 35.1 min (train 35.1, iters 1079); mem: available 23.2 GB, rss 6.7 GB, cgroup 26.7 GB
+[  362.8 min] epoch 72: 35.2 min (train 35.1, iters 1079); mem: available 23.2 GB, rss 6.6 GB, cgroup 26.7 GB
+[  397.9 min] epoch 73: 35.1 min (train 35.1, iters 1079); mem: available 23.3 GB, rss 6.6 GB, cgroup 26.9 GB
+[  433.1 min] epoch 74: 35.1 min (train 35.1, iters 1079); mem: available 23.3 GB, rss 6.6 GB, cgroup 26.9 GB
+[  468.2 min] epoch 75: 35.1 min (train 35.1, iters 1079); mem: available 23.2 GB, rss 6.6 GB, cgroup 26.8 GB
+[  503.3 min] epoch 76: 35.1 min (train 35.1, iters 1079); mem: available 23.5 GB, rss 6.6 GB, cgroup 27.0 GB
+[  538.4 min] epoch 77: 35.1 min (train 35.1, iters 1079); mem: available 23.2 GB, rss 6.7 GB, cgroup 26.9 GB
+[  573.4 min] epoch 78: 35.1 min (train 35.1, iters 1079); mem: available 23.4 GB, rss 6.7 GB, cgroup 26.9 GB
+[  608.6 min] epoch 79: 35.1 min (train 35.1, iters 1079); mem: available 22.7 GB, rss 6.7 GB, cgroup 27.0 GB
+[  643.7 min] epoch 80: 35.1 min (train 35.1, iters 1079); mem: available 23.1 GB, rss 6.7 GB, cgroup 26.9 GB
+[  643.7 min] time budget: stopping before epoch 81; resume.pth holds epoch 80
+[  643.8 min] rc 0, done False, epochs evaluated: 0
+[    0.2 min] $ git clone -q https://github.com/mingyuyng/Visual-Selective-VIO.git /kaggle/working/vsvio
+[    0.2 min] $ git -C /kaggle/working/vsvio checkout -q 27b06b38dcf07a015fba22038050113462387e7d
+[    0.2 min] $ /usr/bin/python3 -m pip install -q path
+[    0.3 min] $ git -C /kaggle/working/vsvio diff --no-index --stat /kaggle/working/vsvio/train.py /kaggle/working/vsvio/train_e5.py
+[    0.4 min] gpu_ids 0
+[    0.4 min] $ /usr/bin/python3 train_e5.py --data_dir /kaggle/working/kitti --seed 1 --gpu_ids 0 --workers 4 --experiment_name e5_s1 --pretrain_flownet /kaggle/input/datasets/norhanelmadah/vsvio-e5-inputs/flownets_bn_EPE2.459.pth.tar
+[    0.7 min] train windows: 17260
+[    7.7 min] frame cache: 17330 frames, 13.6 GB in 6.9 min, max |cached - original| on 4 windows 1.22e-04
+[    7.8 min] resumed from /kaggle/input/notebooks/norhanelmadah/vsvio-e5-auth1gpu-s1-c5/e5/resume.pth: epoch 80 done, continuing at 81
+[   47.3 min] eval epoch 81 (3.7 min): 08 4.38 | 05/07/10 3.42 2.45 4.49 = 3.45
+[   47.3 min] epoch 81: 39.5 min (train 35.8, iters 1079); mem: available 23.6 GB, rss 6.6 GB, cgroup 28.1 GB
+[   85.5 min] eval epoch 82 (2.5 min): 08 3.78 | 05/07/10 3.62 3.01 3.41 = 3.35
+[   85.5 min] epoch 82: 38.2 min (train 35.8, iters 1079); mem: available 23.6 GB, rss 6.6 GB, cgroup 28.3 GB
+[  123.0 min] eval epoch 83 (1.8 min): 08 4.86 | 05/07/10 4.21 4.01 4.23 = 4.15
+[  123.0 min] epoch 83: 37.5 min (train 35.7, iters 1079); mem: available 23.4 GB, rss 6.6 GB, cgroup 28.4 GB
+[  160.5 min] eval epoch 84 (1.7 min): 08 4.83 | 05/07/10 5.02 3.52 5.83 = 4.79
+[  160.5 min] epoch 84: 37.5 min (train 35.7, iters 1079); mem: available 23.2 GB, rss 6.6 GB, cgroup 28.2 GB
+[  197.9 min] eval epoch 85 (1.6 min): 08 2.97 | 05/07/10 3.02 1.83 3.01 = 2.62
+[  197.9 min] epoch 85: 37.4 min (train 35.7, iters 1079); mem: available 23.6 GB, rss 6.7 GB, cgroup 28.6 GB
+[  235.4 min] eval epoch 86 (1.7 min): 08 4.24 | 05/07/10 3.82 2.94 4.54 = 3.77
+[  235.4 min] epoch 86: 37.5 min (train 35.7, iters 1079); mem: available 23.3 GB, rss 6.7 GB, cgroup 28.5 GB
+[  272.7 min] eval epoch 87 (1.6 min): 08 2.95 | 05/07/10 2.97 2.28 3.54 = 2.93
+[  272.7 min] epoch 87: 37.4 min (train 35.7, iters 1079); mem: available 23.5 GB, rss 6.7 GB, cgroup 28.5 GB
+[  310.3 min] eval epoch 88 (1.8 min): 08 3.40 | 05/07/10 3.52 1.99 3.22 = 2.91
+[  310.3 min] epoch 88: 37.6 min (train 35.7, iters 1079); mem: available 23.3 GB, rss 6.7 GB, cgroup 28.7 GB
+[  347.7 min] eval epoch 89 (1.6 min): 08 2.69 | 05/07/10 3.51 1.72 2.59 = 2.61
+[  347.7 min] epoch 89: 37.4 min (train 35.8, iters 1079); mem: available 23.5 GB, rss 6.7 GB, cgroup 28.6 GB
+[  385.2 min] eval epoch 90 (1.7 min): 08 3.79 | 05/07/10 3.26 1.91 3.71 = 2.96
+[  385.2 min] epoch 90: 37.5 min (train 35.7, iters 1079); mem: available 23.2 GB, rss 6.7 GB, cgroup 28.6 GB
+[  422.6 min] eval epoch 91 (1.6 min): 08 2.68 | 05/07/10 3.32 1.78 3.28 = 2.80
+[  422.6 min] epoch 91: 37.4 min (train 35.7, iters 1079); mem: available 23.4 GB, rss 6.8 GB, cgroup 28.6 GB
+[  460.3 min] eval epoch 92 (2.1 min): 08 3.36 | 05/07/10 3.35 2.63 3.26 = 3.08
+[  460.3 min] epoch 92: 37.8 min (train 35.7, iters 1079); mem: available 23.3 GB, rss 6.8 GB, cgroup 28.7 GB
+[  497.7 min] eval epoch 93 (1.6 min): 08 2.59 | 05/07/10 2.84 1.75 2.79 = 2.46
+[  497.7 min] epoch 93: 37.4 min (train 35.7, iters 1079); mem: available 23.4 GB, rss 6.8 GB, cgroup 28.5 GB
+[  535.2 min] eval epoch 94 (1.8 min): 08 2.70 | 05/07/10 3.15 1.81 3.12 = 2.69
+[  535.2 min] epoch 94: 37.5 min (train 35.7, iters 1079); mem: available 23.1 GB, rss 6.7 GB, cgroup 28.6 GB
+[  572.6 min] eval epoch 95 (1.7 min): 08 4.05 | 05/07/10 4.14 3.41 5.03 = 4.20
+[  572.6 min] epoch 95: 37.4 min (train 35.7, iters 1079); mem: available 23.0 GB, rss 6.7 GB, cgroup 28.4 GB
+[  609.9 min] eval epoch 96 (1.6 min): 08 2.63 | 05/07/10 2.84 2.00 2.69 = 2.51
+[  609.9 min] epoch 96: 37.3 min (train 35.7, iters 1079); mem: available 23.0 GB, rss 6.8 GB, cgroup 28.4 GB
+[  648.2 min] eval epoch 97 (2.5 min): 08 2.85 | 05/07/10 2.68 2.23 3.13 = 2.68
+[  648.2 min] epoch 97: 38.2 min (train 35.7, iters 1079); mem: available 23.1 GB, rss 6.8 GB, cgroup 28.5 GB
+[  648.2 min] time budget: stopping before epoch 98; resume.pth holds epoch 97
+[  648.3 min] rc 0, done False, epochs evaluated: 17
+[    0.2 min] $ git clone -q https://github.com/mingyuyng/Visual-Selective-VIO.git /kaggle/working/vsvio
+[    0.3 min] $ git -C /kaggle/working/vsvio checkout -q 27b06b38dcf07a015fba22038050113462387e7d
+[    0.3 min] $ /usr/bin/python3 -m pip install -q path
+[    0.3 min] $ git -C /kaggle/working/vsvio diff --no-index --stat /kaggle/working/vsvio/train.py /kaggle/working/vsvio/train_e5.py
+[    0.5 min] gpu_ids 0
+[    0.5 min] $ /usr/bin/python3 train_e5.py --data_dir /kaggle/working/kitti --seed 1 --gpu_ids 0 --workers 4 --experiment_name e5_s1 --pretrain_flownet /kaggle/input/datasets/hagagovic/vsvio-e5-inputs/flownets_bn_EPE2.459.pth.tar
+[    0.7 min] train windows: 17260
+[    9.7 min] frame cache: 17330 frames, 13.6 GB in 9.0 min, max |cached - original| on 4 windows 1.22e-04
+[    9.8 min] resumed from /kaggle/input/datasets/hagagovic/vsvio-e5-auth1gpu-s1-resume/resume.pth: epoch 97 done, continuing at 98
+[   48.2 min] eval epoch 98 (3.0 min): 08 3.14 | 05/07/10 3.14 2.21 3.54 = 2.96
+[   48.2 min] epoch 98: 38.4 min (train 35.3, iters 1079); mem: available 23.5 GB, rss 6.5 GB, cgroup 28.5 GB
+[   85.2 min] eval epoch 99 (1.8 min): 08 3.78 | 05/07/10 3.62 2.41 3.67 = 3.23
+[   85.4 min] rc 0, done True, epochs evaluated: 19

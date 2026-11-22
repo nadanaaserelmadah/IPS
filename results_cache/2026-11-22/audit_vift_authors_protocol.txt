@@ -1,0 +1,38 @@
+# Audit: VIFT under the protocol of its released code (2026-11-22). Kernels hassanhaggag/vift-kitti-auth08-testsel-s42, dragonvic/…-s2, mhaggag/…-s3 (scripts/kaggle_kernels/vift_auth08_s*): kno08val_hassanhaggag-s2/vift_no08_val08.py with three defaults changed: training adds 08, KR_VAL=05,07,10 so val/loss picks the checkpoint on the test drives, seed. Same mirror augmentation and frozen VS-VIO encoder as the clean runs. Paired with base_s42/s2/s3 of E4 (results_cache/2026-11-10).
+# Early stopping ended each run at its best epoch (best epoch = last epoch: 70, 95, 67).
+# CAUTION: the frozen encoder vf_512_if_256_3e-05.model is VS-VIO's released weights, trained WITH 08, so 08 is never held out from VIFT's pipeline, also in the 'clean' VIFT runs.
+
+## Oracle swap and sensor rows (t_rel % / r_rel deg/100 m, mean of 05 / 07 / 10)
+
+| model | reference | network | oracle: GT rot + net t | oracle: net rot + GT t | gyro rot + net t | + accel length |
+|---|---|---|---|---|---|---|
+| kitti_rpmg/poses_best | OXTS | 2.30 / 0.84 | 1.36 / 0.00 | 1.61 / 0.84 | 1.53 / 0.18 | 1.20 / 0.18 |
+| kitti_rpmg/poses_best | SuMa | 2.27 / 0.84 | 1.46 / 0.25 | 1.56 / 0.84 | 1.58 / 0.32 | 1.26 / 0.32 |
+| kitti_rpmg/poses_best | OXTS | 2.46 / 0.80 | 1.53 / 0.00 | 1.43 / 0.80 | 1.68 / 0.18 | 1.31 / 0.18 |
+| kitti_rpmg/poses_best | SuMa | 2.48 / 0.79 | 1.66 / 0.25 | 1.46 / 0.79 | 1.77 / 0.32 | 1.39 / 0.32 |
+| kitti_rpmg/poses_best | OXTS | 3.39 / 1.39 | 1.32 / 0.00 | 2.90 / 1.39 | 1.51 / 0.18 | 1.22 / 0.18 |
+| kitti_rpmg/poses_best | SuMa | 3.35 / 1.35 | 1.41 / 0.25 | 2.88 / 1.35 | 1.56 / 0.32 | 1.27 / 0.32 |
+
+### KITTI test, variant C5b
+| model | reference | network | gyro + net t | hand-chosen (net dir + accel len) | **gate v3** |
+|---|---|---|---|---|---|
+| auth_s42/kitti_rpmg/poses_best | OXTS | 2.30 | 1.53 | 1.20 | **1.14** |
+| auth_s42/kitti_rpmg/poses_best | SuMa | 2.27 | 1.58 | 1.26 | **1.20** |
+| auth_s2/kitti_rpmg/poses_best | OXTS | 2.46 | 1.68 | 1.31 | **1.27** |
+| auth_s2/kitti_rpmg/poses_best | SuMa | 2.48 | 1.77 | 1.39 | **1.35** |
+| auth_s3/kitti_rpmg/poses_best | OXTS | 3.39 | 1.51 | 1.22 | **1.18** |
+| auth_s3/kitti_rpmg/poses_best | SuMa | 3.35 | 1.56 | 1.27 | **1.24** |
+
+## 08 (in every released model's training split), network only, OXTS
+
+| model | t_rel % | r_rel |
+|---|---|---|
+
+## Paired against the clean runs of the same seeds (t_rel %, 05/07/10, OXTS)
+| stage | with 08, select on test (mean±SD, min-max) | clean (mean±SD) | mean diff | per-seed diffs (42/2/3) | paired t p |
+|---|---|---|---|---|---|
+| network | 2.72±0.59 (2.30-3.39) | 3.05±0.86 | -0.33 | -0.27 / -1.58 / +0.86 | 0.686 |
+| gyro rot + net t | 1.57±0.09 (1.51-1.68) | 2.10±0.04 | -0.53 | -0.61 / -0.38 / -0.60 | 0.019 |
+| + accel length | 1.24±0.06 (1.20-1.31) | 1.62±0.02 | -0.38 | -0.45 / -0.30 / -0.39 | 0.013 |
+| gate v3 | 1.20±0.07 (1.14-1.27) | 1.56±0.02 | -0.37 | -0.45 / -0.28 / -0.37 | 0.017 |
+(Wilcoxon cannot go below p = 0.25 with n = 3.)

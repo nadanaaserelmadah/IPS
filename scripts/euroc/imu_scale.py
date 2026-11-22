@@ -27,6 +27,8 @@ EDGE_NS = gh.EDGE_NS
 WINDOW = 20
 RIDGE_BA = 1.0  # weight pulling b_a towards 0 (m/s^2 units; the bias is ~0.1)
 LAST_RMS = float("nan")
+LAST_COND = float("nan")  # condition number of the last window's design matrix (ridge rows excluded, as on KITTI)
+COND_MAX = None  # unified-rule option: also require the condition number below COND_MAX. None = gravity check only (as in every reported result)
 
 
 def attitude(t_ns, gyro, b):
@@ -82,6 +84,8 @@ def solve_window(Rk, Rk1, d_cam, pre, dts, R_bs, p_bs):
         rhs.append(sum_Rb * dts[k] + Rk[k] @ al + (Rk1[k] - Rk[k]) @ p_bs)
         sum_Rb = sum_Rb + Rk[k] @ be
         sum_RJb = sum_RJb + Rk[k] @ Jb
+    global LAST_COND
+    LAST_COND = float(np.linalg.cond(np.vstack(rows)))
     A = np.vstack(rows + [np.hstack([np.zeros((3, 6)), RIDGE_BA * np.eye(3), np.zeros((3, M))])])
     y = np.concatenate(rhs + [np.zeros(3)])
     x = np.linalg.lstsq(A, y, rcond=None)[0]
@@ -91,13 +95,16 @@ def solve_window(Rk, Rk1, d_cam, pre, dts, R_bs, p_bs):
 
 
 def imu_lengths(root: Path, seq: str, t_end: np.ndarray, d_cam: np.ndarray, window: int = WINDOW, g_tol: float | None = None,
-                rms_out: np.ndarray | None = None):
+                rms_out: np.ndarray | None = None, cond_out: np.ndarray | None = None):
     """Step lengths per edge (NaN where not solved). g_tol: reject windows whose solved |g| is more than
     g_tol m/s^2 from 9.81 (physical plausibility check; 0.5 was fixed before looking at any result)."""
     mav = root / seq / "mav0"
     imu = np.loadtxt(mav / "imu0/data.csv", delimiter=",", comments="#")
     t_ns, gyro, acc = imu[:, 0].astype(np.int64), imu[:, 1:4], imu[:, 4:7]
     b = gh.bias_for(seq, t_ns, gyro, acc)
+    gc = gh.online_gyro(seq, t_ns, gyro)
+    if gc is not None:  # online bias replaces the static-prefix rule (IPS_ONLINE_BIAS_DIR)
+        gyro, b = gc, np.zeros(3)
     T_bs = gh.load_T_BS(root / seq)
     R_bs, p_bs = T_bs[:3, :3], T_bs[:3, 3]
     Rs = attitude(t_ns, gyro, b)
@@ -126,7 +133,11 @@ def imu_lengths(root: Path, seq: str, t_end: np.ndarray, d_cam: np.ndarray, wind
             gnorm.append(np.linalg.norm(g))
             if rms_out is not None:
                 rms_out[idx] = LAST_RMS
+            if cond_out is not None:
+                cond_out[idx] = LAST_COND
             if g_tol is not None and abs(gnorm[-1] - 9.81) > g_tol:
+                continue
+            if COND_MAX is not None and LAST_COND >= COND_MAX:
                 continue
             lengths[idx] = l
     return lengths, np.array(gnorm)

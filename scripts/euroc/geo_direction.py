@@ -199,6 +199,9 @@ def geo_sequence(root: Path, seq: str, t_end: np.ndarray, cache: Path):
     imu = np.loadtxt(mav / "imu0/data.csv", delimiter=",", comments="#")
     t_ns, gyro, acc = imu[:, 0].astype(np.int64), imu[:, 1:4], imu[:, 4:7]
     b = gh.bias_for(seq, t_ns, gyro, acc)
+    gc = gh.online_gyro(seq, t_ns, gyro)
+    if gc is not None:  # online bias replaces the static-prefix rule (IPS_ONLINE_BIAS_DIR)
+        gyro, b = gc, np.zeros(3)
     T_bs0 = gh.load_T_BS(root / seq)
     R_bs = T_bs0[:3, :3]
     K, dist, cam_ts, files = read_cam(mav / "cam0")
@@ -320,6 +323,8 @@ def track_points(img_a, img_b, pa):
 
     lk = dict(winSize=(21, 21), maxLevel=3, criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 30, 0.01))
     p = pa.reshape(-1, 1, 2).astype(np.float32)
+    if len(p) == 0:  # no points to track (e.g. a dark frame): newer OpenCV asserts on an empty array
+        return np.empty((0, 2)), np.empty((0, 2))
     pb, st, _ = cv2.calcOpticalFlowPyrLK(img_a, img_b, p, None, **lk)
     pa2, st2, _ = cv2.calcOpticalFlowPyrLK(img_b, img_a, pb, None, **lk)
     ok = (st.ravel() == 1) & (st2.ravel() == 1) & (np.linalg.norm(p - pa2, axis=2).ravel() < 1.0)

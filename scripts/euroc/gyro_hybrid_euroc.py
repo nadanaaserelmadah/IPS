@@ -61,6 +61,23 @@ def static_bias(t_ns, gyro, acc, block_s=0.25, min_s=0.5):
 
 
 
+def online_gyro(seq, t_ns, gyro):
+    """Opt-in (env IPS_ONLINE_BIAS_DIR): the gyro with the causal online bias removed (docs/ONLINE_GYRO_BIAS_DESIGN.md).
+    <dir>/<seq>_online_bias.npz holds t1 (edge end times, ns) and b (n, 3, rad/s); the bias at an IMU sample is the estimate formed
+    at the last edge that ended at or before it (zero before the first). Returns None when the variable or the file is absent,
+    in which case callers keep the original static-prefix-or-zero rule."""
+    import os
+
+    d = os.environ.get("IPS_ONLINE_BIAS_DIR")
+    f = Path(d) / f"{seq}_online_bias.npz" if d else None
+    if f is None or not f.is_file():
+        return None
+    z = np.load(f)
+    idx = np.searchsorted(z["t1"], t_ns, side="right") - 1
+    b = np.where((idx >= 0)[:, None], z["b"][np.clip(idx, 0, None)], 0.0)
+    return gyro - b
+
+
 def bias_for(seq, t_ns, gyro, acc):
     """Gyro bias for a sequence: the static-prefix mean, else (opt-in diagnostic) a bias from the JSON file named
     by env IPS_GYRO_BIAS_JSON ({seq: [bx, by, bz]}, e.g. the visual estimate of geo_direction.visual_gyro_bias),

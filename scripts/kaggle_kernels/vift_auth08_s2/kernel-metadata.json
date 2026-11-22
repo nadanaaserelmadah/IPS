@@ -1,0 +1,3 @@
+{"id": "dragonvic/vift-kitti-auth08-testsel-s2", "title": "vift-kitti-auth08-testsel-s2", "code_file": "vift_auth08_testsel.py", "language": "python", "kernel_type": "script",
+ "is_private": true, "enable_gpu": true, "enable_tpu": false, "enable_internet": true,
+ "dataset_sources": ["dragonvic/ips-pivift-fixed", "hocop1/kitti-odometry", "dragonvic/kitti-imus", "dragonvic/vsvio-encoder"], "kernel_sources": [], "competition_sources": [], "model_sources": []}
