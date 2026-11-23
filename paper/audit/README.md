@@ -30,4 +30,3 @@ These are also marked in red with `\todo{}` in the PDF, or as `TODO` in `refs.bi
    - DAP-Pose: unchecked, no code.
 4. **Bibliography:** filled from Crossref on 2026-11-18 (NASVIO, UL-VIO, RWKV-VIO, TOR-VIO, Gu 2026). Nothing left marked TODO in `refs.bib`.
 5. **Overlap with the first paper:** the timing finding and the VIFT protocol audit also appear in `paper/submission/main.tex`. Decide which paper keeps the full account. The plan proposes this one, with a line and a citation in the first.
-6. **Author line:** it is copied from the first paper. Set it as intended.
