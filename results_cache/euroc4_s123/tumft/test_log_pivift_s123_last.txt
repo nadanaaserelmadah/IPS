@@ -1,0 +1,606 @@
+[[36m2026-11-25 08:04:28,476[0m][[34msrc.utils.utils[0m][[32mINFO[0m] - [rank: 0] Enforcing tags! <cfg.extras.enforce_tags=True>[0m
+[[36m2026-11-25 08:04:28,484[0m][[34msrc.utils.utils[0m][[32mINFO[0m] - [rank: 0] Printing config tree with Rich! <cfg.extras.print_config=True>[0m
+CONFIG
+├── data
+│   └── _target_: src.data.vio_datamodule.VIODataModule                         
+│       batch_size: 4                                                           
+│       num_workers: 0                                                          
+│       pin_memory: false                                                       
+│       train_loader:                                                           
+│         _target_: src.data.components.EuRoC_dataset.EuRoC                     
+│         _partial_: false                                                      
+│         root: /kaggle/working/IPS/third_party/VIFT/data//euroc                
+│         sequences:                                                            
+│         - MH_05_difficult                                                     
+│         sequence_length: 11                                                   
+│         cam_stride: 2                                                         
+│         imu_freq: 10                                                          
+│         include_state_gt: true                                                
+│         transform:                                                            
+│           _target_: src.utils.custom_transform.Compose                        
+│           _partial_: false                                                    
+│           transforms:                                                         
+│           - _target_: src.utils.custom_transform.ToTensor                     
+│           - _target_: src.utils.custom_transform.Resize                       
+│             size:                                                             
+│             - 256                                                             
+│             - 512                                                             
+│       val_loader:                                                             
+│         _target_: src.data.components.EuRoC_dataset.EuRoC                     
+│         _partial_: false                                                      
+│         root: /kaggle/working/IPS/third_party/VIFT/data//euroc                
+│         sequences:                                                            
+│         - MH_05_difficult                                                     
+│         sequence_length: 11                                                   
+│         cam_stride: 2                                                         
+│         imu_freq: 10                                                          
+│         include_state_gt: true                                                
+│         transform:                                                            
+│           _target_: src.utils.custom_transform.Compose                        
+│           _partial_: false                                                    
+│           transforms:                                                         
+│           - _target_: src.utils.custom_transform.ToTensor                     
+│           - _target_: src.utils.custom_transform.Resize                       
+│             size:                                                             
+│             - 256                                                             
+│             - 512                                                             
+│       test_loader:                                                            
+│         _target_: src.data.components.empty_dataset.EvalPlaceholderDataset    
+│                                                                               
+├── model
+│   └── _target_: src.models.euroc_joint_module.EurocJointLitModule             
+│       optimizer:                                                              
+│         _target_: torch.optim.AdamW                                           
+│         _partial_: true                                                       
+│         lr: 0.0001                                                            
+│         weight_decay: 0.01                                                    
+│       scheduler:                                                              
+│         _target_: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts        
+│         _partial_: true                                                       
+│         T_0: 50                                                               
+│         T_mult: 1                                                             
+│       criterion:                                                              
+│         _target_: src.metrics.weighted_loss.PIViftLoss                        
+│         translation_weight: 1.0                                               
+│         rotation_weight: 40.0                                                 
+│         horizon_weight: 0.1                                                   
+│         temporal_weight: 0.0                                                  
+│         velocity_weight: 0.1                                                  
+│         gravity_weight: 0.05                                                  
+│         horizons:                                                             
+│         - 2                                                                   
+│         - 5                                                                   
+│         - 10                                                                  
+│         smooth_l1_beta: 0.05                                                  
+│       net:                                                                    
+│         _target_: src.models.components.pi_vift.PIViftNet                     
+│         img_w: 512                                                            
+│         img_h: 256                                                            
+│         v_f_len: 512                                                          
+│         i_f_len: 256                                                          
+│         imu_dropout: 0.1                                                      
+│         predict_corrections: true                                             
+│       pretrained_encoder: /kaggle/working/IPS/third_party/VIFT/pretrained_mode
+│       phase2_ckpt: null                                                       
+│       encoder_ckpt: null                                                      
+│       fusion_lr: 0.0001                                                       
+│       freeze_encoder_epochs: 100                                              
+│       encoder_lr_scale: 0.1                                                   
+│       gradient_clip_val: 1.0                                                  
+│       metrics_calculator:                                                     
+│         _target_: src.metrics.euroc_metrics_calculator.EuroCMetricsCalculator 
+│         primary_alignment: se3                                                
+│         report_all_alignments: true                                           
+│         max_step_m: 5.0                                                       
+│         invalid_policy: flag                                                  
+│       tester:                                                                 
+│         _target_: src.testers.euroc_joint_tester.EurocJointTester             
+│         sequences:                                                            
+│         - MH_05_difficult                                                     
+│         - V2_02_medium                                                        
+│         - V1_01_easy                                                          
+│         - V1_02_medium                                                        
+│         data_dir: /kaggle/working/IPS/third_party/VIFT/data//euroc            
+│         seq_len: 11                                                           
+│         cam_stride: 2                                                         
+│         imu_freq: 10                                                          
+│         img_w: 512                                                            
+│         img_h: 256                                                            
+│         wrapper_weights_path: ''                                              
+│         device: cuda                                                          
+│         v_f_len: 512                                                          
+│         i_f_len: 256                                                          
+│         use_history_in_eval: false                                            
+│         eval_mode: window_last                                                
+│       compile: false                                                          
+│                                                                               
+├── callbacks
+│   └── model_summary:                                                          
+│         _target_: lightning.pytorch.callbacks.RichModelSummary                
+│         max_depth: 1                                                          
+│       rich_progress_bar:                                                      
+│         _target_: lightning.pytorch.callbacks.RichProgressBar                 
+│       model_checkpoint:                                                       
+│         _target_: lightning.pytorch.callbacks.ModelCheckpoint                 
+│         dirpath: /kaggle/working/euroc4_pivift_s123_last/checkpoints          
+│         filename: best_{epoch:03d}                                            
+│         monitor: val/loss                                                     
+│         mode: min                                                             
+│         save_last: false                                                      
+│         save_top_k: 3                                                         
+│         auto_insert_metric_name: false                                        
+│         every_n_epochs: 5                                                     
+│       model_checkpoint_periodic:                                              
+│         _target_: lightning.pytorch.callbacks.ModelCheckpoint                 
+│         dirpath: /kaggle/working/euroc4_pivift_s123_last/checkpoints          
+│         filename: epoch_{epoch:03d}                                           
+│         monitor: null                                                         
+│         save_last: true                                                       
+│         save_top_k: 1                                                         
+│         auto_insert_metric_name: false                                        
+│         every_n_epochs: 5                                                     
+│       checkpoint_zip:                                                         
+│         _target_: src.utils.checkpoint_zip_callback.CheckpointZipCallback     
+│         every_n_epochs: 5                                                     
+│         output_dir: /kaggle/working/euroc4_pivift_s123_last/checkpoint_zips   
+│         copy_to_kaggle_working: true                                          
+│                                                                               
+├── logger
+│   └── csv:                                                                    
+│         _target_: lightning.pytorch.loggers.csv_logs.CSVLogger                
+│         save_dir: /kaggle/working/euroc4_pivift_s123_last                     
+│         name: csv/                                                            
+│         prefix: ''                                                            
+│                                                                               
+├── trainer
+│   └── _target_: lightning.pytorch.trainer.Trainer                             
+│       default_root_dir: /kaggle/working/euroc4_pivift_s123_last               
+│       min_epochs: 1                                                           
+│       max_epochs: 100                                                         
+│       accelerator: gpu                                                        
+│       devices: 1                                                              
+│       check_val_every_n_epoch: 1                                              
+│       deterministic: false                                                    
+│       num_sanity_val_steps: 0                                                 
+│       log_every_n_steps: 10                                                   
+│       gradient_clip_val: 1.0                                                  
+│                                                                               
+├── paths
+│   └── root_dir: /kaggle/working/IPS/third_party/VIFT                          
+│       data_dir: /kaggle/working/IPS/third_party/VIFT/data/                    
+│       log_dir: /kaggle/working/IPS/third_party/VIFT/logs/                     
+│       output_dir: /kaggle/working/euroc4_pivift_s123_last                     
+│       work_dir: /kaggle/working/IPS/third_party/VIFT                          
+│                                                                               
+├── extras
+│   └── ignore_warnings: false                                                  
+│       enforce_tags: true                                                      
+│       print_config: true                                                      
+│                                                                               
+├── task_name
+│   └── train                                                                   
+├── tags
+│   └── ['euroc_joint_pivift', 'pi_vift', 'g1']                                 
+├── train
+│   └── False                                                                   
+├── test
+│   └── True                                                                    
+├── ckpt_path
+│   └── /kaggle/input/datasets/amrelmadah/pivift-euroc-ckpt/pivift_s123_last.ckp
+├── ckpt_weights_only
+│   └── False                                                                   
+├── init_ckpt_weights
+│   └── False                                                                   
+└── seed
+    └── 42                                                                      
+Seed set to 42
+[[36m2026-11-25 08:04:28,565[0m][[34m__main__[0m][[32mINFO[0m] - [rank: 0] Instantiating datamodule <src.data.vio_datamodule.VIODataModule>[0m
+[[36m2026-11-25 08:04:30,888[0m][[34m__main__[0m][[32mINFO[0m] - [rank: 0] Instantiating model <src.models.euroc_joint_module.EurocJointLitModule>[0m
+Loaded pretrained encoder: 79 tensors from /kaggle/working/IPS/third_party/VIFT/pretrained_models/vf_512_if_256_3e-05.model
+[[36m2026-11-25 08:04:42,268[0m][[34m__main__[0m][[32mINFO[0m] - [rank: 0] Instantiating callbacks...[0m
+[[36m2026-11-25 08:04:42,268[0m][[34msrc.utils.instantiators[0m][[32mINFO[0m] - [rank: 0] Instantiating callback <lightning.pytorch.callbacks.RichModelSummary>[0m
+[[36m2026-11-25 08:04:42,269[0m][[34msrc.utils.instantiators[0m][[32mINFO[0m] - [rank: 0] Instantiating callback <lightning.pytorch.callbacks.RichProgressBar>[0m
+[[36m2026-11-25 08:04:42,269[0m][[34msrc.utils.instantiators[0m][[32mINFO[0m] - [rank: 0] Instantiating callback <lightning.pytorch.callbacks.ModelCheckpoint>[0m
+[[36m2026-11-25 08:04:42,274[0m][[34msrc.utils.instantiators[0m][[32mINFO[0m] - [rank: 0] Instantiating callback <lightning.pytorch.callbacks.ModelCheckpoint>[0m
+[[36m2026-11-25 08:04:42,276[0m][[34msrc.utils.instantiators[0m][[32mINFO[0m] - [rank: 0] Instantiating callback <src.utils.checkpoint_zip_callback.CheckpointZipCallback>[0m
+[[36m2026-11-25 08:04:42,279[0m][[34m__main__[0m][[32mINFO[0m] - [rank: 0] Instantiating loggers...[0m
+[[36m2026-11-25 08:04:42,279[0m][[34msrc.utils.instantiators[0m][[32mINFO[0m] - [rank: 0] Instantiating logger <lightning.pytorch.loggers.csv_logs.CSVLogger>[0m
+[[36m2026-11-25 08:04:42,280[0m][[34m__main__[0m][[32mINFO[0m] - [rank: 0] Instantiating trainer <lightning.pytorch.trainer.Trainer>[0m
+Trainer already configured with model summary callbacks: [<class 'lightning.pytorch.callbacks.rich_model_summary.RichModelSummary'>]. Skipping setting a default `ModelSummary` callback.
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+💡 Tip: For seamless cloud logging and experiment tracking, try installing [litlogger](https://pypi.org/project/litlogger/) to enable LitLogger, which logs metrics and artifacts automatically to the Lightning Experiments platform.
+[[36m2026-11-25 08:04:42,385[0m][[34m__main__[0m][[32mINFO[0m] - [rank: 0] Logging hyperparameters![0m
+[[36m2026-11-25 08:04:43,377[0m][[34m__main__[0m][[32mINFO[0m] - [rank: 0] Starting testing![0m
+[[36m2026-11-25 08:04:43,377[0m][[34m__main__[0m][[32mINFO[0m] - [rank: 0] Testing from checkpoint: /kaggle/input/datasets/amrelmadah/pivift-euroc-ckpt/pivift_s123_last.ckpt[0m
+Restoring states from the checkpoint path at /kaggle/input/datasets/amrelmadah/pivift-euroc-ckpt/pivift_s123_last.ckpt
+/usr/local/lib/python3.13/dist-packages/lightning/pytorch/trainer/call.py:283: Be aware that when using `ckpt_path`, callbacks used to create the checkpoint need to be provided during `Trainer` instantiation. Please add the following callbacks: ["ModelCheckpoint{'monitor': 'val/loss', 'mode': 'min', 'every_n_train_steps': 0, 'every_n_epochs': 1, 'train_time_interval': None}", "ModelCheckpoint{'monitor': 'val/ate_se3', 'mode': 'min', 'every_n_train_steps': 0, 'every_n_epochs': 1, 'train_time_interval': None}", "ModelCheckpoint{'monitor': None, 'mode': 'min', 'every_n_train_steps': 0, 'every_n_epochs': 1, 'train_time_interval': None}"].
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1]
+Loaded model weights from the checkpoint at /kaggle/input/datasets/amrelmadah/pivift-euroc-ckpt/pivift_s123_last.ckpt
+/usr/local/lib/python3.13/dist-packages/lightning/pytorch/utilities/_pytree.py:21: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+/usr/local/lib/python3.13/dist-packages/lightning/pytorch/trainer/connectors/data_connector.py:434: The 'test_dataloader' does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=3` in the `DataLoader` to improve performance.
+Running full sequence evaluation (raw images + encoder; slow)...
+Testing EuRoC sequence 1/4: MH_05_difficult
+  MH_05_difficult: 1127 windows (joint eval; mode=window_last)
+
+EuRoC joint MH_05_difficult:   0%|          | 0/1127 [00:00<?, ?it/s]
+EuRoC joint MH_05_difficult:   0%|          | 1/1127 [00:10<3:16:22, 10.46s/it]
+EuRoC joint MH_05_difficult:   1%|          | 14/1127 [00:15<16:43,  1.11it/s] 
+EuRoC joint MH_05_difficult:   2%|▏         | 28/1127 [00:20<10:45,  1.70it/s]
+EuRoC joint MH_05_difficult:   4%|▎         | 42/1127 [00:25<08:46,  2.06it/s]
+EuRoC joint MH_05_difficult:   5%|▍         | 56/1127 [00:30<07:47,  2.29it/s]
+EuRoC joint MH_05_difficult:   6%|▌         | 70/1127 [00:36<07:16,  2.42it/s]
+EuRoC joint MH_05_difficult:   7%|▋         | 84/1127 [00:41<06:51,  2.53it/s]
+EuRoC joint MH_05_difficult:   9%|▊         | 98/1127 [00:46<06:35,  2.60it/s]
+EuRoC joint MH_05_difficult:  10%|█         | 113/1127 [00:51<06:19,  2.67it/s]
+EuRoC joint MH_05_difficult:  11%|█▏        | 128/1127 [00:56<06:07,  2.72it/s]
+EuRoC joint MH_05_difficult:  13%|█▎        | 143/1127 [01:02<05:56,  2.76it/s]
+EuRoC joint MH_05_difficult:  14%|█▍        | 158/1127 [01:07<05:50,  2.77it/s]
+EuRoC joint MH_05_difficult:  15%|█▌        | 173/1127 [01:12<05:40,  2.80it/s]
+EuRoC joint MH_05_difficult:  17%|█▋        | 188/1127 [01:17<05:33,  2.81it/s]
+EuRoC joint MH_05_difficult:  18%|█▊        | 203/1127 [01:23<05:31,  2.79it/s]
+EuRoC joint MH_05_difficult:  19%|█▉        | 218/1127 [01:28<05:26,  2.79it/s]
+EuRoC joint MH_05_difficult:  21%|██        | 233/1127 [01:34<05:17,  2.81it/s]
+EuRoC joint MH_05_difficult:  22%|██▏       | 248/1127 [01:39<05:12,  2.81it/s]
+EuRoC joint MH_05_difficult:  23%|██▎       | 263/1127 [01:45<05:25,  2.65it/s]
+EuRoC joint MH_05_difficult:  25%|██▍       | 277/1127 [01:50<05:16,  2.69it/s]
+EuRoC joint MH_05_difficult:  26%|██▌       | 291/1127 [01:55<05:08,  2.71it/s]
+EuRoC joint MH_05_difficult:  27%|██▋       | 305/1127 [02:01<05:03,  2.70it/s]
+EuRoC joint MH_05_difficult:  28%|██▊       | 319/1127 [02:06<04:57,  2.72it/s]
+EuRoC joint MH_05_difficult:  30%|██▉       | 333/1127 [02:11<04:55,  2.69it/s]
+EuRoC joint MH_05_difficult:  31%|███       | 347/1127 [02:16<04:47,  2.71it/s]
+EuRoC joint MH_05_difficult:  32%|███▏      | 362/1127 [02:21<04:38,  2.74it/s]
+EuRoC joint MH_05_difficult:  33%|███▎      | 376/1127 [02:27<04:34,  2.74it/s]
+EuRoC joint MH_05_difficult:  35%|███▍      | 390/1127 [02:32<04:28,  2.74it/s]
+EuRoC joint MH_05_difficult:  36%|███▌      | 405/1127 [02:37<04:20,  2.77it/s]
+EuRoC joint MH_05_difficult:  37%|███▋      | 419/1127 [02:42<04:15,  2.77it/s]
+EuRoC joint MH_05_difficult:  38%|███▊      | 433/1127 [02:47<04:10,  2.77it/s]
+EuRoC joint MH_05_difficult:  40%|███▉      | 447/1127 [02:52<04:06,  2.76it/s]
+EuRoC joint MH_05_difficult:  41%|████      | 462/1127 [02:58<03:59,  2.77it/s]
+EuRoC joint MH_05_difficult:  42%|████▏     | 477/1127 [03:03<03:52,  2.80it/s]
+EuRoC joint MH_05_difficult:  44%|████▎     | 491/1127 [03:08<03:49,  2.78it/s]
+EuRoC joint MH_05_difficult:  45%|████▍     | 505/1127 [03:13<03:46,  2.74it/s]
+EuRoC joint MH_05_difficult:  46%|████▌     | 520/1127 [03:18<03:39,  2.77it/s]
+EuRoC joint MH_05_difficult:  47%|████▋     | 534/1127 [03:24<03:35,  2.75it/s]
+EuRoC joint MH_05_difficult:  49%|████▊     | 548/1127 [03:29<03:32,  2.72it/s]
+EuRoC joint MH_05_difficult:  50%|████▉     | 563/1127 [03:34<03:24,  2.75it/s]
+EuRoC joint MH_05_difficult:  51%|█████▏    | 578/1127 [03:39<03:16,  2.80it/s]
+EuRoC joint MH_05_difficult:  53%|█████▎    | 593/1127 [03:45<03:08,  2.84it/s]
+EuRoC joint MH_05_difficult:  54%|█████▍    | 608/1127 [03:50<03:02,  2.84it/s]
+EuRoC joint MH_05_difficult:  55%|█████▌    | 623/1127 [03:55<02:55,  2.87it/s]
+EuRoC joint MH_05_difficult:  57%|█████▋    | 638/1127 [04:00<02:49,  2.88it/s]
+EuRoC joint MH_05_difficult:  58%|█████▊    | 653/1127 [04:05<02:44,  2.89it/s]
+EuRoC joint MH_05_difficult:  59%|█████▉    | 668/1127 [04:11<02:40,  2.87it/s]
+EuRoC joint MH_05_difficult:  61%|██████    | 683/1127 [04:16<02:35,  2.85it/s]
+EuRoC joint MH_05_difficult:  62%|██████▏   | 698/1127 [04:21<02:29,  2.87it/s]
+EuRoC joint MH_05_difficult:  63%|██████▎   | 713/1127 [04:26<02:22,  2.90it/s]
+EuRoC joint MH_05_difficult:  65%|██████▍   | 728/1127 [04:32<02:20,  2.83it/s]
+EuRoC joint MH_05_difficult:  66%|██████▌   | 743/1127 [04:37<02:14,  2.84it/s]
+EuRoC joint MH_05_difficult:  67%|██████▋   | 758/1127 [04:42<02:09,  2.84it/s]
+EuRoC joint MH_05_difficult:  69%|██████▊   | 773/1127 [04:48<02:05,  2.83it/s]
+EuRoC joint MH_05_difficult:  70%|██████▉   | 788/1127 [04:53<01:59,  2.84it/s]
+EuRoC joint MH_05_difficult:  71%|███████▏  | 803/1127 [04:58<01:53,  2.86it/s]
+EuRoC joint MH_05_difficult:  73%|███████▎  | 818/1127 [05:03<01:49,  2.82it/s]
+EuRoC joint MH_05_difficult:  74%|███████▍  | 833/1127 [05:09<01:45,  2.80it/s]
+EuRoC joint MH_05_difficult:  75%|███████▌  | 848/1127 [05:14<01:39,  2.80it/s]
+EuRoC joint MH_05_difficult:  77%|███████▋  | 863/1127 [05:20<01:34,  2.79it/s]
+EuRoC joint MH_05_difficult:  78%|███████▊  | 877/1127 [05:25<01:29,  2.79it/s]
+EuRoC joint MH_05_difficult:  79%|███████▉  | 891/1127 [05:30<01:24,  2.78it/s]
+EuRoC joint MH_05_difficult:  80%|████████  | 905/1127 [05:35<01:22,  2.71it/s]
+EuRoC joint MH_05_difficult:  82%|████████▏ | 919/1127 [05:40<01:16,  2.72it/s]
+EuRoC joint MH_05_difficult:  83%|████████▎ | 933/1127 [05:45<01:11,  2.73it/s]
+EuRoC joint MH_05_difficult:  84%|████████▍ | 947/1127 [05:50<01:05,  2.74it/s]
+EuRoC joint MH_05_difficult:  85%|████████▌ | 962/1127 [05:56<00:59,  2.76it/s]
+EuRoC joint MH_05_difficult:  87%|████████▋ | 976/1127 [06:01<00:54,  2.76it/s]
+EuRoC joint MH_05_difficult:  88%|████████▊ | 990/1127 [06:06<00:49,  2.76it/s]
+EuRoC joint MH_05_difficult:  89%|████████▉ | 1004/1127 [06:11<00:44,  2.76it/s]
+EuRoC joint MH_05_difficult:  90%|█████████ | 1019/1127 [06:16<00:39,  2.77it/s]
+EuRoC joint MH_05_difficult:  92%|█████████▏| 1033/1127 [06:22<00:33,  2.77it/s]
+EuRoC joint MH_05_difficult:  93%|█████████▎| 1047/1127 [06:27<00:28,  2.76it/s]
+EuRoC joint MH_05_difficult:  94%|█████████▍| 1062/1127 [06:32<00:23,  2.78it/s]
+EuRoC joint MH_05_difficult:  95%|█████████▌| 1076/1127 [06:37<00:18,  2.75it/s]
+EuRoC joint MH_05_difficult:  97%|█████████▋| 1091/1127 [06:42<00:12,  2.78it/s]
+EuRoC joint MH_05_difficult:  98%|█████████▊| 1105/1127 [06:47<00:07,  2.78it/s]
+EuRoC joint MH_05_difficult:  99%|█████████▉| 1120/1127 [06:53<00:02,  2.80it/s]
+EuRoC joint MH_05_difficult: 100%|██████████| 1127/1127 [06:55<00:00,  2.71it/s]
+Testing EuRoC sequence 2/4: V2_02_medium
+  V2_02_medium: 1164 windows (joint eval; mode=window_last)
+
+EuRoC joint V2_02_medium:   0%|          | 0/1164 [00:00<?, ?it/s]
+EuRoC joint V2_02_medium:   1%|          | 12/1164 [00:05<08:16,  2.32it/s]
+EuRoC joint V2_02_medium:   2%|▏         | 27/1164 [00:10<07:09,  2.65it/s]
+EuRoC joint V2_02_medium:   4%|▎         | 41/1164 [00:15<06:55,  2.70it/s]
+EuRoC joint V2_02_medium:   5%|▍         | 55/1164 [00:20<06:49,  2.71it/s]
+EuRoC joint V2_02_medium:   6%|▌         | 69/1164 [00:25<06:45,  2.70it/s]
+EuRoC joint V2_02_medium:   7%|▋         | 83/1164 [00:30<06:37,  2.72it/s]
+EuRoC joint V2_02_medium:   8%|▊         | 98/1164 [00:36<06:26,  2.76it/s]
+EuRoC joint V2_02_medium:  10%|▉         | 112/1164 [00:41<06:27,  2.71it/s]
+EuRoC joint V2_02_medium:  11%|█         | 127/1164 [00:46<06:15,  2.76it/s]
+EuRoC joint V2_02_medium:  12%|█▏        | 142/1164 [00:51<06:04,  2.81it/s]
+EuRoC joint V2_02_medium:  13%|█▎        | 157/1164 [00:57<05:58,  2.81it/s]
+EuRoC joint V2_02_medium:  15%|█▍        | 172/1164 [01:02<05:51,  2.82it/s]
+EuRoC joint V2_02_medium:  16%|█▌        | 187/1164 [01:07<05:42,  2.85it/s]
+EuRoC joint V2_02_medium:  17%|█▋        | 202/1164 [01:12<05:36,  2.86it/s]
+EuRoC joint V2_02_medium:  19%|█▊        | 217/1164 [01:18<05:30,  2.87it/s]
+EuRoC joint V2_02_medium:  20%|█▉        | 232/1164 [01:23<05:30,  2.82it/s]
+EuRoC joint V2_02_medium:  21%|██        | 247/1164 [01:28<05:26,  2.81it/s]
+EuRoC joint V2_02_medium:  23%|██▎       | 262/1164 [01:34<05:19,  2.82it/s]
+EuRoC joint V2_02_medium:  24%|██▍       | 277/1164 [01:39<05:15,  2.81it/s]
+EuRoC joint V2_02_medium:  25%|██▌       | 292/1164 [01:45<05:14,  2.78it/s]
+EuRoC joint V2_02_medium:  26%|██▋       | 307/1164 [01:50<05:04,  2.81it/s]
+EuRoC joint V2_02_medium:  28%|██▊       | 322/1164 [01:55<04:58,  2.82it/s]
+EuRoC joint V2_02_medium:  29%|██▉       | 337/1164 [02:00<04:53,  2.82it/s]
+EuRoC joint V2_02_medium:  30%|███       | 352/1164 [02:06<04:47,  2.82it/s]
+EuRoC joint V2_02_medium:  32%|███▏      | 367/1164 [02:11<04:43,  2.81it/s]
+EuRoC joint V2_02_medium:  33%|███▎      | 382/1164 [02:16<04:37,  2.82it/s]
+EuRoC joint V2_02_medium:  34%|███▍      | 397/1164 [02:22<04:31,  2.82it/s]
+EuRoC joint V2_02_medium:  35%|███▌      | 412/1164 [02:27<04:26,  2.82it/s]
+EuRoC joint V2_02_medium:  37%|███▋      | 427/1164 [02:32<04:18,  2.85it/s]
+EuRoC joint V2_02_medium:  38%|███▊      | 442/1164 [02:37<04:12,  2.86it/s]
+EuRoC joint V2_02_medium:  39%|███▉      | 457/1164 [02:43<04:08,  2.84it/s]
+EuRoC joint V2_02_medium:  41%|████      | 472/1164 [02:48<04:03,  2.84it/s]
+EuRoC joint V2_02_medium:  42%|████▏     | 487/1164 [02:53<03:55,  2.87it/s]
+EuRoC joint V2_02_medium:  43%|████▎     | 502/1164 [02:59<03:53,  2.83it/s]
+EuRoC joint V2_02_medium:  44%|████▍     | 517/1164 [03:04<03:48,  2.83it/s]
+EuRoC joint V2_02_medium:  46%|████▌     | 532/1164 [03:09<03:41,  2.85it/s]
+EuRoC joint V2_02_medium:  47%|████▋     | 547/1164 [03:14<03:35,  2.87it/s]
+EuRoC joint V2_02_medium:  48%|████▊     | 562/1164 [03:19<03:28,  2.88it/s]
+EuRoC joint V2_02_medium:  50%|████▉     | 577/1164 [03:25<03:26,  2.84it/s]
+EuRoC joint V2_02_medium:  51%|█████     | 592/1164 [03:30<03:20,  2.85it/s]
+EuRoC joint V2_02_medium:  52%|█████▏    | 607/1164 [03:35<03:16,  2.83it/s]
+EuRoC joint V2_02_medium:  53%|█████▎    | 622/1164 [03:41<03:10,  2.85it/s]
+EuRoC joint V2_02_medium:  55%|█████▍    | 637/1164 [03:46<03:03,  2.87it/s]
+EuRoC joint V2_02_medium:  56%|█████▌    | 652/1164 [03:52<03:03,  2.78it/s]
+EuRoC joint V2_02_medium:  57%|█████▋    | 667/1164 [03:57<02:58,  2.79it/s]
+EuRoC joint V2_02_medium:  59%|█████▊    | 682/1164 [04:02<02:52,  2.80it/s]
+EuRoC joint V2_02_medium:  60%|█████▉    | 697/1164 [04:07<02:46,  2.81it/s]
+EuRoC joint V2_02_medium:  61%|██████    | 712/1164 [04:13<02:41,  2.81it/s]
+EuRoC joint V2_02_medium:  62%|██████▏   | 727/1164 [04:18<02:36,  2.78it/s]
+EuRoC joint V2_02_medium:  64%|██████▎   | 741/1164 [04:24<02:34,  2.74it/s]
+EuRoC joint V2_02_medium:  65%|██████▍   | 755/1164 [04:29<02:29,  2.73it/s]
+EuRoC joint V2_02_medium:  66%|██████▌   | 769/1164 [04:34<02:23,  2.74it/s]
+EuRoC joint V2_02_medium:  67%|██████▋   | 783/1164 [04:39<02:18,  2.75it/s]
+EuRoC joint V2_02_medium:  68%|██████▊   | 797/1164 [04:44<02:13,  2.75it/s]
+EuRoC joint V2_02_medium:  70%|██████▉   | 812/1164 [04:49<02:06,  2.78it/s]
+EuRoC joint V2_02_medium:  71%|███████   | 826/1164 [04:54<02:01,  2.78it/s]
+EuRoC joint V2_02_medium:  72%|███████▏  | 840/1164 [04:59<01:56,  2.78it/s]
+EuRoC joint V2_02_medium:  73%|███████▎  | 855/1164 [05:05<01:50,  2.80it/s]
+EuRoC joint V2_02_medium:  75%|███████▍  | 869/1164 [05:10<01:45,  2.79it/s]
+EuRoC joint V2_02_medium:  76%|███████▌  | 883/1164 [05:15<01:40,  2.79it/s]
+EuRoC joint V2_02_medium:  77%|███████▋  | 898/1164 [05:20<01:35,  2.80it/s]
+EuRoC joint V2_02_medium:  78%|███████▊  | 912/1164 [05:25<01:30,  2.79it/s]
+EuRoC joint V2_02_medium:  80%|███████▉  | 926/1164 [05:30<01:25,  2.79it/s]
+EuRoC joint V2_02_medium:  81%|████████  | 940/1164 [05:35<01:20,  2.78it/s]
+EuRoC joint V2_02_medium:  82%|████████▏ | 955/1164 [05:40<01:14,  2.80it/s]
+EuRoC joint V2_02_medium:  83%|████████▎ | 970/1164 [05:46<01:09,  2.79it/s]
+EuRoC joint V2_02_medium:  85%|████████▍ | 985/1164 [05:51<01:03,  2.80it/s]
+EuRoC joint V2_02_medium:  86%|████████▌ | 999/1164 [05:56<00:59,  2.76it/s]
+EuRoC joint V2_02_medium:  87%|████████▋ | 1014/1164 [06:02<00:53,  2.78it/s]
+EuRoC joint V2_02_medium:  88%|████████▊ | 1028/1164 [06:07<00:48,  2.79it/s]
+EuRoC joint V2_02_medium:  90%|████████▉ | 1043/1164 [06:12<00:43,  2.80it/s]
+EuRoC joint V2_02_medium:  91%|█████████ | 1058/1164 [06:17<00:37,  2.82it/s]
+EuRoC joint V2_02_medium:  92%|█████████▏| 1073/1164 [06:23<00:32,  2.79it/s]
+EuRoC joint V2_02_medium:  93%|█████████▎| 1087/1164 [06:28<00:27,  2.78it/s]
+EuRoC joint V2_02_medium:  95%|█████████▍| 1101/1164 [06:33<00:22,  2.77it/s]
+EuRoC joint V2_02_medium:  96%|█████████▌| 1116/1164 [06:38<00:17,  2.79it/s]
+EuRoC joint V2_02_medium:  97%|█████████▋| 1130/1164 [06:43<00:12,  2.77it/s]
+EuRoC joint V2_02_medium:  98%|█████████▊| 1144/1164 [06:48<00:07,  2.77it/s]
+EuRoC joint V2_02_medium:  99%|█████████▉| 1158/1164 [06:53<00:02,  2.77it/s]
+EuRoC joint V2_02_medium: 100%|██████████| 1164/1164 [06:56<00:00,  2.80it/s]
+Testing EuRoC sequence 3/4: V1_01_easy
+  V1_01_easy: 1446 windows (joint eval; mode=window_last)
+
+EuRoC joint V1_01_easy:   0%|          | 0/1446 [00:00<?, ?it/s]
+EuRoC joint V1_01_easy:   1%|          | 12/1446 [00:05<10:23,  2.30it/s]
+EuRoC joint V1_01_easy:   2%|▏         | 27/1446 [00:10<08:58,  2.64it/s]
+EuRoC joint V1_01_easy:   3%|▎         | 42/1446 [00:15<08:30,  2.75it/s]
+EuRoC joint V1_01_easy:   4%|▍         | 57/1446 [00:20<08:17,  2.79it/s]
+EuRoC joint V1_01_easy:   5%|▍         | 71/1446 [00:25<08:12,  2.79it/s]
+EuRoC joint V1_01_easy:   6%|▌         | 86/1446 [00:31<08:02,  2.82it/s]
+EuRoC joint V1_01_easy:   7%|▋         | 101/1446 [00:36<07:56,  2.82it/s]
+EuRoC joint V1_01_easy:   8%|▊         | 116/1446 [00:41<07:47,  2.85it/s]
+EuRoC joint V1_01_easy:   9%|▉         | 131/1446 [00:46<07:43,  2.84it/s]
+EuRoC joint V1_01_easy:  10%|█         | 146/1446 [00:52<07:46,  2.78it/s]
+EuRoC joint V1_01_easy:  11%|█         | 160/1446 [00:57<07:41,  2.79it/s]
+EuRoC joint V1_01_easy:  12%|█▏        | 175/1446 [01:02<07:35,  2.79it/s]
+EuRoC joint V1_01_easy:  13%|█▎        | 190/1446 [01:08<07:29,  2.80it/s]
+EuRoC joint V1_01_easy:  14%|█▍        | 205/1446 [01:13<07:21,  2.81it/s]
+EuRoC joint V1_01_easy:  15%|█▌        | 220/1446 [01:18<07:16,  2.81it/s]
+EuRoC joint V1_01_easy:  16%|█▋        | 235/1446 [01:24<07:11,  2.81it/s]
+EuRoC joint V1_01_easy:  17%|█▋        | 250/1446 [01:29<07:05,  2.81it/s]
+EuRoC joint V1_01_easy:  18%|█▊        | 265/1446 [01:35<07:06,  2.77it/s]
+EuRoC joint V1_01_easy:  19%|█▉        | 279/1446 [01:40<07:02,  2.76it/s]
+EuRoC joint V1_01_easy:  20%|██        | 293/1446 [01:45<06:56,  2.77it/s]
+EuRoC joint V1_01_easy:  21%|██        | 307/1446 [01:50<06:50,  2.77it/s]
+EuRoC joint V1_01_easy:  22%|██▏       | 322/1446 [01:55<06:42,  2.79it/s]
+EuRoC joint V1_01_easy:  23%|██▎       | 337/1446 [02:01<06:37,  2.79it/s]
+EuRoC joint V1_01_easy:  24%|██▍       | 351/1446 [02:06<06:32,  2.79it/s]
+EuRoC joint V1_01_easy:  25%|██▌       | 366/1446 [02:11<06:25,  2.80it/s]
+EuRoC joint V1_01_easy:  26%|██▋       | 381/1446 [02:16<06:19,  2.80it/s]
+EuRoC joint V1_01_easy:  27%|██▋       | 396/1446 [02:22<06:15,  2.80it/s]
+EuRoC joint V1_01_easy:  28%|██▊       | 411/1446 [02:27<06:05,  2.83it/s]
+EuRoC joint V1_01_easy:  29%|██▉       | 426/1446 [02:32<06:02,  2.81it/s]
+EuRoC joint V1_01_easy:  30%|███       | 441/1446 [02:38<06:02,  2.77it/s]
+EuRoC joint V1_01_easy:  31%|███▏      | 455/1446 [02:43<05:57,  2.77it/s]
+EuRoC joint V1_01_easy:  32%|███▏      | 469/1446 [02:48<05:52,  2.77it/s]
+EuRoC joint V1_01_easy:  33%|███▎      | 483/1446 [02:53<05:46,  2.78it/s]
+EuRoC joint V1_01_easy:  34%|███▍      | 498/1446 [02:58<05:38,  2.80it/s]
+EuRoC joint V1_01_easy:  35%|███▌      | 512/1446 [03:03<05:35,  2.79it/s]
+EuRoC joint V1_01_easy:  36%|███▋      | 526/1446 [03:08<05:30,  2.78it/s]
+EuRoC joint V1_01_easy:  37%|███▋      | 541/1446 [03:14<05:23,  2.79it/s]
+EuRoC joint V1_01_easy:  38%|███▊      | 556/1446 [03:19<05:16,  2.81it/s]
+EuRoC joint V1_01_easy:  39%|███▉      | 571/1446 [03:24<05:12,  2.80it/s]
+EuRoC joint V1_01_easy:  41%|████      | 586/1446 [03:30<05:07,  2.80it/s]
+EuRoC joint V1_01_easy:  42%|████▏     | 601/1446 [03:35<05:02,  2.79it/s]
+EuRoC joint V1_01_easy:  43%|████▎     | 616/1446 [03:40<04:56,  2.80it/s]
+EuRoC joint V1_01_easy:  44%|████▎     | 630/1446 [03:45<04:51,  2.80it/s]
+EuRoC joint V1_01_easy:  45%|████▍     | 644/1446 [03:50<04:47,  2.79it/s]
+EuRoC joint V1_01_easy:  46%|████▌     | 658/1446 [03:55<04:42,  2.79it/s]
+EuRoC joint V1_01_easy:  47%|████▋     | 673/1446 [04:01<04:37,  2.78it/s]
+EuRoC joint V1_01_easy:  48%|████▊     | 688/1446 [04:06<04:31,  2.79it/s]
+EuRoC joint V1_01_easy:  49%|████▊     | 702/1446 [04:11<04:30,  2.75it/s]
+EuRoC joint V1_01_easy:  50%|████▉     | 716/1446 [04:16<04:24,  2.76it/s]
+EuRoC joint V1_01_easy:  51%|█████     | 731/1446 [04:22<04:17,  2.77it/s]
+EuRoC joint V1_01_easy:  52%|█████▏    | 745/1446 [04:27<04:13,  2.77it/s]
+EuRoC joint V1_01_easy:  52%|█████▏    | 759/1446 [04:32<04:13,  2.71it/s]
+EuRoC joint V1_01_easy:  53%|█████▎    | 773/1446 [04:37<04:06,  2.73it/s]
+EuRoC joint V1_01_easy:  54%|█████▍    | 787/1446 [04:42<04:00,  2.74it/s]
+EuRoC joint V1_01_easy:  55%|█████▌    | 801/1446 [04:47<03:54,  2.75it/s]
+EuRoC joint V1_01_easy:  56%|█████▋    | 815/1446 [04:53<03:49,  2.75it/s]
+EuRoC joint V1_01_easy:  57%|█████▋    | 830/1446 [04:58<03:40,  2.79it/s]
+EuRoC joint V1_01_easy:  58%|█████▊    | 845/1446 [05:03<03:33,  2.82it/s]
+EuRoC joint V1_01_easy:  59%|█████▉    | 860/1446 [05:08<03:26,  2.84it/s]
+EuRoC joint V1_01_easy:  61%|██████    | 875/1446 [05:13<03:21,  2.84it/s]
+EuRoC joint V1_01_easy:  62%|██████▏   | 890/1446 [05:19<03:15,  2.84it/s]
+EuRoC joint V1_01_easy:  63%|██████▎   | 905/1446 [05:24<03:11,  2.82it/s]
+EuRoC joint V1_01_easy:  64%|██████▎   | 920/1446 [05:29<03:05,  2.83it/s]
+EuRoC joint V1_01_easy:  65%|██████▍   | 935/1446 [05:35<03:00,  2.83it/s]
+EuRoC joint V1_01_easy:  66%|██████▌   | 950/1446 [05:40<02:56,  2.82it/s]
+EuRoC joint V1_01_easy:  67%|██████▋   | 965/1446 [05:46<02:51,  2.80it/s]
+EuRoC joint V1_01_easy:  68%|██████▊   | 980/1446 [05:51<02:46,  2.80it/s]
+EuRoC joint V1_01_easy:  69%|██████▉   | 995/1446 [05:56<02:41,  2.79it/s]
+EuRoC joint V1_01_easy:  70%|██████▉   | 1010/1446 [06:02<02:35,  2.80it/s]
+EuRoC joint V1_01_easy:  71%|███████   | 1025/1446 [06:07<02:29,  2.82it/s]
+EuRoC joint V1_01_easy:  72%|███████▏  | 1040/1446 [06:12<02:24,  2.82it/s]
+EuRoC joint V1_01_easy:  73%|███████▎  | 1055/1446 [06:18<02:21,  2.77it/s]
+EuRoC joint V1_01_easy:  74%|███████▍  | 1069/1446 [06:23<02:15,  2.78it/s]
+EuRoC joint V1_01_easy:  75%|███████▍  | 1084/1446 [06:28<02:09,  2.79it/s]
+EuRoC joint V1_01_easy:  76%|███████▌  | 1098/1446 [06:33<02:04,  2.79it/s]
+EuRoC joint V1_01_easy:  77%|███████▋  | 1112/1446 [06:38<02:00,  2.78it/s]
+EuRoC joint V1_01_easy:  78%|███████▊  | 1127/1446 [06:44<01:54,  2.78it/s]
+EuRoC joint V1_01_easy:  79%|███████▉  | 1142/1446 [06:49<01:48,  2.81it/s]
+EuRoC joint V1_01_easy:  80%|████████  | 1157/1446 [06:54<01:42,  2.82it/s]
+EuRoC joint V1_01_easy:  81%|████████  | 1172/1446 [06:59<01:37,  2.81it/s]
+EuRoC joint V1_01_easy:  82%|████████▏ | 1187/1446 [07:05<01:31,  2.82it/s]
+EuRoC joint V1_01_easy:  83%|████████▎ | 1202/1446 [07:10<01:27,  2.80it/s]
+EuRoC joint V1_01_easy:  84%|████████▍ | 1217/1446 [07:16<01:22,  2.78it/s]
+EuRoC joint V1_01_easy:  85%|████████▌ | 1232/1446 [07:21<01:16,  2.79it/s]
+EuRoC joint V1_01_easy:  86%|████████▌ | 1246/1446 [07:27<01:16,  2.62it/s]
+EuRoC joint V1_01_easy:  87%|████████▋ | 1260/1446 [07:32<01:10,  2.63it/s]
+EuRoC joint V1_01_easy:  88%|████████▊ | 1274/1446 [07:37<01:04,  2.68it/s]
+EuRoC joint V1_01_easy:  89%|████████▉ | 1288/1446 [07:43<00:58,  2.69it/s]
+EuRoC joint V1_01_easy:  90%|█████████ | 1303/1446 [07:48<00:52,  2.74it/s]
+EuRoC joint V1_01_easy:  91%|█████████ | 1318/1446 [07:53<00:46,  2.78it/s]
+EuRoC joint V1_01_easy:  92%|█████████▏| 1333/1446 [07:58<00:39,  2.83it/s]
+EuRoC joint V1_01_easy:  93%|█████████▎| 1348/1446 [08:03<00:34,  2.85it/s]
+EuRoC joint V1_01_easy:  94%|█████████▍| 1363/1446 [08:09<00:29,  2.84it/s]
+EuRoC joint V1_01_easy:  95%|█████████▌| 1378/1446 [08:14<00:23,  2.85it/s]
+EuRoC joint V1_01_easy:  96%|█████████▋| 1393/1446 [08:19<00:18,  2.85it/s]
+EuRoC joint V1_01_easy:  97%|█████████▋| 1408/1446 [08:25<00:13,  2.81it/s]
+EuRoC joint V1_01_easy:  98%|█████████▊| 1423/1446 [08:30<00:08,  2.85it/s]
+EuRoC joint V1_01_easy:  99%|█████████▉| 1438/1446 [08:35<00:02,  2.83it/s]
+EuRoC joint V1_01_easy: 100%|██████████| 1446/1446 [08:38<00:00,  2.79it/s]
+Testing EuRoC sequence 4/4: V1_02_medium
+  V1_02_medium: 845 windows (joint eval; mode=window_last)
+
+EuRoC joint V1_02_medium:   0%|          | 0/845 [00:00<?, ?it/s]
+EuRoC joint V1_02_medium:   1%|▏         | 12/845 [00:05<06:03,  2.29it/s]
+EuRoC joint V1_02_medium:   3%|▎         | 27/845 [00:10<05:10,  2.63it/s]
+EuRoC joint V1_02_medium:   5%|▍         | 42/845 [00:15<04:56,  2.71it/s]
+EuRoC joint V1_02_medium:   7%|▋         | 57/845 [00:21<04:43,  2.78it/s]
+EuRoC joint V1_02_medium:   9%|▊         | 72/845 [00:26<04:35,  2.81it/s]
+EuRoC joint V1_02_medium:  10%|█         | 87/845 [00:31<04:31,  2.79it/s]
+EuRoC joint V1_02_medium:  12%|█▏        | 102/845 [00:36<04:24,  2.81it/s]
+EuRoC joint V1_02_medium:  14%|█▍        | 117/845 [00:42<04:17,  2.83it/s]
+EuRoC joint V1_02_medium:  16%|█▌        | 132/845 [00:47<04:09,  2.85it/s]
+EuRoC joint V1_02_medium:  17%|█▋        | 147/845 [00:52<04:05,  2.84it/s]
+EuRoC joint V1_02_medium:  19%|█▉        | 162/845 [00:58<04:02,  2.81it/s]
+EuRoC joint V1_02_medium:  21%|██        | 177/845 [01:03<03:55,  2.84it/s]
+EuRoC joint V1_02_medium:  23%|██▎       | 192/845 [01:08<03:49,  2.85it/s]
+EuRoC joint V1_02_medium:  24%|██▍       | 207/845 [01:13<03:43,  2.85it/s]
+EuRoC joint V1_02_medium:  26%|██▋       | 222/845 [01:18<03:37,  2.86it/s]
+EuRoC joint V1_02_medium:  28%|██▊       | 237/845 [01:24<03:31,  2.87it/s]
+EuRoC joint V1_02_medium:  30%|██▉       | 252/845 [01:29<03:27,  2.86it/s]
+EuRoC joint V1_02_medium:  32%|███▏      | 267/845 [01:34<03:23,  2.84it/s]
+EuRoC joint V1_02_medium:  33%|███▎      | 282/845 [01:40<03:18,  2.84it/s]
+EuRoC joint V1_02_medium:  35%|███▌      | 297/845 [01:45<03:11,  2.86it/s]
+EuRoC joint V1_02_medium:  37%|███▋      | 312/845 [01:50<03:05,  2.88it/s]
+EuRoC joint V1_02_medium:  39%|███▊      | 327/845 [01:55<03:00,  2.87it/s]
+EuRoC joint V1_02_medium:  40%|████      | 342/845 [02:01<02:58,  2.82it/s]
+EuRoC joint V1_02_medium:  42%|████▏     | 357/845 [02:06<02:53,  2.81it/s]
+EuRoC joint V1_02_medium:  44%|████▍     | 372/845 [02:11<02:46,  2.84it/s]
+EuRoC joint V1_02_medium:  46%|████▌     | 387/845 [02:17<02:41,  2.84it/s]
+EuRoC joint V1_02_medium:  48%|████▊     | 402/845 [02:22<02:37,  2.82it/s]
+EuRoC joint V1_02_medium:  49%|████▉     | 417/845 [02:27<02:32,  2.81it/s]
+EuRoC joint V1_02_medium:  51%|█████     | 432/845 [02:32<02:25,  2.84it/s]
+EuRoC joint V1_02_medium:  53%|█████▎    | 447/845 [02:38<02:19,  2.85it/s]
+EuRoC joint V1_02_medium:  55%|█████▍    | 462/845 [02:43<02:15,  2.83it/s]
+EuRoC joint V1_02_medium:  56%|█████▋    | 477/845 [02:49<02:11,  2.80it/s]
+EuRoC joint V1_02_medium:  58%|█████▊    | 492/845 [02:54<02:05,  2.81it/s]
+EuRoC joint V1_02_medium:  60%|██████    | 507/845 [03:01<02:09,  2.60it/s]
+EuRoC joint V1_02_medium:  62%|██████▏   | 522/845 [03:06<02:00,  2.67it/s]
+EuRoC joint V1_02_medium:  63%|██████▎   | 536/845 [03:11<01:54,  2.70it/s]
+EuRoC joint V1_02_medium:  65%|██████▌   | 551/845 [03:16<01:46,  2.75it/s]
+EuRoC joint V1_02_medium:  67%|██████▋   | 566/845 [03:21<01:39,  2.80it/s]
+EuRoC joint V1_02_medium:  69%|██████▉   | 581/845 [03:26<01:32,  2.85it/s]
+EuRoC joint V1_02_medium:  71%|███████   | 596/845 [03:32<01:26,  2.86it/s]
+EuRoC joint V1_02_medium:  72%|███████▏  | 611/845 [03:37<01:21,  2.87it/s]
+EuRoC joint V1_02_medium:  74%|███████▍  | 626/845 [03:42<01:17,  2.84it/s]
+EuRoC joint V1_02_medium:  76%|███████▌  | 641/845 [03:47<01:12,  2.83it/s]
+EuRoC joint V1_02_medium:  78%|███████▊  | 656/845 [03:53<01:06,  2.85it/s]
+EuRoC joint V1_02_medium:  79%|███████▉  | 671/845 [03:58<01:01,  2.82it/s]
+EuRoC joint V1_02_medium:  81%|████████  | 686/845 [04:03<00:55,  2.84it/s]
+EuRoC joint V1_02_medium:  83%|████████▎ | 701/845 [04:08<00:50,  2.87it/s]
+EuRoC joint V1_02_medium:  85%|████████▍ | 716/845 [04:14<00:45,  2.86it/s]
+EuRoC joint V1_02_medium:  87%|████████▋ | 731/845 [04:19<00:40,  2.84it/s]
+EuRoC joint V1_02_medium:  88%|████████▊ | 746/845 [04:24<00:34,  2.84it/s]
+EuRoC joint V1_02_medium:  90%|█████████ | 761/845 [04:30<00:29,  2.85it/s]
+EuRoC joint V1_02_medium:  92%|█████████▏| 776/845 [04:35<00:24,  2.82it/s]
+EuRoC joint V1_02_medium:  94%|█████████▎| 791/845 [04:40<00:19,  2.81it/s]
+EuRoC joint V1_02_medium:  95%|█████████▌| 806/845 [04:46<00:13,  2.82it/s]
+EuRoC joint V1_02_medium:  97%|█████████▋| 821/845 [04:51<00:08,  2.82it/s]
+EuRoC joint V1_02_medium:  99%|█████████▉| 836/845 [04:56<00:03,  2.82it/s]
+EuRoC joint V1_02_medium: 100%|██████████| 845/845 [04:59<00:00,  2.82it/s]
+Saved pose dumps to: /kaggle/working/euroc4_pivift_s123_last/csv/version_0
+Also saved pose dumps to: /kaggle/working/phase5_pose_dumps
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃             Test metric              ┃             DataLoader 0              ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│              hp_metric               │           5.469081878662109           │
+│      test/MH_05_difficult_ate_m      │           9.076369285583496           │
+│  test/MH_05_difficult_ate_origin_m   │          14.929073333740234           │
+│    test/MH_05_difficult_ate_se3_m    │           9.076369285583496           │
+│   test/MH_05_difficult_ate_sim3_m    │          6.6000142097473145           │
+│ test/MH_05_difficult_ate_zero_motio… │           6.844493389129639           │
+│ test/MH_05_difficult_est_path_len_m  │           69.96492004394531           │
+│   test/MH_05_difficult_path_len_m    │           97.4542465209961            │
+│     test/MH_05_difficult_rpe_t_m     │          0.12428472191095352          │
+│   test/MH_05_difficult_sim3_scale    │          0.22539490461349487          │
+│      test/MH_05_difficult_valid      │                  1.0                  │
+│        test/V1_01_easy_ate_m         │           4.057540416717529           │
+│     test/V1_01_easy_ate_origin_m     │           8.64693546295166            │
+│      test/V1_01_easy_ate_se3_m       │           4.057540416717529           │
+│      test/V1_01_easy_ate_sim3_m      │          1.7780346870422363           │
+│  test/V1_01_easy_ate_zero_motion_m   │           1.854992151260376           │
+│    test/V1_01_easy_est_path_len_m    │           85.74795532226562           │
+│      test/V1_01_easy_path_len_m      │           58.45105743408203           │
+│       test/V1_01_easy_rpe_t_m        │          0.07790113240480423          │
+│      test/V1_01_easy_sim3_scale      │          0.12661966681480408          │
+│        test/V1_01_easy_valid         │                  1.0                  │
+│       test/V1_02_medium_ate_m        │          3.6322054862976074           │
+│    test/V1_02_medium_ate_origin_m    │           8.008273124694824           │
+│     test/V1_02_medium_ate_se3_m      │          3.6322054862976074           │
+│     test/V1_02_medium_ate_sim3_m     │          1.7540420293807983           │
+│ test/V1_02_medium_ate_zero_motion_m  │          1.7671375274658203           │
+│   test/V1_02_medium_est_path_len_m   │           82.04169464111328           │
+│     test/V1_02_medium_path_len_m     │           75.45013427734375           │
+│      test/V1_02_medium_rpe_t_m       │          0.1509667932987213           │
+│     test/V1_02_medium_sim3_scale     │          0.0632442981004715           │
+│       test/V1_02_medium_valid        │                  1.0                  │
+│       test/V2_02_medium_ate_m        │          5.1102118492126465           │
+│    test/V2_02_medium_ate_origin_m    │           7.858941555023193           │
+│     test/V2_02_medium_ate_se3_m      │          5.1102118492126465           │
+│     test/V2_02_medium_ate_sim3_m     │          1.8255674839019775           │
+│ test/V2_02_medium_ate_zero_motion_m  │           2.122950315475464           │
+│   test/V2_02_medium_est_path_len_m   │          121.60331726074219           │
+│     test/V2_02_medium_path_len_m     │           83.4432144165039            │
+│      test/V2_02_medium_rpe_t_m       │          0.13797684013843536          │
+│     test/V2_02_medium_sim3_scale     │          0.1850239783525467           │
+│       test/V2_02_medium_valid        │                  1.0                  │
+│           test/mean_ate_m            │           5.469081878662109           │
+│           test/n_valid_seq           │                  4.0                  │
+└──────────────────────────────────────┴───────────────────────────────────────┘
+Testing ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1/1 0:00:00 • 0:00:00 0.00it/s 
+[[36m2026-11-25 08:32:23,982[0m][[34m__main__[0m][[32mINFO[0m] - [rank: 0] Test ckpt path: /kaggle/input/datasets/amrelmadah/pivift-euroc-ckpt/pivift_s123_last.ckpt[0m
+[[36m2026-11-25 08:32:23,983[0m][[34msrc.utils.utils[0m][[32mINFO[0m] - [rank: 0] Output dir: /kaggle/working/euroc4_pivift_s123_last[0m
+[[36m2026-11-25 08:32:25,583[0m][[34msrc.utils.utils[0m][[32mINFO[0m] - [rank: 0] Metric name is None! Skipping metric value retrieval...[0m

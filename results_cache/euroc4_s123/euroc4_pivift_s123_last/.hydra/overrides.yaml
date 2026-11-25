@@ -1,0 +1,8 @@
+- experiment=euroc_joint_pivift
+- data.train_loader.sequences=[MH_05_difficult]
+- data.val_loader.sequences=[MH_05_difficult]
+- model.tester.sequences=[MH_05_difficult,V2_02_medium,V1_01_easy,V1_02_medium]
+- train=false
+- test=true
+- logger=csv
+- ckpt_path='/kaggle/input/datasets/amrelmadah/pivift-euroc-ckpt/pivift_s123_last.ckpt'

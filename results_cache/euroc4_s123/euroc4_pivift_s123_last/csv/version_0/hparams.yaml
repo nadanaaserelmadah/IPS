@@ -1,0 +1,167 @@
+model:
+  _target_: src.models.euroc_joint_module.EurocJointLitModule
+  optimizer:
+    _target_: torch.optim.AdamW
+    _partial_: true
+    lr: 0.0001
+    weight_decay: 0.01
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
+    _partial_: true
+    T_0: 50
+    T_mult: 1
+  criterion:
+    _target_: src.metrics.weighted_loss.PIViftLoss
+    translation_weight: 1.0
+    rotation_weight: 40.0
+    horizon_weight: 0.1
+    temporal_weight: 0.0
+    velocity_weight: 0.1
+    gravity_weight: 0.05
+    horizons:
+    - 2
+    - 5
+    - 10
+    smooth_l1_beta: 0.05
+  net:
+    _target_: src.models.components.pi_vift.PIViftNet
+    img_w: 512
+    img_h: 256
+    v_f_len: 512
+    i_f_len: 256
+    imu_dropout: 0.1
+    predict_corrections: true
+  pretrained_encoder: ${paths.root_dir}/pretrained_models/vf_512_if_256_3e-05.model
+  phase2_ckpt: null
+  encoder_ckpt: null
+  fusion_lr: 0.0001
+  freeze_encoder_epochs: 100
+  encoder_lr_scale: 0.1
+  gradient_clip_val: 1.0
+  metrics_calculator:
+    _target_: src.metrics.euroc_metrics_calculator.EuroCMetricsCalculator
+    primary_alignment: se3
+    report_all_alignments: true
+    max_step_m: 5.0
+    invalid_policy: flag
+  tester:
+    _target_: src.testers.euroc_joint_tester.EurocJointTester
+    sequences:
+    - MH_05_difficult
+    - V2_02_medium
+    - V1_01_easy
+    - V1_02_medium
+    data_dir: ${paths.data_dir}/euroc
+    seq_len: 11
+    cam_stride: 2
+    imu_freq: 10
+    img_w: 512
+    img_h: 256
+    wrapper_weights_path: ''
+    device: cuda
+    v_f_len: 512
+    i_f_len: 256
+    use_history_in_eval: false
+    eval_mode: window_last
+  compile: false
+model/params/total: 43906968
+model/params/trainable: 11666392
+model/params/non_trainable: 32240576
+data:
+  _target_: src.data.vio_datamodule.VIODataModule
+  batch_size: 4
+  num_workers: 0
+  pin_memory: false
+  train_loader:
+    _target_: src.data.components.EuRoC_dataset.EuRoC
+    _partial_: false
+    root: ${paths.data_dir}/euroc
+    sequences:
+    - MH_05_difficult
+    sequence_length: 11
+    cam_stride: 2
+    imu_freq: 10
+    include_state_gt: true
+    transform:
+      _target_: src.utils.custom_transform.Compose
+      _partial_: false
+      transforms:
+      - _target_: src.utils.custom_transform.ToTensor
+      - _target_: src.utils.custom_transform.Resize
+        size:
+        - 256
+        - 512
+  val_loader:
+    _target_: src.data.components.EuRoC_dataset.EuRoC
+    _partial_: false
+    root: ${paths.data_dir}/euroc
+    sequences:
+    - MH_05_difficult
+    sequence_length: 11
+    cam_stride: 2
+    imu_freq: 10
+    include_state_gt: true
+    transform:
+      _target_: src.utils.custom_transform.Compose
+      _partial_: false
+      transforms:
+      - _target_: src.utils.custom_transform.ToTensor
+      - _target_: src.utils.custom_transform.Resize
+        size:
+        - 256
+        - 512
+  test_loader:
+    _target_: src.data.components.empty_dataset.EvalPlaceholderDataset
+trainer:
+  _target_: lightning.pytorch.trainer.Trainer
+  default_root_dir: ${paths.output_dir}
+  min_epochs: 1
+  max_epochs: 100
+  accelerator: gpu
+  devices: 1
+  check_val_every_n_epoch: 1
+  deterministic: false
+  num_sanity_val_steps: 0
+  log_every_n_steps: 10
+  gradient_clip_val: 1.0
+callbacks:
+  model_summary:
+    _target_: lightning.pytorch.callbacks.RichModelSummary
+    max_depth: 1
+  rich_progress_bar:
+    _target_: lightning.pytorch.callbacks.RichProgressBar
+  model_checkpoint:
+    _target_: lightning.pytorch.callbacks.ModelCheckpoint
+    dirpath: ${paths.output_dir}/checkpoints
+    filename: best_{epoch:03d}
+    monitor: val/loss
+    mode: min
+    save_last: false
+    save_top_k: 3
+    auto_insert_metric_name: false
+    every_n_epochs: 5
+  model_checkpoint_periodic:
+    _target_: lightning.pytorch.callbacks.ModelCheckpoint
+    dirpath: ${paths.output_dir}/checkpoints
+    filename: epoch_{epoch:03d}
+    monitor: null
+    save_last: true
+    save_top_k: 1
+    auto_insert_metric_name: false
+    every_n_epochs: 5
+  checkpoint_zip:
+    _target_: src.utils.checkpoint_zip_callback.CheckpointZipCallback
+    every_n_epochs: 5
+    output_dir: ${paths.output_dir}/checkpoint_zips
+    copy_to_kaggle_working: true
+extras:
+  ignore_warnings: false
+  enforce_tags: true
+  print_config: true
+task_name: train
+tags:
+- euroc_joint_pivift
+- pi_vift
+- g1
+ckpt_path: /kaggle/input/datasets/amrelmadah/pivift-euroc-ckpt/pivift_s123_last.ckpt
+seed: 42

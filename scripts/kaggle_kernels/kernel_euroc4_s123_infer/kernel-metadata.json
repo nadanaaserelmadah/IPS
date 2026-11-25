@@ -1,0 +1,4 @@
+{"id": "amrelmadah/pivift-euroc4-s123-infer", "title": "pivift-euroc4-s123-infer", "code_file": "euroc4_infer.py", "language": "python", "kernel_type": "script",
+ "is_private": true, "enable_gpu": true, "enable_tpu": false, "enable_internet": true,
+ "dataset_sources": ["nadaelmadah/eurocmav", "amrelmadah/ips-pivift-fixed", "amrelmadah/pivift-euroc-ckpt"],
+ "kernel_sources": [], "competition_sources": [], "model_sources": [], "machine_shape": "NvidiaTeslaT4"}

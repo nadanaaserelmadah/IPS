@@ -1,0 +1,289 @@
+\begin{thebibliography}{10}
+\expandafter\ifx\csname url\endcsname\relax
+  \def\url#1{\burl{#1}}\fi
+\expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
+\providecommand{\bibinfo}[2]{#2}
+\providecommand{\eprint}[2][]{\url{#2}}
+\providecommand{\doi}[1]{\url{https://doi.org/#1}}
+\bibcommenthead
+
+\bibitem{Mourikis2007}
+\bibinfo{author}{Mourikis, A.~I.} \& \bibinfo{author}{Roumeliotis, S.~I.}
+  \emph{\bibinfo{title}{A multi-state constraint {Kalman} filter for
+  vision-aided inertial navigation}}.
+\newblock \emph{\bibinfo{booktitle}{Proceedings 2007 IEEE International
+  Conference on Robotics and Automation}}, \bibinfo{pages}{3565--3572}
+  (\bibinfo{year}{2007}).
+
+\bibitem{Leutenegger2015}
+\bibinfo{author}{Leutenegger, S.}, \bibinfo{author}{Lynen, S.},
+  \bibinfo{author}{Bosse, M.}, \bibinfo{author}{Siegwart, R.} \&
+  \bibinfo{author}{Furgale, P.}
+\newblock \bibinfo{title}{Keyframe-based visual-inertial odometry using
+  nonlinear optimization}.
+\newblock \emph{\bibinfo{journal}{International Journal of Robotics Research}}
+  \textbf{\bibinfo{volume}{34}}, \bibinfo{pages}{314--334}
+  (\bibinfo{year}{2015}).
+
+\bibitem{Qin2018}
+\bibinfo{author}{Qin, T.}, \bibinfo{author}{Li, P.} \& \bibinfo{author}{Shen,
+  S.}
+\newblock \bibinfo{title}{{VINS-Mono}: A robust and versatile monocular
+  visual-inertial state estimator}.
+\newblock \emph{\bibinfo{journal}{IEEE Transactions on Robotics}}
+  \textbf{\bibinfo{volume}{34}}, \bibinfo{pages}{1004--1020}
+  (\bibinfo{year}{2018}).
+
+\bibitem{Campos2021}
+\bibinfo{author}{Campos, C.}, \bibinfo{author}{Elvira, R.},
+  \bibinfo{author}{G{\'o}mez~Rodr{\'\i}guez, J.~J.}, \bibinfo{author}{Montiel,
+  J. M.~M.} \& \bibinfo{author}{Tard{\'o}s, J.~D.}
+\newblock \bibinfo{title}{{ORB-SLAM3}: An accurate open-source library for
+  visual, visual-inertial, and multimap {SLAM}}.
+\newblock \emph{\bibinfo{journal}{IEEE Transactions on Robotics}}
+  \textbf{\bibinfo{volume}{37}}, \bibinfo{pages}{1874--1890}
+  (\bibinfo{year}{2021}).
+
+\bibitem{Furgale2013}
+\bibinfo{author}{Furgale, P.}, \bibinfo{author}{Rehder, J.} \&
+  \bibinfo{author}{Siegwart, R.} \emph{\bibinfo{title}{Unified temporal and
+  spatial calibration for multi-sensor systems}}.
+\newblock \emph{\bibinfo{booktitle}{2013 IEEE/RSJ International Conference on
+  Intelligent Robots and Systems}}, \bibinfo{pages}{1280--1286}
+  (\bibinfo{year}{2013}).
+
+\bibitem{Qin2018b}
+\bibinfo{author}{Qin, T.} \& \bibinfo{author}{Shen, S.}
+  \emph{\bibinfo{title}{Online temporal calibration for monocular
+  visual-inertial systems}}.
+\newblock \emph{\bibinfo{booktitle}{2018 IEEE/RSJ International Conference on
+  Intelligent Robots and Systems}}, \bibinfo{pages}{3662--3669}
+  (\bibinfo{year}{2018}).
+
+\bibitem{Kneip2011}
+\bibinfo{author}{Kneip, L.}, \bibinfo{author}{Chli, M.} \&
+  \bibinfo{author}{Siegwart, R.} \emph{\bibinfo{title}{Robust real-time visual
+  odometry with a single camera and an {IMU}}}.
+\newblock \emph{\bibinfo{booktitle}{Proceedings of the British Machine Vision
+  Conference}}, \bibinfo{pages}{16.1--16.11} (\bibinfo{year}{2011}).
+
+\bibitem{Troiani2014}
+\bibinfo{author}{Troiani, C.}, \bibinfo{author}{Martinelli, A.},
+  \bibinfo{author}{Laugier, C.} \& \bibinfo{author}{Scaramuzza, D.}
+  \emph{\bibinfo{title}{2-point-based outlier rejection for camera-{IMU}
+  systems with applications to micro aerial vehicles}}.
+\newblock \emph{\bibinfo{booktitle}{2014 IEEE International Conference on
+  Robotics and Automation}}, \bibinfo{pages}{5530--5536}
+  (\bibinfo{year}{2014}).
+
+\bibitem{Martinelli2014}
+\bibinfo{author}{Martinelli, A.}
+\newblock \bibinfo{title}{Closed-form solution of visual-inertial structure
+  from motion}.
+\newblock \emph{\bibinfo{journal}{International Journal of Computer Vision}}
+  \textbf{\bibinfo{volume}{106}}, \bibinfo{pages}{138--152}
+  (\bibinfo{year}{2014}).
+
+\bibitem{Qin2017}
+\bibinfo{author}{Qin, T.} \& \bibinfo{author}{Shen, S.}
+  \emph{\bibinfo{title}{Robust initialization of monocular visual-inertial
+  estimation on aerial robots}}.
+\newblock \emph{\bibinfo{booktitle}{2017 IEEE/RSJ International Conference on
+  Intelligent Robots and Systems}}, \bibinfo{pages}{4225--4232}
+  (\bibinfo{year}{2017}).
+
+\bibitem{Clark2017}
+\bibinfo{author}{Clark, R.}, \bibinfo{author}{Wang, S.}, \bibinfo{author}{Wen,
+  H.}, \bibinfo{author}{Markham, A.} \& \bibinfo{author}{Trigoni, N.}
+  \emph{\bibinfo{title}{{VINet}: Visual-inertial odometry as a
+  sequence-to-sequence learning problem}}.
+\newblock \emph{\bibinfo{booktitle}{Proceedings of the AAAI Conference on
+  Artificial Intelligence}}, Vol.~\bibinfo{volume}{31},
+  \bibinfo{pages}{3995--4001} (\bibinfo{year}{2017}).
+
+\bibitem{Han2019}
+\bibinfo{author}{Han, L.}, \bibinfo{author}{Lin, Y.}, \bibinfo{author}{Du, G.}
+  \& \bibinfo{author}{Lian, S.} \emph{\bibinfo{title}{{DeepVIO}:
+  Self-supervised deep learning of monocular visual inertial odometry using
+  {3D} geometric constraints}}.
+\newblock \emph{\bibinfo{booktitle}{2019 IEEE/RSJ International Conference on
+  Intelligent Robots and Systems}}, \bibinfo{pages}{6906--6913}
+  (\bibinfo{year}{2019}).
+
+\bibitem{Almalioglu2022}
+\bibinfo{author}{Almalioglu, Y.} \emph{et~al.}
+\newblock \bibinfo{title}{{SelfVIO}: Self-supervised deep monocular
+  visual-inertial odometry and depth estimation}.
+\newblock \emph{\bibinfo{journal}{Neural Networks}}
+  \textbf{\bibinfo{volume}{150}}, \bibinfo{pages}{119--136}
+  (\bibinfo{year}{2022}).
+
+\bibitem{Yang2022}
+\bibinfo{author}{Yang, M.}, \bibinfo{author}{Chen, Y.} \& \bibinfo{author}{Kim,
+  H.-S.} \emph{\bibinfo{title}{Efficient deep visual and inertial odometry with
+  adaptive visual modality selection}}.
+\newblock \emph{\bibinfo{booktitle}{Computer Vision -- {ECCV} 2022}},
+  \bibinfo{pages}{233--250} (\bibinfo{year}{2022}).
+
+\bibitem{Kurt2024}
+\bibinfo{author}{Kurt, Y.~B.}, \bibinfo{author}{Akman, A.} \&
+  \bibinfo{author}{Alatan, A.~A.}
+\newblock \bibinfo{title}{Causal transformer for fusion and pose estimation in
+  deep visual inertial odometry}.
+\newblock \bibinfo{howpublished}{Preprint at https://arxiv.org/abs/2409.08769}
+  (\bibinfo{year}{2024}).
+\newblock
+  \bibinfo{eprint}{{\href{https://arxiv.org/abs/2409.08769}{{arXiv:2409.08769}}}}.
+
+\bibitem{Wan2026}
+\bibinfo{author}{Wan, Z.} \& \bibinfo{author}{Zhao, L.}
+\newblock \bibinfo{title}{{DB-VIO}: Dual-branch visual inertial odometry with
+  enhanced visual-inertial representation}.
+\newblock \bibinfo{howpublished}{Preprint at https://arxiv.org/abs/2607.22123}
+  (\bibinfo{year}{2026}).
+\newblock
+  \bibinfo{eprint}{{\href{https://arxiv.org/abs/2607.22123}{{arXiv:2607.22123}}}}.
+
+\bibitem{Ma2026}
+\bibinfo{author}{Ma, L.}, \bibinfo{author}{Zhang, L.}, \bibinfo{author}{Huang,
+  C.}, \bibinfo{author}{Zhang, T.} \& \bibinfo{author}{Chu, X.}
+\newblock \bibinfo{title}{{MixVIO}: Selective visual-inertial odometry via
+  phase-aware attention and hybrid kernel modeling}.
+\newblock \emph{\bibinfo{journal}{IEEE Robotics and Automation Letters}}
+  \textbf{\bibinfo{volume}{11}}, \bibinfo{pages}{9859--9866}
+  (\bibinfo{year}{2026}).
+
+\bibitem{Qin2026}
+\bibinfo{author}{Qin, W.}, \bibinfo{author}{Kong, X.}, \bibinfo{author}{Zhang,
+  S.}, \bibinfo{author}{Xu, H.} \& \bibinfo{author}{Dong, X.}
+  \emph{\bibinfo{title}{{Diff-VIO}: A diffusion model-based pose optimizer for
+  visual inertial odometry}}.
+\newblock \emph{\bibinfo{booktitle}{2026 IEEE International Conference on
+  Robotics and Automation}}, \bibinfo{pages}{5430--5437}
+  (\bibinfo{year}{2026}).
+
+\bibitem{DAPPose}
+\bibinfo{author}{Lin, J.}, \bibinfo{author}{Qin, Y.}, \bibinfo{author}{Yuan,
+  J.}, \bibinfo{author}{Zhang, W.} \& \bibinfo{author}{Gao, S.}
+\newblock \bibinfo{title}{{DAP-Pose}: Deep temporal alignment and physics-aware
+  cross-modal sensor fusion for robust pose estimation}.
+\newblock \bibinfo{howpublished}{Preprint at https://arxiv.org/abs/2607.23755}
+  (\bibinfo{year}{2026}).
+\newblock
+  \bibinfo{eprint}{{\href{https://arxiv.org/abs/2607.23755}{{arXiv:2607.23755}}}}.
+
+\bibitem{Liu2020}
+\bibinfo{author}{Liu, W.} \emph{et~al.}
+\newblock \bibinfo{title}{{TLIO}: Tight learned inertial odometry}.
+\newblock \emph{\bibinfo{journal}{IEEE Robotics and Automation Letters}}
+  \textbf{\bibinfo{volume}{5}}, \bibinfo{pages}{5653--5660}
+  (\bibinfo{year}{2020}).
+
+\bibitem{Herath2020}
+\bibinfo{author}{Herath, S.}, \bibinfo{author}{Yan, H.} \&
+  \bibinfo{author}{Furukawa, Y.} \emph{\bibinfo{title}{{RoNIN}: Robust neural
+  inertial navigation in the wild: Benchmark, evaluations, \& new methods}}.
+\newblock \emph{\bibinfo{booktitle}{2020 IEEE International Conference on
+  Robotics and Automation}}, \bibinfo{pages}{3146--3152}
+  (\bibinfo{year}{2020}).
+
+\bibitem{Brossard2020}
+\bibinfo{author}{Brossard, M.}, \bibinfo{author}{Barrau, A.} \&
+  \bibinfo{author}{Bonnabel, S.}
+\newblock \bibinfo{title}{{AI-IMU} dead-reckoning}.
+\newblock \emph{\bibinfo{journal}{IEEE Transactions on Intelligent Vehicles}}
+  \textbf{\bibinfo{volume}{5}}, \bibinfo{pages}{585--595}
+  (\bibinfo{year}{2020}).
+
+\bibitem{Geiger2012}
+\bibinfo{author}{Geiger, A.}, \bibinfo{author}{Lenz, P.} \&
+  \bibinfo{author}{Urtasun, R.} \emph{\bibinfo{title}{Are we ready for
+  autonomous driving? {The KITTI} vision benchmark suite}}.
+\newblock \emph{\bibinfo{booktitle}{2012 IEEE Conference on Computer Vision and
+  Pattern Recognition}}, \bibinfo{pages}{3354--3361} (\bibinfo{year}{2012}).
+
+\bibitem{Chen2022}
+\bibinfo{author}{Chen, J.} \emph{et~al.} \emph{\bibinfo{title}{Projective
+  manifold gradient layer for deep rotation regression}}.
+\newblock \emph{\bibinfo{booktitle}{Proceedings of the IEEE/CVF Conference on
+  Computer Vision and Pattern Recognition}}, \bibinfo{pages}{6646--6655}
+  (\bibinfo{year}{2022}).
+
+\bibitem{Cimarelli2022}
+\bibinfo{author}{Cimarelli, C.}, \bibinfo{author}{Bavle, H.},
+  \bibinfo{author}{Sanchez-Lopez, J.~L.} \& \bibinfo{author}{Voos, H.}
+\newblock \bibinfo{title}{{RAUM-VO}: Rotational adjusted unsupervised monocular
+  visual odometry}.
+\newblock \emph{\bibinfo{journal}{Sensors}} \textbf{\bibinfo{volume}{22}},
+  \bibinfo{pages}{2651} (\bibinfo{year}{2022}).
+
+\bibitem{Kang2025}
+\bibinfo{author}{Kang, J.}
+\newblock \bibinfo{title}{Monocular visual/{IMU/GNSS} integration system using
+  deep learning-based optical flow for intelligent vehicle localization}.
+\newblock \emph{\bibinfo{journal}{Sensors}} \textbf{\bibinfo{volume}{25}},
+  \bibinfo{pages}{6050} (\bibinfo{year}{2025}).
+
+\bibitem{Chen2023NASVIO}
+\bibinfo{author}{Chen, Y.}, \bibinfo{author}{Yang, M.} \& \bibinfo{author}{Kim,
+  H.-S.} \emph{\bibinfo{title}{Search for efficient deep visual-inertial
+  odometry through neural architecture search}}.
+\newblock \emph{\bibinfo{booktitle}{ICASSP 2023 - 2023 IEEE International
+  Conference on Acoustics, Speech and Signal Processing}},
+  \bibinfo{pages}{1--5} (\bibinfo{year}{2023}).
+
+\bibitem{Park2024ULVIO}
+\bibinfo{author}{Park, J.}, \bibinfo{author}{Chun, S.~Y.} \&
+  \bibinfo{author}{Seok, M.} \emph{\bibinfo{title}{{UL-VIO}: Ultra-lightweight
+  visual-inertial odometry with noise robust test-time adaptation}}.
+\newblock \emph{\bibinfo{booktitle}{Computer Vision -- {ECCV} 2024}},
+  \bibinfo{pages}{415--432} (\bibinfo{year}{2024}).
+
+\bibitem{Burri2016}
+\bibinfo{author}{Burri, M.} \emph{et~al.}
+\newblock \bibinfo{title}{The {EuRoC} micro aerial vehicle datasets}.
+\newblock \emph{\bibinfo{journal}{International Journal of Robotics Research}}
+  \textbf{\bibinfo{volume}{35}}, \bibinfo{pages}{1157--1163}
+  (\bibinfo{year}{2016}).
+
+\bibitem{Schubert2018}
+\bibinfo{author}{Schubert, D.} \emph{et~al.} \emph{\bibinfo{title}{The {TUM VI}
+  benchmark for evaluating visual-inertial odometry}}.
+\newblock \emph{\bibinfo{booktitle}{2018 IEEE/RSJ International Conference on
+  Intelligent Robots and Systems}}, \bibinfo{pages}{1680--1687}
+  (\bibinfo{year}{2018}).
+
+\bibitem{Geiger2013}
+\bibinfo{author}{Geiger, A.}, \bibinfo{author}{Lenz, P.},
+  \bibinfo{author}{Stiller, C.} \& \bibinfo{author}{Urtasun, R.}
+\newblock \bibinfo{title}{Vision meets robotics: {The KITTI} dataset}.
+\newblock \emph{\bibinfo{journal}{International Journal of Robotics Research}}
+  \textbf{\bibinfo{volume}{32}}, \bibinfo{pages}{1231--1237}
+  (\bibinfo{year}{2013}).
+
+\bibitem{Wang2020}
+\bibinfo{author}{Wang, W.}, \bibinfo{author}{Hu, Y.} \&
+  \bibinfo{author}{Scherer, S.} \emph{\bibinfo{title}{{TartanVO}: A
+  generalizable learning-based {VO}}}.
+\newblock \emph{\bibinfo{booktitle}{Proceedings of the 2020 Conference on Robot
+  Learning}}, Vol. \bibinfo{volume}{155} of \emph{\bibinfo{series}{Proceedings
+  of Machine Learning Research}}, \bibinfo{pages}{1761--1772}
+  (\bibinfo{publisher}{PMLR}, \bibinfo{year}{2021}).
+
+\bibitem{Behley2018}
+\bibinfo{author}{Behley, J.} \& \bibinfo{author}{Stachniss, C.}
+  \emph{\bibinfo{title}{Efficient surfel-based {SLAM} using {3D} laser range
+  data in urban environments}}.
+\newblock \emph{\bibinfo{booktitle}{Robotics: Science and Systems XIV}}
+  (\bibinfo{year}{2018}).
+\newblock \bibinfo{note}{Paper 16}.
+
+\bibitem{Delmerico2018}
+\bibinfo{author}{Delmerico, J.} \& \bibinfo{author}{Scaramuzza, D.}
+  \emph{\bibinfo{title}{A benchmark comparison of monocular visual-inertial
+  odometry algorithms for flying robots}}.
+\newblock \emph{\bibinfo{booktitle}{2018 IEEE International Conference on
+  Robotics and Automation}}, \bibinfo{pages}{2502--2509}
+  (\bibinfo{year}{2018}).
+
+\end{thebibliography}
