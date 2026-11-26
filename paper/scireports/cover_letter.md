@@ -10,7 +10,7 @@ We submit the manuscript **"Observability-gated fusion of sensor measurements an
 
 **Why *Scientific Reports*.** The journal publishes technically sound work across the sciences and engineering, and the contribution here is methodological and diagnostic rather than a new state of the art. We say so explicitly: a classical system remains about 22 times more accurate on one of the datasets, and we report every failure, including a pre-registered version that failed on one dataset and a post-hoc revision that was no better on a sequence it had not seen. We believe this transparent reporting, together with the oracle-swap procedure that readers in any field using learned sensor fusion can apply, suits the journal's emphasis on rigour over novelty, and the paper is written for readers from many disciplines (navigation, robotics, sensing, machine learning).
 
-**Corresponding author.** Nada El Madah, Computer Science, Mansoura University, Mansoura, Egypt; email nadaelmadah@mans.edu.eg; [TO BE FILLED: postal address, ORCID]. Affiliation of all authors: Computer Science, Mansoura University, Mansoura, Egypt.
+**Corresponding author.** Nada El Madah, Department of Computer Science, Faculty of Computers and Information, Mansoura University, Mansoura, Egypt; email nadaelmadah@mans.edu.eg; ORCID 0000-0002-2537-2746. Affiliation of all authors: Computer Science, Mansoura University, Mansoura, Egypt.
 
 **Prior discussion with a *Scientific Reports* Editor.** [TO BE FILLED: none / name of the Editor and date].
 
@@ -18,7 +18,7 @@ We submit the manuscript **"Observability-gated fusion of sensor measurements an
 
 **Excluded referees.** [TO BE FILLED: names and reasons, or none.]
 
-**Declarations.** The manuscript is not under consideration elsewhere and has not been published previously. All authors have approved the submission. [TO BE FILLED: confirm; competing interests; use of large language models.] Data and code availability statements are in the manuscript [TO BE FILLED: repository and DOI].
+**Declarations.** The manuscript is not under consideration elsewhere and has not been published previously. All authors have approved the submission. The authors declare no competing interests. [TO BE FILLED: use of large language models.] Data and code availability statements are in the manuscript [TO BE FILLED: repository and DOI].
 
 Sincerely,
 
