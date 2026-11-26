@@ -23,3 +23,6 @@ third_party/VIFT/outputs/
 # OS
 .DS_Store
 Thumbs.db
+
+# Kept locally, not published in the repository
+docs/
