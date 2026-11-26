@@ -1,8 +1,8 @@
 # Fix PyTorch WinError 126 on Windows (missing DLL dependencies)
 $ErrorActionPreference = "Stop"
 
-$VenvPython = "c:\Users\LORD\Desktop\IPS\third_party\VIFT\.venv\Scripts\python.exe"
-$VenvPip = "c:\Users\LORD\Desktop\IPS\third_party\VIFT\.venv\Scripts\pip.exe"
+$VenvPython = "$PSScriptRoot\..\..\third_party\VIFT\.venv\Scripts\python.exe"
+$VenvPip = "$PSScriptRoot\..\..\third_party\VIFT\.venv\Scripts\pip.exe"
 
 Write-Host "=== PyTorch Windows repair ==="
 Write-Host ""

@@ -90,4 +90,4 @@ Assumes a known common start for every trajectory; no loop closure or map mergin
 | VIFT with 08, 3 seeds | + accel length | 46 / 51 / 62 | 8 / 9 / 21 | 21 / 20 / 48 |
 | VIFT with 08, 3 seeds | gate v3 | 44 / 49 / 62 | 8 / 9 / 22 | 16 / 15 / 47 |
 
-figure: /Users/finetch/Library/Caches/ips_e5_chain/revisit.png
+figure: ~/Library/Caches/ips_e5_chain/revisit.png

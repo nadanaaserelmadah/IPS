@@ -59,7 +59,7 @@ Same contrast after scoring (best-on-test minus best-on-08; negative = the test-
 
 Released VS-VIO checkpoint: network 2.35, gate v3 1.27. Clean seeds (best on 08) with a worse network: 1 of 1; any rule: 2 of 3. Worse after gate v3: 1 of 1.
 
-figure: /Users/finetch/Library/Caches/ips_e5_chain/e5_auth1gpu/audit_e5.png
+figure: ~/Library/Caches/ips_e5_chain/e5_auth1gpu/audit_e5.png
 
 # Full scoring output
 ## Oracle swap and sensor rows (t_rel % / r_rel deg/100 m, mean of 05 / 07 / 10)

@@ -1,0 +1,7 @@
+# Packages imported by the scripts in this repository (versions not pinned).
+# The base networks also need third_party/VIFT/requirements.txt.
+numpy
+scipy
+matplotlib
+pillow
+torch

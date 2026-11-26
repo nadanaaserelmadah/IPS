@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the manuscript below."
+title: "Observability-gated fusion of sensor measurements and a neural network improves learned visual-inertial odometry"
+type: software
+authors:
+  - given-names: "Nada"
+    family-names: "El Madah"
+    email: "nadaelmadah@mans.edu.eg"
+    orcid: "https://orcid.org/0000-0002-2537-2746"
+    affiliation: "Department of Computer Science, Faculty of Computers and Information, Mansoura University, Egypt"
+  - given-names: "Magdy"
+    family-names: "Zakaria"
+    affiliation: "Mansoura University, Egypt"
+  - given-names: "Samir"
+    family-names: "Elmougy"
+    affiliation: "Mansoura University, Egypt"
+  - given-names: "Shahenda"
+    family-names: "Sarhan"
+    affiliation: "Mansoura University, Egypt"
+  - given-names: "Mohamed"
+    family-names: "Handosa"
+    affiliation: "Mansoura University, Egypt"
+  - given-names: "Rasha Elsayed"
+    family-names: "Sakr"
+    affiliation: "Mansoura University, Egypt"
+repository-code: "https://github.com/nadanaaserelmadah/IPS"
+license: MIT
+keywords:
+  - visual-inertial odometry
+  - sensor fusion
+  - deep learning
+  - observability

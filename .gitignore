@@ -26,3 +26,17 @@ Thumbs.db
 
 # Kept locally, not published in the repository
 docs/
+paper/
+papers/
+# Book, slide-deck and PDF builders and the book figures (kept locally)
+scripts/build_*.py
+scripts/build_*.js
+scripts/export_*.py
+scripts/book.css
+scripts/paper_draft.css
+scripts/plot_*.py
+scripts/scireports/build_scireports.sh
+scripts/scireports/count_words.py
+# Local symlinks to regenerated dumps
+results_cache/euroc4_s123/dumps/
+results_cache/euroc_dumps_stub/
