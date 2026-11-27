@@ -3,7 +3,7 @@
 Code, scripts and cached results that accompany the manuscript
 
 > **Observability-gated fusion of sensor measurements and a neural network improves learned visual–inertial odometry**
-> Nada El Madah, Magdy Zakaria, Samir Elmougy, Shahenda Sarhan, Mohamed Handosa and Rasha Elsayed Sakr
+> Nada El Madah, M. Z. Rashad, Samir Elmougy, Shahenda Sarhan, Mohamed Handosa and Rasha H. Sakr
 > Department of Computer Science, Faculty of Computers and Information, Mansoura University, Egypt.
 
 The work asks which part of the motion a learned visual–inertial odometry (VIO) network gets wrong, and then lets the inertial sensor measure what it can observe while a frozen network supplies the rest.
